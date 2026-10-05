@@ -1,0 +1,109 @@
+{%- liquid
+  assign img = 'https://images.unsplash.com/photo-'
+  assign q = '?auto=format&fit=crop&q=72'
+  assign h = routes.root_url | remove_last: '/'
+  case page.handle
+    when 'pompe-a-chaleur'
+      assign pic = '1600047509807-ba8f99d2cdde'
+      assign kicker = 'Chauffage'
+      assign proj = 'pac'
+    when 'panneaux-solaires-photovoltaiques'
+      assign pic = '1509391366360-2e959784a276'
+      assign kicker = 'Solaire'
+      assign proj = 'pv'
+    when 'isolation-thermique'
+      assign pic = '1607400201889-565b1ee75f8e'
+      assign kicker = 'Isolation'
+      assign proj = 'iso'
+    when 'chauffe-eau-thermodynamique'
+      assign pic = '1600210492486-724fe5c67fb0'
+      assign kicker = 'Eau chaude'
+      assign proj = 'cet'
+    when 'renovation-energetique-globale'
+      assign pic = '1600566753086-00f18fb6b3ea'
+      assign kicker = 'Rénovation globale'
+      assign proj = 'reno'
+    when 'aides-renovation-energetique'
+      assign pic = '1503387762-592deb58ef4e'
+      assign kicker = 'Aides et financements'
+      assign proj = ''
+    else
+      assign pic = '1600585154340-be6161a56a0c'
+      assign kicker = 'Énergie Hachem Yazour'
+      assign proj = ''
+  endcase
+  assign wa = settings.whatsapp_number | remove: ' ' | remove: '+' | remove: '.' | remove: '-'
+  assign first = wa | slice: 0
+  if first == '0'
+    assign wa = wa | remove_first: '0' | prepend: '33'
+  endif
+-%}
+<section class="hero hero--page" aria-label="{{ page.title | escape }}">
+  <div class="hero__media" data-parallax="8">
+    <img src="{{ img }}{{ pic }}{{ q }}&w=1600" srcset="{{ img }}{{ pic }}{{ q }}&w=800 800w, {{ img }}{{ pic }}{{ q }}&w=1600 1600w, {{ img }}{{ pic }}{{ q }}&w=2200 2200w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
+  </div>
+  <div class="wrap hero__inner">
+    <nav class="crumbs fade-in" aria-label="Fil d'Ariane"><a href="{{ routes.root_url }}">Accueil</a><span aria-hidden="true">/</span><span aria-current="page">{{ page.title }}</span></nav>
+    <span class="eyebrow fade-in" style="margin-top:24px">{{ kicker }}</span>
+    <h1 class="page-h1"><span class="ln"><span>{{ page.title }}</span></span></h1>
+    <div class="ctas fade-in d2" style="margin-top:32px">
+      <a class="btn btn--primary" href="{{ h }}/#etude" {% if proj != blank %}data-project="{{ proj }}"{% endif %}>Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+      {%- if wa != blank -%}<a class="btn btn--glass" href="https://wa.me/{{ wa }}" target="_blank" rel="noopener">Écrire sur WhatsApp {% render 'icon', name: 'btn-arrow' %}</a>{%- endif -%}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:clamp(56px,7vw,96px)">
+  <div class="wrap article-grid">
+    <article class="rte rte--rich">{{ page.content }}</article>
+    <aside class="side">
+      <div class="side__card">
+        <span class="eyebrow">Votre projet</span>
+        <h2 class="side__t">Une étude <span class="s">sur mesure.</span></h2>
+        <p class="muted">Décrivez votre logement en deux minutes : nous étudions votre projet et les aides susceptibles de s'appliquer.</p>
+        <a class="btn btn--primary" href="{{ h }}/#etude" style="width:100%">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+        {%- if wa != blank -%}<a class="btn btn--glass" href="https://wa.me/{{ wa }}" target="_blank" rel="noopener" style="width:100%">WhatsApp {% render 'icon', name: 'btn-arrow' %}</a>{%- endif -%}
+      </div>
+      <nav class="side__nav" aria-label="Nos autres solutions">
+        <span class="eyebrow">Nos solutions</span>
+        <ul>
+          <li><a href="{{ h }}/pages/pompe-a-chaleur"{% if page.handle == 'pompe-a-chaleur' %} aria-current="page"{% endif %}>Pompe à chaleur</a></li>
+          <li><a href="{{ h }}/pages/panneaux-solaires-photovoltaiques"{% if page.handle == 'panneaux-solaires-photovoltaiques' %} aria-current="page"{% endif %}>Panneaux photovoltaïques</a></li>
+          <li><a href="{{ h }}/pages/isolation-thermique"{% if page.handle == 'isolation-thermique' %} aria-current="page"{% endif %}>Isolation</a></li>
+          <li><a href="{{ h }}/pages/chauffe-eau-thermodynamique"{% if page.handle == 'chauffe-eau-thermodynamique' %} aria-current="page"{% endif %}>Chauffe-eau thermodynamique</a></li>
+          <li><a href="{{ h }}/pages/renovation-energetique-globale"{% if page.handle == 'renovation-energetique-globale' %} aria-current="page"{% endif %}>Rénovation énergétique globale</a></li>
+          <li><a href="{{ h }}/pages/aides-renovation-energetique"{% if page.handle == 'aides-renovation-energetique' %} aria-current="page"{% endif %}>Aides et financements</a></li>
+          <li><a href="{{ h }}/blogs/guides-energie">Guides et conseils</a></li>
+        </ul>
+      </nav>
+    </aside>
+  </div>
+</section>
+
+<section class="final">
+  <div class="final__bg" data-parallax="8"><img src="{{ img }}1600607687939-ce8a6c25118c{{ q }}&w=1800" alt="" loading="lazy" decoding="async"></div>
+  <div class="wrap">
+    <span class="eyebrow rv">Prêt à commencer ?</span>
+    <h2 class="rv">Parlons de <span class="s">votre projet.</span></h2>
+    <p class="lead rv">Une étude sérieuse, une recommandation honnête, une installation soignée — partout en France.</p>
+    <div class="ctas rv"><a class="btn btn--primary" href="{{ h }}/#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a></div>
+  </div>
+</section>
+
+<script type="application/ld+json">
+[{
+  "@context":"https://schema.org","@type":"BreadcrumbList",
+  "itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":{{ shop.url | append: routes.root_url | json }}},
+    {"@type":"ListItem","position":2,"name":{{ page.title | json }},"item":{{ canonical_url | json }}}
+  ]
+}{% if proj != blank %},{
+  "@context":"https://schema.org","@type":"Service",
+  "name":{{ page.title | json }},
+  "serviceType":{{ kicker | json }},
+  "description":{{ page_description | json }},
+  "areaServed":{"@type":"Country","name":"France"},
+  "provider":{"@type":"HomeAndConstructionBusiness","name":{{ settings.brand_name | default: 'Énergie Hachem Yazour' | json }},"url":{{ shop.url | json }}},
+  "url":{{ canonical_url | json }}
+}{% endif %}]
+</script>

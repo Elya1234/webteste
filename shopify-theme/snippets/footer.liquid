@@ -20,11 +20,11 @@
       <div>
         <h4>Solutions</h4>
         <ul>
-          <li><a href="{{ h }}/#solutions">Pompe à chaleur</a></li>
-          <li><a href="{{ h }}/#solutions">Panneaux photovoltaïques</a></li>
-          <li><a href="{{ h }}/#solutions">Isolation</a></li>
-          <li><a href="{{ h }}/#solutions">Chauffe-eau thermodynamique</a></li>
-          <li><a href="{{ h }}/#solutions">Rénovation globale</a></li>
+          <li><a href="{{ h }}/pages/pompe-a-chaleur">Pompe à chaleur</a></li>
+          <li><a href="{{ h }}/pages/panneaux-solaires-photovoltaiques">Panneaux photovoltaïques</a></li>
+          <li><a href="{{ h }}/pages/isolation-thermique">Isolation</a></li>
+          <li><a href="{{ h }}/pages/chauffe-eau-thermodynamique">Chauffe-eau thermodynamique</a></li>
+          <li><a href="{{ h }}/pages/renovation-energetique-globale">Rénovation globale</a></li>
         </ul>
       </div>
       <div>
@@ -32,7 +32,9 @@
         <ul>
           <li><a href="{{ h }}/#methode">Notre méthode</a></li>
           <li><a href="{{ h }}/#realisations">Réalisations</a></li>
-          <li><a href="{{ h }}/#aides">Aides et financements</a></li>
+          <li><a href="{{ h }}/pages/aides-renovation-energetique">Aides et financements</a></li>
+          <li><a href="{{ h }}/blogs/guides-energie">Guides et conseils</a></li>
+          <li><a href="{{ h }}/pages/zones-intervention">Zones d'intervention</a></li>
           <li><a href="{{ h }}/#avis">Avis clients</a></li>
           <li><a href="{{ h }}/#faq">Questions fréquentes</a></li>
         </ul>
@@ -44,7 +46,8 @@
           {%- if settings.phone != blank -%}<li><a href="tel:{{ tel }}">{{ settings.phone }}</a></li>{%- endif -%}
           {%- if settings.email != blank -%}<li><a href="mailto:{{ settings.email }}">{{ settings.email }}</a></li>{%- endif -%}
           {%- if settings.address != blank -%}<li><span class="muted">{{ settings.address }}</span></li>{%- endif -%}
-          <li><span class="muted">Intervention partout en France</span></li>
+          {%- if settings.whatsapp_number != blank -%}<li><span class="muted">WhatsApp : {{ settings.whatsapp_number }}</span></li>{%- endif -%}
+          <li><a href="{{ h }}/pages/zones-intervention">Intervention partout en France</a></li>
         </ul>
       </div>
     </div>

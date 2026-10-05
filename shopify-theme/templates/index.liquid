@@ -115,7 +115,8 @@ reno|Rénovation globale|05|Un bouquet de travaux coordonné pour un vrai saut d
       {%- assign lines = sols | strip | newline_to_br | split: '<br />' -%}
       {%- for l in lines -%}
         {%- assign f = l | strip | split: '|' -%}
-        <a class="sol rv" href="#etude" data-project="{{ f[0] }}" aria-label="{{ f[1] }} — demander une étude">
+        {%- case f[0] -%}{%- when 'pac' -%}{%- assign url = '/pages/pompe-a-chaleur' -%}{%- when 'pv' -%}{%- assign url = '/pages/panneaux-solaires-photovoltaiques' -%}{%- when 'iso' -%}{%- assign url = '/pages/isolation-thermique' -%}{%- when 'cet' -%}{%- assign url = '/pages/chauffe-eau-thermodynamique' -%}{%- else -%}{%- assign url = '/pages/renovation-energetique-globale' -%}{%- endcase -%}
+        <a class="sol rv" href="{{ h }}{{ url }}">
           <div class="sol__img"><img src="{{ img }}{{ f[7] }}{{ q }}&w=1100" srcset="{{ img }}{{ f[7] }}{{ q }}&w=700 700w, {{ img }}{{ f[7] }}{{ q }}&w=1100 1100w" sizes="(min-width:1100px) 50vw, 100vw" alt="{{ f[8] }}" loading="lazy" decoding="async" data-parallax="6"></div>
           <span class="sol__tag">{% case f[0] %}{% when 'pac' %}Chauffage{% when 'pv' %}Solaire{% when 'iso' %}Isolation{% when 'cet' %}Eau chaude{% else %}Rénovation{% endcase %}</span>
           <span class="sol__n">{{ f[2] }}</span>
@@ -123,7 +124,7 @@ reno|Rénovation globale|05|Un bouquet de travaux coordonné pour un vrai saut d
           <p>{{ f[3] }}</p>
           <div class="sol__more"><div>
             <ul><li>{{ f[4] }}</li><li>{{ f[5] }}</li><li>{{ f[6] }}</li></ul>
-            <span class="sol__go"><span class="ic">{% render 'icon', name: 'arrow' %}</span>Demander une étude</span>
+            <span class="sol__go"><span class="ic">{% render 'icon', name: 'arrow' %}</span>Découvrir</span>
           </div></div>
         </a>
       {%- endfor -%}
@@ -319,7 +320,7 @@ reno|Rénovation|Maison d'architecte|Bouquet de travaux|Classe DPE|avant → apr
         <h3>Vérifiez votre éligibilité.</h3>
         <p>Répondez à quelques questions sur votre logement et votre projet : un conseiller étudie votre situation et vous indique les dispositifs susceptibles de s'appliquer.</p>
       </div>
-      <a class="btn btn--primary" href="#etude">Vérifier mon éligibilité {% render 'icon', name: 'btn-arrow' %}</a>
+      <div class="ctas"><a class="btn btn--primary" href="#etude">Vérifier mon éligibilité {% render 'icon', name: 'btn-arrow' %}</a><a class="btn btn--glass" href="{{ h }}/pages/aides-renovation-energetique">Tout savoir sur les aides {% render 'icon', name: 'btn-arrow' %}</a></div>
     </div>
     <p class="aid-src rv">Informations générales fournies à titre indicatif, dernière vérification : {{ settings.aids_checked_on | default: 'à compléter' }}. Sources officielles : <a href="https://france-renov.gouv.fr" target="_blank" rel="noopener">france-renov.gouv.fr</a> · <a href="https://www.service-public.fr" target="_blank" rel="noopener">service-public.fr</a> · <a href="https://www.anah.gouv.fr" target="_blank" rel="noopener">anah.gouv.fr</a></p>
   </div>
@@ -408,6 +409,7 @@ Est-il normal d'être démarché par téléphone pour des travaux de rénovation
       <div class="contact-lines rv">
         {%- if settings.phone != blank -%}<a href="tel:{{ tel }}">{% render 'icon', name: 'phone' %}{{ settings.phone }}</a>{%- endif -%}
         {%- if settings.email != blank -%}<a href="mailto:{{ settings.email }}">{% render 'icon', name: 'mail' %}{{ settings.email }}</a>{%- endif -%}
+        {%- if settings.whatsapp_number != blank -%}{%- assign wa = settings.whatsapp_number | remove: ' ' | remove: '+' | remove: '.' | remove: '-' -%}{%- assign w0 = wa | slice: 0 -%}{%- if w0 == '0' -%}{%- assign wa = wa | remove_first: '0' | prepend: '33' -%}{%- endif -%}<a href="https://wa.me/{{ wa }}" target="_blank" rel="noopener">{% render 'icon', name: 'phone' %}WhatsApp · {{ settings.whatsapp_number }}</a>{%- endif -%}
         <span>{% render 'icon', name: 'clock' %}{{ settings.hours | default: 'Du lundi au vendredi' }}</span>
         <span>{% render 'icon', name: 'pin' %}Intervention partout en France</span>
       </div>

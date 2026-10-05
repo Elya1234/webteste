@@ -10,31 +10,147 @@
   {
     "name": "Entreprise",
     "settings": [
-      { "type": "header", "content": "Identité" },
-      { "type": "text", "id": "brand_name", "label": "Nom de l'entreprise", "default": "Énergie Hachem Yazour" },
-      { "type": "text", "id": "seo_title", "label": "Titre de la page d'accueil (Google)", "default": "Énergie Hachem Yazour — Pompe à chaleur, solaire, isolation et rénovation énergétique" },
-      { "type": "textarea", "id": "seo_description", "label": "Description de la page d'accueil (Google)", "default": "Étude personnalisée, installation soignée et suivi : pompe à chaleur, panneaux photovoltaïques, isolation, chauffe-eau thermodynamique et rénovation énergétique globale, partout en France." },
-      { "type": "header", "content": "Coordonnées" },
-      { "type": "text", "id": "phone", "label": "Téléphone (ex. 01 23 45 67 89)", "info": "Laisser vide tant que le numéro n'est pas défini." },
-      { "type": "text", "id": "email", "label": "Email de contact" },
-      { "type": "text", "id": "address", "label": "Adresse du siège" },
-      { "type": "text", "id": "hours", "label": "Horaires", "default": "Du lundi au vendredi" },
-      { "type": "text", "id": "response_delay", "label": "Délai de réponse annoncé", "info": "Ex. « sous 48 h ouvrées ». Laisser vide s'il n'est pas garanti." },
-      { "type": "header", "content": "Chiffres clés (réels uniquement)" },
-      { "type": "paragraph", "content": "Laissez un champ vide pour afficher un emplacement « À compléter ». N'indiquez que des chiffres vérifiables." },
-      { "type": "text", "id": "stat_years", "label": "Années d'expérience (nombre)" },
-      { "type": "text", "id": "stat_projects", "label": "Projets réalisés (nombre)" },
-      { "type": "text", "id": "stat_rating", "label": "Note moyenne des avis (ex. 4,8)" },
-      { "type": "text", "id": "stat_reviews_count", "label": "Nombre d'avis vérifiés" },
-      { "type": "header", "content": "Certifications et assurances" },
-      { "type": "paragraph", "content": "N'indiquez que les qualifications réellement détenues (RGE QualiPAC, QualiPV, Qualibat…), avec leur numéro." },
-      { "type": "textarea", "id": "certifications", "label": "Certifications (une par ligne)" },
-      { "type": "text", "id": "insurance", "label": "Assurance décennale (assureur, n° de contrat)" },
-      { "type": "text", "id": "siren", "label": "SIREN / SIRET" },
-      { "type": "header", "content": "Avis clients" },
-      { "type": "url", "id": "reviews_url", "label": "Lien vers vos avis vérifiés (Google, etc.)" },
-      { "type": "header", "content": "Aides" },
-      { "type": "text", "id": "aids_checked_on", "label": "Date de dernière vérification des aides", "default": "à compléter avant mise en ligne" }
+      {
+        "type": "header",
+        "content": "Identité"
+      },
+      {
+        "type": "text",
+        "id": "brand_name",
+        "label": "Nom de l'entreprise",
+        "default": "Énergie Hachem Yazour"
+      },
+      {
+        "type": "text",
+        "id": "seo_title",
+        "label": "Titre de la page d'accueil (Google)",
+        "default": "Énergie Hachem Yazour — Pompe à chaleur, solaire, isolation et rénovation énergétique"
+      },
+      {
+        "type": "textarea",
+        "id": "seo_description",
+        "label": "Description de la page d'accueil (Google)",
+        "default": "Étude personnalisée, installation soignée et suivi : pompe à chaleur, panneaux photovoltaïques, isolation, chauffe-eau thermodynamique et rénovation énergétique globale, partout en France."
+      },
+      {
+        "type": "header",
+        "content": "Coordonnées"
+      },
+      {
+        "type": "text",
+        "id": "phone",
+        "label": "Téléphone (ex. 01 23 45 67 89)",
+        "info": "Laisser vide tant que le numéro n'est pas défini."
+      },
+      {
+        "type": "text",
+        "id": "email",
+        "label": "Email de contact"
+      },
+      {
+        "type": "text",
+        "id": "address",
+        "label": "Adresse du siège"
+      },
+      {
+        "type": "text",
+        "id": "hours",
+        "label": "Horaires",
+        "default": "Du lundi au vendredi"
+      },
+      {
+        "type": "text",
+        "id": "response_delay",
+        "label": "Délai de réponse annoncé",
+        "info": "Ex. « sous 48 h ouvrées ». Laisser vide s'il n'est pas garanti."
+      },
+      {
+        "type": "header",
+        "content": "WhatsApp"
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_number",
+        "label": "Numéro WhatsApp",
+        "default": "0767914597",
+        "info": "Format français (06…, 07…) ou international (+33…). Laisser vide pour masquer le bouton."
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_message",
+        "label": "Message pré-rempli",
+        "default": "Bonjour, je souhaite des informations sur un projet de rénovation énergétique."
+      },
+      {
+        "type": "header",
+        "content": "Chiffres clés (réels uniquement)"
+      },
+      {
+        "type": "paragraph",
+        "content": "Laissez un champ vide pour afficher un emplacement « À compléter ». N'indiquez que des chiffres vérifiables."
+      },
+      {
+        "type": "text",
+        "id": "stat_years",
+        "label": "Années d'expérience (nombre)"
+      },
+      {
+        "type": "text",
+        "id": "stat_projects",
+        "label": "Projets réalisés (nombre)"
+      },
+      {
+        "type": "text",
+        "id": "stat_rating",
+        "label": "Note moyenne des avis (ex. 4,8)"
+      },
+      {
+        "type": "text",
+        "id": "stat_reviews_count",
+        "label": "Nombre d'avis vérifiés"
+      },
+      {
+        "type": "header",
+        "content": "Certifications et assurances"
+      },
+      {
+        "type": "paragraph",
+        "content": "N'indiquez que les qualifications réellement détenues (RGE QualiPAC, QualiPV, Qualibat…), avec leur numéro."
+      },
+      {
+        "type": "textarea",
+        "id": "certifications",
+        "label": "Certifications (une par ligne)"
+      },
+      {
+        "type": "text",
+        "id": "insurance",
+        "label": "Assurance décennale (assureur, n° de contrat)"
+      },
+      {
+        "type": "text",
+        "id": "siren",
+        "label": "SIREN / SIRET"
+      },
+      {
+        "type": "header",
+        "content": "Avis clients"
+      },
+      {
+        "type": "url",
+        "id": "reviews_url",
+        "label": "Lien vers vos avis vérifiés (Google, etc.)"
+      },
+      {
+        "type": "header",
+        "content": "Aides"
+      },
+      {
+        "type": "text",
+        "id": "aids_checked_on",
+        "label": "Date de dernière vérification des aides",
+        "default": "à compléter avant mise en ligne"
+      }
     ]
   }
 ]

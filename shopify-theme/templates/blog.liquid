@@ -1,2 +1,25 @@
-<section class="page-hero"><div class="wrap"><span class="eyebrow">Journal</span><h1 style="margin-top:20px;font-size:var(--t-h2)">{{ blog.title }}</h1></div></section>
-<section class="section" style="padding-top:56px"><div class="wrap rte">{% for article in blog.articles %}<h2><a href="{{ article.url }}">{{ article.title }}</a></h2><p>{{ article.excerpt_or_content | strip_html | truncate: 200 }}</p>{% endfor %}</div></section>
+<section class="page-hero">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Fil d'Ariane"><a href="{{ routes.root_url }}">Accueil</a><span aria-hidden="true">/</span><span aria-current="page">{{ blog.title }}</span></nav>
+    <span class="eyebrow" style="margin-top:24px">Guides et conseils</span>
+    <h1 style="margin-top:20px;font-size:var(--t-h2)">{{ blog.title }}</h1>
+    <p class="lead" style="margin-top:18px">Des repères clairs pour préparer votre projet de rénovation énergétique.</p>
+  </div>
+</section>
+<section class="section" style="padding-top:56px">
+  <div class="wrap">
+    {%- paginate blog.articles by 12 -%}
+    <div class="posts">
+      {%- for article in blog.articles -%}
+        <a class="post rv" href="{{ article.url }}">
+          <span class="eyebrow">{{ article.published_at | date: '%d/%m/%Y' }}</span>
+          <h2>{{ article.title }}</h2>
+          <p>{{ article.excerpt_or_content | strip_html | truncate: 170 }}</p>
+          <span class="link">Lire le guide {% render 'icon', name: 'arrow' %}</span>
+        </a>
+      {%- endfor -%}
+    </div>
+    {%- if paginate.pages > 1 -%}<div style="margin-top:40px">{{ paginate | default_pagination }}</div>{%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>

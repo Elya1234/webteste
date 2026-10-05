@@ -1,2 +1,44 @@
-<section class="page-hero"><div class="wrap"><span class="eyebrow">Journal</span><h1 style="margin-top:20px;font-size:var(--t-h2)">{{ article.title }}</h1></div></section>
-<section class="section" style="padding-top:56px"><div class="wrap rte">{{ article.content }}</div></section>
+{%- assign h = routes.root_url | remove_last: '/' -%}
+<section class="page-hero">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Fil d'Ariane"><a href="{{ routes.root_url }}">Accueil</a><span aria-hidden="true">/</span><a href="{{ blog.url }}">{{ blog.title }}</a><span aria-hidden="true">/</span><span aria-current="page">Article</span></nav>
+    <span class="eyebrow" style="margin-top:24px">Guide</span>
+    <h1 style="margin-top:20px;font-size:clamp(2rem,4.6vw,3.75rem);max-width:22ch">{{ article.title }}</h1>
+    <div class="post-meta"><span>Publié le {{ article.published_at | date: '%d/%m/%Y' }}</span><span>{{ settings.brand_name | default: 'Énergie Hachem Yazour' }}</span></div>
+  </div>
+</section>
+<section class="section" style="padding-top:56px">
+  <div class="wrap article-grid">
+    <article class="rte rte--rich">{{ article.content }}</article>
+    <aside class="side">
+      <div class="side__card">
+        <span class="eyebrow">Votre projet</span>
+        <h2 class="side__t">Une étude <span class="s">sur mesure.</span></h2>
+        <p class="muted">Nous étudions votre logement et les aides susceptibles de s'appliquer.</p>
+        <a class="btn btn--primary" href="{{ h }}/#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+      </div>
+      <nav class="side__nav" aria-label="Nos solutions">
+        <span class="eyebrow">Nos solutions</span>
+        <ul>
+          <li><a href="{{ h }}/pages/pompe-a-chaleur">Pompe à chaleur</a></li>
+          <li><a href="{{ h }}/pages/panneaux-solaires-photovoltaiques">Panneaux photovoltaïques</a></li>
+          <li><a href="{{ h }}/pages/isolation-thermique">Isolation</a></li>
+          <li><a href="{{ h }}/pages/chauffe-eau-thermodynamique">Chauffe-eau thermodynamique</a></li>
+          <li><a href="{{ h }}/pages/renovation-energetique-globale">Rénovation énergétique globale</a></li>
+          <li><a href="{{ h }}/pages/aides-renovation-energetique">Aides et financements</a></li>
+        </ul>
+      </nav>
+    </aside>
+  </div>
+</section>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org","@type":"Article",
+  "headline":{{ article.title | json }},
+  "datePublished":{{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "dateModified":{{ article.updated_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "author":{"@type":"Organization","name":{{ settings.brand_name | default: 'Énergie Hachem Yazour' | json }}},
+  "publisher":{"@type":"Organization","name":{{ settings.brand_name | default: 'Énergie Hachem Yazour' | json }}},
+  "mainEntityOfPage":{{ canonical_url | json }}
+}
+</script>
