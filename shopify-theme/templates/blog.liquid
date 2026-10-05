@@ -1,0 +1,2 @@
+<section class="page-hero"><div class="wrap"><span class="eyebrow">Journal</span><h1 style="margin-top:20px;font-size:var(--t-h2)">{{ blog.title }}</h1></div></section>
+<section class="section" style="padding-top:56px"><div class="wrap rte">{% for article in blog.articles %}<h2><a href="{{ article.url }}">{{ article.title }}</a></h2><p>{{ article.excerpt_or_content | strip_html | truncate: 200 }}</p>{% endfor %}</div></section>

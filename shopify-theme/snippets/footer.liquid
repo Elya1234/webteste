@@ -1,0 +1,69 @@
+{%- assign h = routes.root_url | remove_last: '/' -%}
+{%- assign brand = settings.brand_name | default: 'Énergie Hachem Yazour' -%}
+{%- capture tel -%}{{ settings.phone | remove: ' ' | remove: '.' | remove: '-' }}{%- endcapture -%}
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__top">
+      <div class="ftr__brand">
+        <a class="logo" href="{{ routes.root_url }}">{% render 'icon', name: 'mark' %}<span class="logo__wm"><b>HACHEM YAZOUR</b><small>ÉNERGIE</small></span></a>
+        <p>Pompe à chaleur, solaire, isolation et rénovation énergétique. Étude personnalisée, installation soignée, suivi dans la durée — partout en France.</p>
+        <div class="ftr__certs">
+          {%- if settings.certifications != blank -%}
+            {%- assign certs = settings.certifications | newline_to_br | split: '<br />' -%}
+            {%- for c in certs -%}{%- assign c2 = c | strip -%}{%- if c2 != blank -%}<span class="ph" style="color:var(--porcelain);border-style:solid;border-color:var(--line-d);background:rgba(255,255,255,.04)">{{ c2 }}</span>{%- endif -%}{%- endfor -%}
+          {%- else -%}
+            <span class="ph">Certifications RGE — à compléter</span>
+            <span class="ph">Assurance décennale — à compléter</span>
+          {%- endif -%}
+        </div>
+      </div>
+      <div>
+        <h4>Solutions</h4>
+        <ul>
+          <li><a href="{{ h }}/#solutions">Pompe à chaleur</a></li>
+          <li><a href="{{ h }}/#solutions">Panneaux photovoltaïques</a></li>
+          <li><a href="{{ h }}/#solutions">Isolation</a></li>
+          <li><a href="{{ h }}/#solutions">Chauffe-eau thermodynamique</a></li>
+          <li><a href="{{ h }}/#solutions">Rénovation globale</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Entreprise</h4>
+        <ul>
+          <li><a href="{{ h }}/#methode">Notre méthode</a></li>
+          <li><a href="{{ h }}/#realisations">Réalisations</a></li>
+          <li><a href="{{ h }}/#aides">Aides et financements</a></li>
+          <li><a href="{{ h }}/#avis">Avis clients</a></li>
+          <li><a href="{{ h }}/#faq">Questions fréquentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="{{ h }}/#etude">Obtenir mon étude</a></li>
+          {%- if settings.phone != blank -%}<li><a href="tel:{{ tel }}">{{ settings.phone }}</a></li>{%- endif -%}
+          {%- if settings.email != blank -%}<li><a href="mailto:{{ settings.email }}">{{ settings.email }}</a></li>{%- endif -%}
+          {%- if settings.address != blank -%}<li><span class="muted">{{ settings.address }}</span></li>{%- endif -%}
+          <li><span class="muted">Intervention partout en France</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ftr__word" aria-hidden="true">HACHEM YAZOUR</div>
+    <div class="ftr__bot">
+      <span>© <span data-year>{{ 'now' | date: '%Y' }}</span> {{ brand }}{% if settings.siren != blank %} · SIREN {{ settings.siren }}{% endif %}</span>
+      <ul>
+        <li><a href="{{ h }}/pages/mentions-legales">Mentions légales</a></li>
+        <li><a href="{{ h }}/pages/politique-de-confidentialite">Confidentialité et cookies</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<div class="mbar" aria-label="Actions rapides">
+  {%- if settings.phone != blank -%}
+    <a class="btn btn--glass" href="tel:{{ tel }}" aria-label="Appeler">{% render 'icon', name: 'phone' %}</a>
+  {%- else -%}
+    <a class="btn btn--glass" href="{{ h }}/#faq" aria-label="Questions fréquentes">{% render 'icon', name: 'info' %}</a>
+  {%- endif -%}
+  <a class="btn btn--primary" href="{{ h }}/#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+</div>

@@ -1,0 +1,535 @@
+{%- liquid
+  assign img = 'https://images.unsplash.com/photo-'
+  assign q = '?auto=format&fit=crop&q=72'
+  assign h = routes.root_url | remove_last: '/'
+-%}
+
+{%- comment -%} ===================== HERO ===================== {%- endcomment -%}
+<section class="hero" aria-label="Présentation">
+  <div class="hero__media" data-parallax="10">
+    <img src="{{ img }}1600585154340-be6161a56a0c{{ q }}&w=1600"
+         srcset="{{ img }}1600585154340-be6161a56a0c{{ q }}&w=800 800w, {{ img }}1600585154340-be6161a56a0c{{ q }}&w=1400 1400w, {{ img }}1600585154340-be6161a56a0c{{ q }}&w=2200 2200w"
+         sizes="100vw" alt="Maison contemporaine éclairée au crépuscule" fetchpriority="high" decoding="async" width="2200" height="1467">
+  </div>
+  <svg class="hero__flow" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="flowGrad" x1="0" x2="1"><stop offset="0" stop-color="#3BE3A1" stop-opacity="0"/><stop offset=".5" stop-color="#3BE3A1"/><stop offset="1" stop-color="#3BE3A1" stop-opacity="0"/></linearGradient></defs>
+    <path d="M-20 720 C 300 640, 520 760, 820 650 S 1260 560, 1460 600"/>
+    <path d="M-20 790 C 360 720, 640 820, 940 720 S 1300 650, 1460 690" style="animation-duration:9s"/>
+  </svg>
+  <div class="wrap hero__inner">
+    <span class="eyebrow fade-in">Rénovation énergétique · Partout en France</span>
+    <h1>
+      <span class="ln"><span>Transformez votre maison.</span></span>
+      <span class="ln"><span>Réduisez votre <span class="s">consommation.</span></span></span>
+      <span class="ln"><span>Préparez l'avenir.</span></span>
+    </h1>
+    <p class="lead fade-in d1">Pompe à chaleur, solaire, isolation : des solutions conçues pour votre logement, après une étude sérieuse — et installées avec exigence.</p>
+    <div class="ctas fade-in d2">
+      <a class="btn btn--primary" href="#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+      <a class="btn btn--glass" href="#solutions">Découvrir nos solutions {% render 'icon', name: 'btn-arrow' %}</a>
+    </div>
+    <div class="hero__foot fade-in d3">
+      <div class="hero__pt">{% render 'icon', name: 'check' %}Étude personnalisée de votre logement</div>
+      <div class="hero__pt">{% render 'icon', name: 'check' %}Un interlocuteur unique, de l'étude au suivi</div>
+      <div class="hero__pt">{% render 'icon', name: 'check' %}Aides possibles vérifiées selon votre situation</div>
+      <span class="scroll-cue" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== CONFIANCE ===================== {%- endcomment -%}
+<section class="trust" aria-label="Chiffres clés">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat rv">
+        <span class="eyebrow">Expérience</span>
+        {%- if settings.stat_years != blank -%}
+          <div><div class="stat__v"><span data-count="{{ settings.stat_years }}">{{ settings.stat_years }}</span><sup>ans</sup></div><p class="stat__l">d'expérience dans la rénovation énergétique</p></div>
+        {%- else -%}
+          <div><div class="stat__v">—</div><p class="stat__l">Années d'expérience <span class="ph">À compléter</span></p></div>
+        {%- endif -%}
+      </div>
+      <div class="stat rv">
+        <span class="eyebrow">Projets</span>
+        {%- if settings.stat_projects != blank -%}
+          <div><div class="stat__v"><span data-count="{{ settings.stat_projects }}">{{ settings.stat_projects }}</span><sup>+</sup></div><p class="stat__l">projets réalisés</p></div>
+        {%- else -%}
+          <div><div class="stat__v">—</div><p class="stat__l">Projets réalisés <span class="ph">À compléter</span></p></div>
+        {%- endif -%}
+      </div>
+      <div class="stat rv">
+        <span class="eyebrow">Avis clients</span>
+        {%- if settings.stat_rating != blank -%}
+          <div><div class="stat__v"><span data-count="{{ settings.stat_rating | replace: ',', '.' }}">{{ settings.stat_rating }}</span><sup>/5</sup></div><p class="stat__l">note moyenne{% if settings.stat_reviews_count != blank %} sur {{ settings.stat_reviews_count }} avis vérifiés{% endif %}</p></div>
+        {%- else -%}
+          <div><div class="stat__v">—</div><p class="stat__l">Note moyenne vérifiée <span class="ph">À compléter</span></p></div>
+        {%- endif -%}
+      </div>
+      <div class="stat rv">
+        <span class="eyebrow">Couverture</span>
+        <div><div class="stat__v">France</div><p class="stat__l">Intervention sur l'ensemble du territoire métropolitain</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      {%- for i in (1..2) -%}
+        <span class="marquee__item">{% render 'icon', name: 'spark' %}Étude avant toute proposition</span>
+        <span class="marquee__item">{% render 'icon', name: 'shield' %}{% if settings.certifications != blank %}{{ settings.certifications | newline_to_br | split: '<br />' | first | strip }}{% else %}Certification RGE · à compléter{% endif %}</span>
+        <span class="marquee__item">{% render 'icon', name: 'check' %}Devis détaillé poste par poste</span>
+        <span class="marquee__item">{% render 'icon', name: 'shield' %}{% if settings.insurance != blank %}Assurance décennale{% else %}Assurance décennale · à compléter{% endif %}</span>
+        <span class="marquee__item">{% render 'icon', name: 'spark' %}Matériel sélectionné</span>
+        <span class="marquee__item">{% render 'icon', name: 'pin' %}Partout en France</span>
+        <span class="marquee__item">{% render 'icon', name: 'check' %}Suivi après installation</span>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== MANIFESTE ===================== {%- endcomment -%}
+<section class="section manifesto" aria-label="Notre vision">
+  <div class="wrap">
+    <span class="eyebrow rv">Notre vision</span>
+    <p data-words style="margin-top:28px">Chaque maison est unique. Sa performance énergétique aussi. Nous concevons des solutions <span class="s">sur mesure</span> — pas des installations standard.</p>
+    <div class="manifesto__meta rv">
+      <a class="link" href="#methode">Découvrir notre méthode {% render 'icon', name: 'arrow' %}</a>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== SOLUTIONS ===================== {%- endcomment -%}
+<section class="section" id="solutions" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head sec-head--split">
+      <div class="rv"><span class="eyebrow">Nos solutions</span><h2 style="margin-top:20px">Cinq expertises, <span class="s">une vision</span> globale.</h2></div>
+      <p class="lead rv">Chaque solution peut être réalisée seule ou combinée aux autres dans un projet de rénovation cohérent. Nous vous recommandons ce qui a du sens pour votre logement — rien de plus.</p>
+    </div>
+    {%- capture sols -%}
+pac|Pompe à chaleur|01|Remplacez une chaudière fioul, gaz ou des radiateurs énergivores par un système de chauffage performant.|Chauffage et eau chaude|Alternative aux énergies fossiles|Confort homogène toute l'année|1600047509807-ba8f99d2cdde|Façade de maison contemporaine
+pv|Panneaux photovoltaïques|02|Produisez une partie de votre électricité et consommez-la en priorité chez vous.|Autoconsommation|Réduction de la facture d'électricité|Stockage sur batterie possible|1509391366360-2e959784a276|Panneaux photovoltaïques sous un ciel dégagé
+iso|Isolation|03|Le premier levier de performance : conserver la chaleur l'hiver, la fraîcheur l'été.|Combles et toiture|Murs par l'intérieur ou l'extérieur|Planchers bas|1607400201889-565b1ee75f8e|Pose d'isolant dans une cloison
+cet|Chauffe-eau thermodynamique|04|L'eau chaude sanitaire produite en captant les calories de l'air.|Moins d'électricité consommée|Remplacement d'un ballon classique|Installation rapide|1600210492486-724fe5c67fb0|Intérieur lumineux et chaleureux
+reno|Rénovation globale|05|Un bouquet de travaux coordonné pour un vrai saut de performance.|Audit et plan de travaux|Objectif : gagner des classes DPE|Un interlocuteur unique|1600566753086-00f18fb6b3ea|Intérieur contemporain rénové
+    {%- endcapture -%}
+    <div class="solutions">
+      {%- assign lines = sols | strip | newline_to_br | split: '<br />' -%}
+      {%- for l in lines -%}
+        {%- assign f = l | strip | split: '|' -%}
+        <a class="sol rv" href="#etude" data-project="{{ f[0] }}" aria-label="{{ f[1] }} — demander une étude">
+          <div class="sol__img"><img src="{{ img }}{{ f[7] }}{{ q }}&w=1100" srcset="{{ img }}{{ f[7] }}{{ q }}&w=700 700w, {{ img }}{{ f[7] }}{{ q }}&w=1100 1100w" sizes="(min-width:1100px) 50vw, 100vw" alt="{{ f[8] }}" loading="lazy" decoding="async" data-parallax="6"></div>
+          <span class="sol__tag">{% case f[0] %}{% when 'pac' %}Chauffage{% when 'pv' %}Solaire{% when 'iso' %}Isolation{% when 'cet' %}Eau chaude{% else %}Rénovation{% endcase %}</span>
+          <span class="sol__n">{{ f[2] }}</span>
+          <h3>{{ f[1] }}</h3>
+          <p>{{ f[3] }}</p>
+          <div class="sol__more"><div>
+            <ul><li>{{ f[4] }}</li><li>{{ f[5] }}</li><li>{{ f[6] }}</li></ul>
+            <span class="sol__go"><span class="ic">{% render 'icon', name: 'arrow' %}</span>Demander une étude</span>
+          </div></div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== MAISON INTERACTIVE ===================== {%- endcomment -%}
+<section class="section" aria-label="Comment fonctionne une maison performante" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow rv">La maison performante</span>
+      <h2 class="rv">Chaque élément <span class="s">compte.</span></h2>
+      <p class="lead rv">Explorez les leviers d'une rénovation énergétique réussie. Touchez un point pour en savoir plus.</p>
+    </div>
+    <div class="house">
+      <div class="house__stage rv"><div class="house__canvas">
+        <svg class="house__svg" viewBox="0 0 800 520" role="img" aria-label="Schéma d'une maison : soleil, panneaux solaires, isolation, pompe à chaleur et chauffe-eau">
+          <defs>
+            <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#C8A96B" stroke-width="2" stroke-opacity=".55"/></pattern>
+            <radialGradient id="sunG"><stop offset="0" stop-color="#FFD58A"/><stop offset="1" stop-color="#FFB36B" stop-opacity="0"/></radialGradient>
+          </defs>
+          <line class="faint" x1="20" y1="470" x2="780" y2="470"/>
+          <g class="part p-sun"><circle cx="110" cy="96" r="70" fill="url(#sunG)" opacity=".35"/><circle cx="110" cy="96" r="26" fill="none" stroke="#FFC77D" stroke-width="1.6"/></g>
+          <path class="flow warm f-sun f-pv" d="M140 112 Q 300 70 470 150"/>
+          <g class="part p-iso">
+            <path d="M206 242 L400 120 L594 242 L578 242 L400 134 L222 242 Z" fill="url(#hatch)"/>
+            <rect x="186" y="242" width="10" height="226" fill="url(#hatch)"/><rect x="604" y="242" width="10" height="226" fill="url(#hatch)"/>
+            <rect x="196" y="458" width="408" height="8" fill="url(#hatch)"/>
+          </g>
+          <path class="stroke" d="M160 248 L400 92 L640 248"/>
+          <path class="stroke" d="M180 236 V470 M620 236 V470"/>
+          <line class="faint" x1="196" y1="350" x2="604" y2="350"/>
+          <rect class="faint" x="250" y="270" width="70" height="56" rx="3"/><rect class="faint" x="480" y="270" width="70" height="56" rx="3"/>
+          <rect class="faint" x="440" y="384" width="56" height="84" rx="3"/>
+          <g class="part p-pv" transform="translate(420 118) rotate(33)">
+            <rect x="0" y="-26" width="44" height="22" rx="2" fill="rgba(59,227,161,.12)" stroke="#3BE3A1" stroke-width="1.3"/>
+            <rect x="50" y="-26" width="44" height="22" rx="2" fill="rgba(59,227,161,.12)" stroke="#3BE3A1" stroke-width="1.3"/>
+            <rect x="100" y="-26" width="44" height="22" rx="2" fill="rgba(59,227,161,.12)" stroke="#3BE3A1" stroke-width="1.3"/>
+            <rect x="150" y="-26" width="44" height="22" rx="2" fill="rgba(59,227,161,.12)" stroke="#3BE3A1" stroke-width="1.3"/>
+          </g>
+          <path class="flow f-pv" d="M560 210 V 330 H 540"/>
+          <g class="part p-pv"><rect x="520" y="300" width="36" height="44" rx="4" fill="none" stroke="#3BE3A1" stroke-width="1.3"/><path d="M533 312 l6 -6 v10 l6 -6" fill="none" stroke="#3BE3A1" stroke-width="1.3"/></g>
+          <g class="part p-cet"><rect x="236" y="378" width="38" height="84" rx="12" fill="rgba(255,179,107,.1)" stroke="#FFB36B" stroke-width="1.4"/><circle cx="255" cy="396" r="7" fill="none" stroke="#FFB36B" stroke-width="1.2"/></g>
+          <path class="flow warm f-cet" d="M274 420 H 330 V 362"/>
+          <g class="part p-pac"><rect x="652" y="410" width="96" height="58" rx="6" fill="rgba(59,227,161,.08)" stroke="#3BE3A1" stroke-width="1.4"/><circle cx="682" cy="439" r="18" fill="none" stroke="#3BE3A1" stroke-width="1.2"/><path d="M682 425 v28 M668 439 h28" stroke="#3BE3A1" stroke-width="1" opacity=".6"/><line x1="712" y1="425" x2="736" y2="425" stroke="#3BE3A1" stroke-width="1"/><line x1="712" y1="433" x2="736" y2="433" stroke="#3BE3A1" stroke-width="1"/></g>
+          <path class="flow f-pac" d="M652 452 H 600 V 452 Q 560 452 560 442 H 210"/>
+          <path class="flow f-iso warm" d="M300 225 Q 400 200 500 225" style="stroke-dasharray:2 8"/>
+        </svg>
+        <button class="hot" type="button" data-part="sun" aria-pressed="false" aria-label="Soleil" style="left:13.75%;top:18.5%"><span></span></button>
+        <button class="hot" type="button" data-part="pv" aria-pressed="false" aria-label="Panneaux photovoltaïques" style="left:63.7%;top:30.4%"><span></span></button>
+        <button class="hot" type="button" data-part="iso" aria-pressed="false" aria-label="Isolation" style="left:50%;top:38.5%"><span></span></button>
+        <button class="hot" type="button" data-part="cet" aria-pressed="false" aria-label="Chauffe-eau thermodynamique" style="left:31.9%;top:80.8%"><span></span></button>
+        <button class="hot" type="button" data-part="pac" aria-pressed="false" aria-label="Pompe à chaleur" style="left:87.5%;top:84.4%"><span></span></button>
+      </div></div>
+      <div class="house__panel rv">
+        <div class="house__tabs" role="tablist" aria-label="Éléments de la maison">
+          <button type="button" role="tab" data-part="pac" aria-selected="false">Pompe à chaleur</button>
+          <button type="button" role="tab" data-part="pv" aria-selected="false">Solaire</button>
+          <button type="button" role="tab" data-part="iso" aria-selected="false">Isolation</button>
+          <button type="button" role="tab" data-part="cet" aria-selected="false">Eau chaude</button>
+          <button type="button" role="tab" data-part="sun" aria-selected="false">Soleil</button>
+        </div>
+        <div class="house__card" aria-live="polite">
+          <span class="eyebrow" data-k>Chauffage</span>
+          <h3 data-t>Pompe à chaleur</h3>
+          <p data-d>Elle capte les calories présentes dans l'air extérieur pour chauffer votre logement et, selon le modèle, produire l'eau chaude.</p>
+          <a class="link" href="#etude" data-l data-project="pac"><span>Étudier mon projet</span> {% render 'icon', name: 'arrow' %}</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="house-data">
+      {
+        "pac": {"k":"Chauffage","t":"Pompe à chaleur","d":"Elle capte les calories présentes dans l'air extérieur pour chauffer votre logement et, selon le modèle, produire l'eau chaude. Son dimensionnement dépend de l'isolation, des émetteurs existants et du climat local : c'est tout l'objet de notre étude.","l":"Étudier mon projet de pompe à chaleur","p":"pac"},
+        "pv": {"k":"Production","t":"Panneaux photovoltaïques","d":"Les panneaux transforment la lumière en électricité, consommée en priorité dans la maison. Le surplus peut être injecté sur le réseau ou stocké sur batterie. La production dépend de l'orientation, de l'inclinaison, de l'ombrage et de la région.","l":"Étudier mon projet solaire","p":"pv"},
+        "iso": {"k":"Enveloppe","t":"Isolation","d":"Toiture, murs, planchers : une bonne isolation limite les déperditions de chaleur et améliore le confort d'été. C'est souvent le premier poste à traiter avant de changer de système de chauffage.","l":"Étudier mon projet d'isolation","p":"iso"},
+        "cet": {"k":"Eau chaude","t":"Chauffe-eau thermodynamique","d":"Il chauffe l'eau sanitaire grâce à une petite pompe à chaleur intégrée, et consomme moins d'électricité qu'un ballon à résistance classique pour un même besoin.","l":"Étudier mon projet de chauffe-eau","p":"cet"},
+        "sun": {"k":"Ressource","t":"Le soleil","d":"Une énergie disponible chaque jour, avec une production variable selon la saison et la météo. Bien exploitée, elle couvre une partie de vos besoins d'électricité en journée.","l":"Étudier mon potentiel solaire","p":"pv"}
+      }
+    </script>
+  </div>
+</section>
+
+{%- comment -%} ===================== POURQUOI NOUS ===================== {%- endcomment -%}
+<section class="section light" id="pourquoi">
+  <div class="wrap why">
+    <div class="why__aside">
+      <span class="eyebrow rv">Pourquoi nous choisir</span>
+      <h2 class="rv" style="margin-top:20px">L'exigence, <span class="s">à chaque étape.</span></h2>
+      <p class="lead rv" style="margin-top:20px">Une rénovation énergétique engage votre confort et votre budget pour des années. Nous la traitons comme un projet d'ingénierie.</p>
+      <figure class="why__img rv-img">
+        <img src="{{ img }}1503387762-592deb58ef4e{{ q }}&w=1000" alt="Étude de plans d'un logement" loading="lazy" decoding="async" data-parallax="6">
+        <figcaption>{% render 'icon', name: 'spark' %}<span><b>Étude d'abord.</b> Aucune proposition sans analyse de votre logement.</span></figcaption>
+      </figure>
+    </div>
+    <ol class="why__list">
+      <li class="why__item rv"><span class="n">01</span><h3>Une étude personnalisée</h3><p>Surface, isolation, système de chauffage, consommation, habitudes : nous analysons votre logement avant de recommander quoi que ce soit.</p></li>
+      <li class="why__item rv"><span class="n">02</span><h3>Un interlocuteur unique</h3><p>Une seule personne suit votre dossier, de la première prise de contact à la mise en service. Vous savez toujours à qui parler.</p></li>
+      <li class="why__item rv"><span class="n">03</span><h3>Une installation soignée</h3><p>Pose réalisée dans les règles de l'art, chantier propre, mise en service et explications claires sur l'utilisation de vos équipements.</p></li>
+      <li class="why__item rv"><span class="n">04</span><h3>Du matériel sélectionné</h3><p>Nous choisissons des équipements reconnus pour leur fiabilité et leur performance, adaptés à votre configuration.</p><span class="ph">Marques partenaires — à compléter</span></li>
+      <li class="why__item rv"><span class="n">05</span><h3>La transparence</h3><p>Devis détaillé poste par poste, estimations prudentes, aides présentées comme possibles et jamais comme acquises.</p></li>
+      <li class="why__item rv"><span class="n">06</span><h3>Garanties et suivi</h3><p>Nous restons disponibles après l'installation pour l'entretien et le suivi de vos équipements.</p><span class="ph">Garanties et assurances — à compléter</span></li>
+    </ol>
+  </div>
+</section>
+
+{%- comment -%} ===================== PARCOURS ===================== {%- endcomment -%}
+<section class="section" id="methode">
+  <div class="wrap">
+    <div class="sec-head sec-head--split">
+      <div><span class="eyebrow rv">Notre méthode</span><h2 class="rv" style="margin-top:20px">Votre projet, <span class="s">simplement.</span></h2></div>
+      <p class="lead rv">Un parcours clair en cinq étapes. Vous savez à chaque instant où en est votre projet et ce qui vient ensuite.</p>
+    </div>
+    <div class="tl" role="list">
+      <span class="tl__rail" aria-hidden="true"><span class="tl__fill"></span></span>
+      <div class="tl__step" role="listitem"><span class="mono">01</span><h3>Votre demande</h3><p>Vous nous décrivez votre logement et votre projet en quelques minutes, en ligne ou par téléphone.</p></div>
+      <div class="tl__step" role="listitem"><span class="mono">02</span><h3>L'étude</h3><p>Nous analysons votre logement, vos consommations et vos besoins pour identifier les solutions pertinentes.</p></div>
+      <div class="tl__step" role="listitem"><span class="mono">03</span><h3>La proposition</h3><p>Vous recevez une recommandation claire et un devis détaillé, avec les aides susceptibles de s'appliquer.</p></div>
+      <div class="tl__step" role="listitem"><span class="mono">04</span><h3>L'installation</h3><p>Nos équipes réalisent les travaux, la mise en service, et vous expliquent le fonctionnement.</p></div>
+      <div class="tl__step" role="listitem"><span class="mono">05</span><h3>Le suivi</h3><p>Nous restons à vos côtés pour l'entretien et toute question sur vos équipements.</p></div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== RÉALISATIONS ===================== {%- endcomment -%}
+<section class="section light" id="realisations">
+  <div class="wrap">
+    <div class="sec-head sec-head--split">
+      <div><span class="eyebrow rv">Réalisations</span><h2 class="rv" style="margin-top:20px">Des projets <span class="s">qui parlent</span> d'eux-mêmes.</h2></div>
+      <p class="lead rv">Une sélection de projets type. Les photos et caractéristiques de nos chantiers réels remplaceront ces illustrations.</p>
+    </div>
+    <div class="filters rv" role="group" aria-label="Filtrer les réalisations">
+      <button type="button" data-filter="all" aria-pressed="true">Tous</button>
+      <button type="button" data-filter="pac" aria-pressed="false">Pompe à chaleur</button>
+      <button type="button" data-filter="pv" aria-pressed="false">Solaire</button>
+      <button type="button" data-filter="iso" aria-pressed="false">Isolation</button>
+      <button type="button" data-filter="reno" aria-pressed="false">Rénovation</button>
+    </div>
+    {%- capture works -%}
+pac|Pompe à chaleur|Maison contemporaine|Pompe à chaleur air/eau|Surface|à compléter|Durée|à compléter|Région|à compléter|1600566753190-17f0baa2a6c3|Maison contemporaine à bardage bois
+pv|Solaire|Toiture photovoltaïque|Autoconsommation avec vente du surplus|Puissance|à compléter|Panneaux|à compléter|Région|à compléter|1624397640148-949b1732bb0a|Installation de panneaux solaires sur une toiture
+reno pac iso|Rénovation|Rénovation globale|Isolation et pompe à chaleur|Classe DPE|avant → après|Durée|à compléter|Région|à compléter|1613490493576-7fde63acd811|Villa contemporaine rénovée
+iso|Isolation|Isolation des murs|Isolation par l'intérieur|Surface|à compléter|Isolant|à compléter|Région|à compléter|1607400201889-565b1ee75f8e|Pose d'isolant dans une cloison
+pv|Solaire|Centrale résidentielle|Panneaux et batterie|Puissance|à compléter|Stockage|à compléter|Région|à compléter|1508514177221-188b1cf16e9d|Rangée de panneaux solaires
+reno|Rénovation|Maison d'architecte|Bouquet de travaux|Classe DPE|avant → après|Durée|à compléter|Région|à compléter|1600596542815-ffad4c1539a9|Maison d'architecte blanche avec piscine
+    {%- endcapture -%}
+    <div class="works">
+      {%- assign wl = works | strip | newline_to_br | split: '<br />' -%}
+      {%- for l in wl -%}
+        {%- assign f = l | strip | split: '|' -%}
+        <article class="work rv" data-cat="{{ f[0] }}">
+          <div class="work__img"><img src="{{ img }}{{ f[10] }}{{ q }}&w=800&h=600" alt="{{ f[11] }}" loading="lazy" decoding="async" width="800" height="600"><span class="ph">Illustration</span></div>
+          <div class="work__body">
+            <div class="work__meta"><span>{{ f[1] }}</span><span>Projet type</span></div>
+            <h3>{{ f[2] }}</h3>
+            <p class="muted" style="font-size:.92rem;margin-top:6px">{{ f[3] }}</p>
+            <dl>
+              <div><dt>{{ f[4] }}</dt><dd>{{ f[5] }}</dd></div>
+              <div><dt>{{ f[6] }}</dt><dd>{{ f[7] }}</dd></div>
+              <div><dt>{{ f[8] }}</dt><dd>{{ f[9] }}</dd></div>
+            </dl>
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== AIDES ===================== {%- endcomment -%}
+<section class="section" id="aides">
+  <div class="wrap">
+    <div class="aid-intro">
+      <div>
+        <span class="eyebrow rv">Aides et financements</span>
+        <h2 class="rv" style="margin-top:20px">Votre éligibilité dépend <span class="s">de votre situation.</span></h2>
+        <p class="lead rv" style="margin-top:20px">Plusieurs dispositifs publics peuvent réduire le coût de vos travaux. Nous vous aidons à identifier ceux qui peuvent concerner votre projet, sans jamais vous promettre un montant à l'avance.</p>
+      </div>
+      <div class="notice rv">
+        {% render 'icon', name: 'info' %}
+        <p>L'accès aux aides et leurs montants dépendent notamment de vos revenus, de votre logement, de sa localisation, de la nature des travaux et des conditions en vigueur au moment de la demande. Ces conditions évoluent régulièrement. La décision d'attribution appartient aux organismes concernés. La plupart des aides exigent que les travaux soient réalisés par une entreprise <strong>certifiée RGE</strong> pour le type de travaux concerné.</p>
+      </div>
+    </div>
+    <div class="aids">
+      <article class="aid rv"><span class="aid__k">État · Anah</span><h3>MaPrimeRénov'</h3><p>Aide publique destinée aux propriétaires, sous conditions (notamment de ressources, d'occupation et d'ancienneté du logement). Elle peut concerner certains travaux pris séparément ou une rénovation d'ampleur, accompagnée par un Mon Accompagnateur Rénov' agréé.</p><div class="aid__v"><b>À vérifier</b> — dispositif ayant connu des évolutions récentes.</div></article>
+      <article class="aid rv"><span class="aid__k">Fournisseurs d'énergie</span><h3>Primes CEE</h3><p>Primes issues du dispositif des certificats d'économies d'énergie, versées pour certaines opérations (isolation, chauffage…). Elles doivent en principe être engagées avant la signature du devis.</p><div class="aid__v"><b>À vérifier</b> — montants variables selon l'opération et la période.</div></article>
+      <article class="aid rv"><span class="aid__k">Banques partenaires</span><h3>Éco-prêt à taux zéro</h3><p>Prêt sans intérêts permettant de financer des travaux d'amélioration de la performance énergétique d'une résidence principale, sous conditions, auprès des établissements qui le proposent.</p><div class="aid__v"><b>À vérifier</b> — selon conditions d'octroi de la banque.</div></article>
+      <article class="aid rv"><span class="aid__k">Fiscalité</span><h3>TVA à taux réduit</h3><p>Certains travaux d'amélioration de la performance énergétique dans des logements achevés depuis plus de deux ans peuvent bénéficier d'un taux de TVA réduit, sous conditions.</p><div class="aid__v"><b>À vérifier</b> — selon la nature des travaux et des équipements.</div></article>
+      <article class="aid rv"><span class="aid__k">Photovoltaïque</span><h3>Autoconsommation et vente du surplus</h3><p>Certaines installations solaires peuvent ouvrir droit à une prime à l'autoconsommation et à un contrat d'achat de l'électricité non consommée, selon des conditions et des tarifs révisés périodiquement.</p><div class="aid__v"><b>À vérifier</b> — tarifs fixés par période.</div></article>
+      <article class="aid rv"><span class="aid__k">Collectivités</span><h3>Aides locales</h3><p>Régions, départements, intercommunalités et communes proposent parfois leurs propres aides, cumulables ou non avec les dispositifs nationaux.</p><div class="aid__v"><b>À vérifier</b> — très variables selon le territoire.</div></article>
+    </div>
+    <div class="aid-cta rv">
+      <div>
+        <h3>Vérifiez votre éligibilité.</h3>
+        <p>Répondez à quelques questions sur votre logement et votre projet : un conseiller étudie votre situation et vous indique les dispositifs susceptibles de s'appliquer.</p>
+      </div>
+      <a class="btn btn--primary" href="#etude">Vérifier mon éligibilité {% render 'icon', name: 'btn-arrow' %}</a>
+    </div>
+    <p class="aid-src rv">Informations générales fournies à titre indicatif, dernière vérification : {{ settings.aids_checked_on | default: 'à compléter' }}. Sources officielles : <a href="https://france-renov.gouv.fr" target="_blank" rel="noopener">france-renov.gouv.fr</a> · <a href="https://www.service-public.fr" target="_blank" rel="noopener">service-public.fr</a> · <a href="https://www.anah.gouv.fr" target="_blank" rel="noopener">anah.gouv.fr</a></p>
+  </div>
+</section>
+
+{%- comment -%} ===================== AVIS ===================== {%- endcomment -%}
+<section class="section sand" id="avis">
+  <div class="wrap">
+    <div class="sec-head sec-head--split">
+      <div><span class="eyebrow rv">Avis clients</span><h2 class="rv" style="margin-top:20px">Ils nous ont <span class="s">fait confiance.</span></h2></div>
+      <div class="rv">
+        {%- if settings.stat_rating != blank -%}
+          <div class="rv-score"><b>{{ settings.stat_rating }}</b><div><div class="stars">{% for i in (1..5) %}{% render 'icon', name: 'star' %}{% endfor %}</div><p class="muted" style="font-size:.9rem;margin-top:6px">{% if settings.stat_reviews_count != blank %}{{ settings.stat_reviews_count }} avis vérifiés{% else %}Note moyenne vérifiée{% endif %}</p></div></div>
+        {%- else -%}
+          <p class="lead">Nous publions uniquement des avis vérifiés de nos clients. Cette section affichera prochainement leurs témoignages.</p>
+        {%- endif -%}
+        {%- if settings.reviews_url != blank -%}<a class="link" href="{{ settings.reviews_url }}" target="_blank" rel="noopener" style="margin-top:16px">Voir tous les avis {% render 'icon', name: 'arrow' %}</a>{%- endif -%}
+      </div>
+    </div>
+    <div class="reviews">
+      {%- for i in (1..3) -%}
+        <figure class="review rv">
+          <div class="stars" aria-hidden="true">{% for s in (1..5) %}{% render 'icon', name: 'star' %}{% endfor %}</div>
+          <q>Emplacement réservé à un avis client vérifié.</q>
+          <footer><span class="av">?</span><span><b>Prénom</b><br><span class="muted">Ville · Prestation</span></span><span class="ph" style="margin-left:auto">À intégrer</span></footer>
+        </figure>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== FAQ ===================== {%- endcomment -%}
+{%- capture faq -%}
+Comment se déroule une étude ?|Après votre demande, nous échangeons avec vous sur votre projet et vos attentes. Nous analysons ensuite votre logement : surface, isolation, système de chauffage existant, consommations et contraintes techniques. Sur cette base, nous vous présentons les solutions pertinentes et un devis détaillé.
+Combien coûte une pompe à chaleur ?|Le prix dépend du type de pompe à chaleur (air/eau, air/air), de la puissance nécessaire, de l'isolation du logement, des émetteurs existants (radiateurs, plancher chauffant) et des travaux annexes. Nous ne donnons pas de prix « standard » : un devis détaillé vous est remis après étude, avec les aides susceptibles de s'appliquer selon votre situation.
+Comment fonctionnent les panneaux photovoltaïques ?|Les cellules des panneaux transforment la lumière du soleil en électricité. Un onduleur la convertit pour qu'elle soit utilisable dans la maison. Elle est consommée en priorité sur place ; le surplus peut être injecté sur le réseau ou stocké dans une batterie. La production varie selon l'orientation, l'inclinaison, l'ombrage, la région et la saison.
+Quels travaux d'isolation sont possibles ?|Selon la configuration du logement : isolation des combles perdus, de la toiture (rampants), des murs par l'intérieur ou par l'extérieur, et des planchers bas. L'isolation des murs par l'extérieur peut nécessiter une autorisation d'urbanisme. L'étude permet de déterminer les postes prioritaires.
+Quelles aides peuvent être disponibles ?|Selon votre situation et vos travaux, plusieurs dispositifs peuvent exister : MaPrimeRénov', primes CEE, éco-prêt à taux zéro, TVA à taux réduit, aides liées au photovoltaïque et aides locales. Leur accès et leurs montants dépendent de conditions qui évoluent ; nous vérifions votre situation au cas par cas, sans garantie d'attribution.
+Qui peut bénéficier des aides ?|Cela dépend de chaque dispositif. Les critères portent notamment sur le statut (propriétaire occupant ou bailleur), l'usage du logement (souvent la résidence principale), son ancienneté, les revenus du foyer et la nature des travaux. La plupart exigent le recours à une entreprise certifiée RGE pour les travaux concernés.
+Combien de temps dure une installation ?|À titre indicatif, la pose d'un chauffe-eau thermodynamique ou l'isolation de combles se réalisent souvent en une journée, une pompe à chaleur en quelques jours et une installation photovoltaïque en un à trois jours de pose. Les démarches administratives (déclaration en mairie, raccordement) peuvent prendre plusieurs semaines. Le calendrier précis vous est communiqué dans la proposition.
+Quelle est la durée totale d'un projet de rénovation ?|Elle dépend de l'ampleur des travaux, des démarches d'aides éventuelles et des délais d'approvisionnement. Une rénovation globale coordonnant plusieurs postes se planifie sur plusieurs semaines. Nous vous remettons un planning prévisionnel avant le démarrage.
+Comment entretenir les équipements ?|La réglementation impose un entretien périodique des pompes à chaleur d'une puissance comprise entre 4 et 70 kW, tous les deux ans. Un chauffe-eau thermodynamique demande un entretien régulier (filtre, anode). Les panneaux photovoltaïques nécessitent peu d'entretien : un suivi de la production et un contrôle visuel suffisent le plus souvent.
+Est-il normal d'être démarché par téléphone pour des travaux de rénovation ?|Non : la loi interdit le démarchage téléphonique pour les travaux de rénovation énergétique, sauf contrat en cours. Méfiez-vous des offres « à 1 € », des pressions à signer rapidement et des demandes d'acompte avant toute étude. En cas de doute, renseignez-vous auprès du réseau public France Rénov'.
+{%- endcapture -%}
+{%- assign fl = faq | strip | newline_to_br | split: '<br />' -%}
+<section class="section" id="faq">
+  <div class="wrap faq">
+    <div class="faq__aside">
+      <span class="eyebrow rv">Questions fréquentes</span>
+      <h2 class="rv" style="margin-top:20px">Des réponses <span class="s">claires.</span></h2>
+      <p class="lead rv" style="margin-top:20px">Vous ne trouvez pas votre réponse ? Posez-nous votre question, nous vous répondons personnellement.</p>
+      <a class="btn btn--glass rv" href="#etude" style="margin-top:28px">Nous contacter {% render 'icon', name: 'btn-arrow' %}</a>
+    </div>
+    <div>
+      {%- for l in fl -%}
+        {%- assign f = l | strip | split: '|' -%}
+        <div class="acc rv">
+          <h3 style="font-size:inherit;letter-spacing:inherit"><button class="acc__q" type="button" aria-expanded="false" aria-controls="faq-{{ forloop.index }}" id="faq-q-{{ forloop.index }}">{{ f[0] }}<span class="acc__i" aria-hidden="true"></span></button></h3>
+          <div class="acc__a" id="faq-{{ forloop.index }}" role="region" aria-labelledby="faq-q-{{ forloop.index }}"><div><p>{{ f[1] }}</p></div></div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {%- for l in fl -%}{%- assign f = l | strip | split: '|' -%}
+    {"@type":"Question","name":{{ f[0] | json }},"acceptedAnswer":{"@type":"Answer","text":{{ f[1] | json }}}}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]}
+  </script>
+</section>
+
+{%- comment -%} ===================== FORMULAIRE ===================== {%- endcomment -%}
+{%- capture tel -%}{{ settings.phone | remove: ' ' | remove: '.' | remove: '-' }}{%- endcapture -%}
+<section class="section" id="etude">
+  <div class="wrap study">
+    <div class="study__aside">
+      <span class="eyebrow rv">Obtenir mon étude</span>
+      <h2 class="rv" style="margin-top:20px">Parlons de <span class="s">votre projet.</span></h2>
+      <p class="lead rv" style="margin-top:20px">Trois étapes, environ deux minutes. Nous vous recontactons pour étudier votre projet{% if settings.response_delay != blank %} {{ settings.response_delay }}{% endif %}.</p>
+      <ol class="rv">
+        <li><b>Votre projet</b><span>Les travaux envisagés et leur avancement.</span></li>
+        <li><b>Votre logement</b><span>Pour pré-identifier les aides possibles.</span></li>
+        <li><b>Vos coordonnées</b><span>Pour vous recontacter, rien de plus.</span></li>
+      </ol>
+      <div class="contact-lines rv">
+        {%- if settings.phone != blank -%}<a href="tel:{{ tel }}">{% render 'icon', name: 'phone' %}{{ settings.phone }}</a>{%- endif -%}
+        {%- if settings.email != blank -%}<a href="mailto:{{ settings.email }}">{% render 'icon', name: 'mail' %}{{ settings.email }}</a>{%- endif -%}
+        <span>{% render 'icon', name: 'clock' %}{{ settings.hours | default: 'Du lundi au vendredi' }}</span>
+        <span>{% render 'icon', name: 'pin' %}Intervention partout en France</span>
+      </div>
+    </div>
+
+    <div class="form rv">
+      {%- form 'contact', id: 'study-form', novalidate: 'novalidate' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="form__ok" role="status" tabindex="-1">
+            <span class="badge">{% render 'icon', name: 'check' %}</span>
+            <h3>Merci, votre demande est bien envoyée.</h3>
+            <p class="muted" style="max-width:44ch">Un conseiller étudie votre projet et vous recontacte{% if settings.response_delay != blank %} {{ settings.response_delay }}{% else %} très prochainement{% endif %}. Aucun engagement de votre part à ce stade.</p>
+            <a class="link" href="#realisations" style="margin-top:8px">Découvrir nos réalisations {% render 'icon', name: 'arrow' %}</a>
+          </div>
+        {%- else -%}
+          {%- if form.errors -%}<div class="form__err" role="alert">Votre demande n'a pas pu être envoyée. Merci de vérifier les champs ({{ form.errors | default_errors }}).</div>{%- endif -%}
+          <div class="progress" aria-hidden="true"><div class="progress__bar"><i></i></div><span class="progress__lbl">Étape 1 / 3</span></div>
+
+          <fieldset class="step is-current">
+            <legend>Quel est votre projet ?</legend>
+            <div class="q" data-group>
+              <span class="q__l" id="lbl-proj">Travaux envisagés <small>(plusieurs choix possibles)</small></span>
+              <div class="chips" role="group" aria-labelledby="lbl-proj">
+                <label class="chip"><input type="checkbox" name="contact[Projet : Pompe à chaleur]" value="Oui" data-proj="pac"><span>Pompe à chaleur</span></label>
+                <label class="chip"><input type="checkbox" name="contact[Projet : Photovoltaïque]" value="Oui" data-proj="pv"><span>Panneaux solaires</span></label>
+                <label class="chip"><input type="checkbox" name="contact[Projet : Isolation]" value="Oui" data-proj="iso"><span>Isolation</span></label>
+                <label class="chip"><input type="checkbox" name="contact[Projet : Chauffe-eau thermodynamique]" value="Oui" data-proj="cet"><span>Chauffe-eau</span></label>
+                <label class="chip"><input type="checkbox" name="contact[Projet : Rénovation globale]" value="Oui" data-proj="reno"><span>Rénovation globale</span></label>
+                <label class="chip"><input type="checkbox" name="contact[Projet : À définir]" value="Oui"><span>Je ne sais pas encore</span></label>
+              </div>
+              <span class="err-msg">Sélectionnez au moins un type de travaux.</span>
+            </div>
+            <div class="q" data-group>
+              <span class="q__l" id="lbl-av">Où en est votre projet ?</span>
+              <div class="chips" role="radiogroup" aria-labelledby="lbl-av">
+                <label class="chip"><input type="radio" name="contact[Avancement]" value="Je me renseigne"><span>Je me renseigne</span></label>
+                <label class="chip"><input type="radio" name="contact[Avancement]" value="Dans les 3 mois"><span>Dans les 3 mois</span></label>
+                <label class="chip"><input type="radio" name="contact[Avancement]" value="Dans l'année"><span>Dans l'année</span></label>
+              </div>
+              <span class="err-msg">Indiquez l'avancement de votre projet.</span>
+            </div>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend>Parlez-nous de votre logement.</legend>
+            <div class="q" data-group>
+              <span class="q__l" id="lbl-type">Type de logement</span>
+              <div class="chips" role="radiogroup" aria-labelledby="lbl-type">
+                <label class="chip"><input type="radio" name="contact[Type de logement]" value="Maison"><span>Maison</span></label>
+                <label class="chip"><input type="radio" name="contact[Type de logement]" value="Appartement"><span>Appartement</span></label>
+                <label class="chip"><input type="radio" name="contact[Type de logement]" value="Autre"><span>Autre</span></label>
+              </div>
+              <span class="err-msg">Indiquez le type de logement.</span>
+            </div>
+            <div class="q" data-group>
+              <span class="q__l" id="lbl-st">Vous êtes</span>
+              <div class="chips" role="radiogroup" aria-labelledby="lbl-st">
+                <label class="chip"><input type="radio" name="contact[Statut]" value="Propriétaire occupant"><span>Propriétaire occupant</span></label>
+                <label class="chip"><input type="radio" name="contact[Statut]" value="Propriétaire bailleur"><span>Propriétaire bailleur</span></label>
+                <label class="chip"><input type="radio" name="contact[Statut]" value="Locataire"><span>Locataire</span></label>
+              </div>
+              <span class="err-msg">Indiquez votre statut.</span>
+            </div>
+            <div class="q" data-group>
+              <span class="q__l" id="lbl-rp">Il s'agit de</span>
+              <div class="chips" role="radiogroup" aria-labelledby="lbl-rp">
+                <label class="chip"><input type="radio" name="contact[Usage]" value="Résidence principale"><span>Résidence principale</span></label>
+                <label class="chip"><input type="radio" name="contact[Usage]" value="Résidence secondaire"><span>Résidence secondaire</span></label>
+              </div>
+              <span class="err-msg">Indiquez l'usage du logement.</span>
+            </div>
+            <div class="q" data-group>
+              <span class="q__l" id="lbl-age">Construit il y a</span>
+              <div class="chips" role="radiogroup" aria-labelledby="lbl-age">
+                <label class="chip"><input type="radio" name="contact[Ancienneté]" value="Moins de 2 ans"><span>Moins de 2 ans</span></label>
+                <label class="chip"><input type="radio" name="contact[Ancienneté]" value="2 à 15 ans"><span>2 à 15 ans</span></label>
+                <label class="chip"><input type="radio" name="contact[Ancienneté]" value="Plus de 15 ans"><span>Plus de 15 ans</span></label>
+                <label class="chip"><input type="radio" name="contact[Ancienneté]" value="Je ne sais pas"><span>Je ne sais pas</span></label>
+              </div>
+              <span class="err-msg">Indiquez l'ancienneté approximative.</span>
+            </div>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend>Comment vous recontacter ?</legend>
+            <div class="grid2">
+              <div class="field"><input id="f-fn" name="contact[Prénom]" placeholder=" " autocomplete="given-name" data-rule="req" required><label for="f-fn">Prénom</label><span class="err-msg">Indiquez votre prénom.</span></div>
+              <div class="field"><input id="f-ln" name="contact[Nom]" placeholder=" " autocomplete="family-name" data-rule="req" required><label for="f-ln">Nom</label><span class="err-msg">Indiquez votre nom.</span></div>
+              <div class="field"><input id="f-tel" type="tel" name="contact[phone]" placeholder=" " autocomplete="tel" inputmode="tel" data-rule="tel" required><label for="f-tel">Téléphone</label><span class="err-msg">Numéro français à 10 chiffres attendu.</span></div>
+              <div class="field"><input id="f-mail" type="email" name="contact[email]" placeholder=" " autocomplete="email" data-rule="email" required><label for="f-mail">Email</label><span class="err-msg">Adresse email invalide.</span></div>
+              <div class="field"><input id="f-cp" name="contact[Code postal]" placeholder=" " autocomplete="postal-code" inputmode="numeric" maxlength="5" data-rule="cp" required><label for="f-cp">Code postal du logement</label><span class="err-msg">Code postal à 5 chiffres attendu.</span></div>
+            </div>
+            <div class="field"><textarea id="f-msg" name="contact[body]" placeholder=" " rows="3"></textarea><label for="f-msg">Précisions (facultatif)</label></div>
+            <div class="hp" aria-hidden="true"><label for="f-web">Ne pas remplir</label><input id="f-web" type="text" name="website" tabindex="-1" autocomplete="off"></div>
+            <div class="consent-wrap">
+              <label class="consent"><input type="checkbox" name="contact[Consentement RGPD]" value="Oui" data-consent required><span>J'accepte que mes données soient utilisées par {{ settings.brand_name | default: 'Énergie Hachem Yazour' }} pour traiter ma demande et me recontacter à ce sujet. Elles ne sont ni vendues ni cédées. <a href="{{ h }}/pages/politique-de-confidentialite">En savoir plus</a>.</span></label>
+              <span class="err-msg">Votre accord est nécessaire pour traiter la demande.</span>
+            </div>
+          </fieldset>
+
+          <div class="form__nav">
+            <button type="button" class="back" data-back hidden>{% render 'icon', name: 'arrow' %}Retour</button>
+            <button type="button" class="btn btn--primary" data-next>Continuer {% render 'icon', name: 'btn-arrow' %}</button>
+            <button type="submit" class="btn btn--primary" data-submit>Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</button>
+          </div>
+          <p class="form__note">Demande gratuite et sans engagement. Vos réponses servent uniquement à préparer l'étude de votre projet.</p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ===================== CTA FINAL ===================== {%- endcomment -%}
+<section class="final">
+  <div class="final__bg" data-parallax="8"><img src="{{ img }}1600607687939-ce8a6c25118c{{ q }}&w=1800" alt="" loading="lazy" decoding="async"></div>
+  <div class="wrap">
+    <span class="eyebrow rv">Prêt à commencer ?</span>
+    <h2 class="rv">Votre maison mérite mieux qu'une <span class="s">solution standard.</span></h2>
+    <p class="lead rv">Une étude sérieuse, une recommandation honnête, une installation soignée.</p>
+    <div class="ctas rv">
+      <a class="btn btn--primary" href="#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+      {%- if settings.phone != blank -%}<a class="btn btn--glass" href="tel:{{ tel }}">{{ settings.phone }} {% render 'icon', name: 'btn-arrow' %}</a>{%- endif -%}
+    </div>
+  </div>
+</section>

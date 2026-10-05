@@ -1,0 +1,48 @@
+{%- assign h = routes.root_url | remove_last: '/' -%}
+{%- capture tel -%}{{ settings.phone | remove: ' ' | remove: '.' | remove: '-' }}{%- endcapture -%}
+<header class="hdr">
+  <div class="wrap">
+    <div class="hdr__bar">
+      <a class="logo" href="{{ routes.root_url }}" aria-label="{{ settings.brand_name | default: 'Énergie Hachem Yazour' | escape }} — accueil">
+        {% render 'icon', name: 'mark' %}
+        <span class="logo__wm"><b>HACHEM YAZOUR</b><small>ÉNERGIE</small></span>
+      </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <ul>
+          <li><a href="{{ h }}/#solutions">Solutions</a></li>
+          <li><a href="{{ h }}/#aides">Aides</a></li>
+          <li><a href="{{ h }}/#realisations">Réalisations</a></li>
+          <li><a href="{{ h }}/#methode">Méthode</a></li>
+          <li><a href="{{ h }}/#faq">FAQ</a></li>
+        </ul>
+      </nav>
+      <div class="hdr__right">
+        {%- if settings.phone != blank -%}
+          <a class="hdr__tel" href="tel:{{ tel }}">{% render 'icon', name: 'phone' %}{{ settings.phone }}</a>
+        {%- endif -%}
+        <a class="btn btn--primary btn--sm hdr__cta" href="{{ h }}/#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+        <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><span></span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav aria-label="Menu mobile">
+    <ul>
+      <li><a href="{{ h }}/#solutions"><small>01</small>Solutions</a></li>
+      <li><a href="{{ h }}/#aides"><small>02</small>Aides</a></li>
+      <li><a href="{{ h }}/#realisations"><small>03</small>Réalisations</a></li>
+      <li><a href="{{ h }}/#methode"><small>04</small>Méthode</a></li>
+      <li><a href="{{ h }}/#avis"><small>05</small>Avis</a></li>
+      <li><a href="{{ h }}/#faq"><small>06</small>FAQ</a></li>
+      <li><a href="{{ h }}/#etude"><small>07</small>Contact</a></li>
+    </ul>
+  </nav>
+  <div class="menu__foot">
+    <a class="btn btn--primary" href="{{ h }}/#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+    {%- if settings.phone != blank -%}
+      <a class="btn btn--glass" href="tel:{{ tel }}">{{ settings.phone }} {% render 'icon', name: 'btn-arrow' %}</a>
+    {%- endif -%}
+  </div>
+</div>
