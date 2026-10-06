@@ -1,0 +1,86 @@
+{%- comment -%}
+  Simulateur de profil de revenus MaPrimeRénov'.
+  Barème « Plafonds de ressources 2026 » (revenu fiscal de référence).
+  À mettre à jour chaque année : modifier le JSON #sim-data ci-dessous et les deux tableaux.
+  Le revenu saisi reste dans le navigateur : seul le profil (couleur) est transmis avec le formulaire.
+{%- endcomment -%}
+<section class="section sim-sec" id="profil" aria-labelledby="sim-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow rv">Simulateur</span>
+      <h2 class="rv" id="sim-title">Votre profil <span class="s">en 10 secondes.</span></h2>
+      <p class="lead rv">Les aides MaPrimeRénov' dépendent de votre profil de revenus. Découvrez le vôtre.</p>
+    </div>
+
+    <div class="sim rv" data-sim>
+      <div class="sim__in">
+        <div class="sim__q">
+          <span class="sim__l">1. Où habitez-vous ?</span>
+          <div class="seg" role="radiogroup" aria-label="Zone">
+            <label><input type="radio" name="sim-zone" value="hidf" checked><span>Hors Île-de-France</span></label>
+            <label><input type="radio" name="sim-zone" value="idf"><span>Île-de-France</span></label>
+          </div>
+        </div>
+        <div class="sim__q">
+          <span class="sim__l" id="sim-n-l">2. Personnes dans le foyer fiscal</span>
+          <div class="stepper" role="group" aria-labelledby="sim-n-l">
+            <button type="button" data-step="-1" aria-label="Retirer une personne">−</button>
+            <output data-n aria-live="polite">2</output>
+            <button type="button" data-step="1" aria-label="Ajouter une personne">+</button>
+          </div>
+        </div>
+        <div class="sim__q">
+          <label class="sim__l" for="sim-rfr">3. Revenu fiscal de référence</label>
+          <div class="money"><input id="sim-rfr" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex. 28 000" data-rfr><span>€</span></div>
+          <small class="muted">Indiqué sur votre avis d'imposition. Il n'est pas enregistré.</small>
+        </div>
+      </div>
+
+      <div class="sim__out" data-out data-p="none" aria-live="polite">
+        <span class="eyebrow">Votre profil</span>
+        <div class="sim__badge"><i></i><b data-name>—</b></div>
+        <p class="sim__txt" data-txt>Renseignez votre revenu fiscal de référence.</p>
+        <div class="sim__bar" aria-hidden="true"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span><em data-cursor></em></div>
+        <div class="sim__scale" aria-hidden="true"><span>Bleu</span><span>Jaune</span><span>Violet</span><span>Rose</span></div>
+        <a class="btn btn--primary" href="#etude" data-sim-cta>Vérifier mes aides {% render 'icon', name: 'btn-arrow' %}</a>
+        <p class="sim__note">Estimation indicative selon le barème 2026. L'éligibilité et le montant des aides dépendent aussi du logement, des travaux et des conditions en vigueur.</p>
+      </div>
+    </div>
+
+    <details class="sim-table rv">
+      <summary>Voir le tableau complet des plafonds 2026 <span aria-hidden="true">+</span></summary>
+      {%- liquid
+        assign rows_idf = '1|24 031|29 253|40 851,2|35 270|42 933|60 051,3|42 357|51 564|71 846,4|49 455|60 208|84 562,5|56 580|68 877|96 817,+1|+ 7 116|+ 8 663|+ 12 257' | split: ','
+        assign rows_hidf = '1|17 363|22 259|31 185,2|25 393|32 553|45 842,3|30 540|39 148|55 196,4|35 676|45 735|64 550,5|40 835|52 348|73 907,+1|+ 5 151|+ 6 598|+ 9 357' | split: ','
+      -%}
+      {%- for zone in (1..2) -%}
+        {%- if zone == 1 -%}{%- assign rows = rows_hidf -%}{%- assign zt = 'Hors Île-de-France' -%}{%- assign zk = 'hidf' -%}{%- else -%}{%- assign rows = rows_idf -%}{%- assign zt = 'Île-de-France' -%}{%- assign zk = 'idf' -%}{%- endif -%}
+        <h3>{{ zt }}</h3>
+        <div class="tbl-wrap">
+          <table class="ptable" data-zone="{{ zk }}">
+            <thead><tr><th scope="col">Personnes</th><th scope="col" class="c1">Bleu<small>très modeste</small></th><th scope="col" class="c2">Jaune<small>modeste</small></th><th scope="col" class="c3">Violet<small>intermédiaire</small></th><th scope="col" class="c4">Rose<small>aisé</small></th></tr></thead>
+            <tbody>
+              {%- for r in rows -%}{%- assign c = r | split: '|' -%}
+                <tr data-row="{{ forloop.index }}">
+                  <th scope="row">{% if c[0] == '+1' %}Par personne en plus{% else %}{{ c[0] }}{% endif %}</th>
+                  {%- if c[0] == '+1' -%}
+                    <td>{{ c[1] }} €</td><td>{{ c[2] }} €</td><td>{{ c[3] }} €</td><td>{{ c[3] }} €</td>
+                  {%- else -%}
+                    <td>≤ {{ c[1] }} €</td><td>≤ {{ c[2] }} €</td><td>≤ {{ c[3] }} €</td><td>&gt; {{ c[3] }} €</td>
+                  {%- endif -%}
+                </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        </div>
+      {%- endfor -%}
+      <p class="sim__note">Source : barème des plafonds de ressources 2026 de l'Anah (revenu fiscal de référence). À vérifier sur <a href="https://france-renov.gouv.fr" target="_blank" rel="noopener">france-renov.gouv.fr</a>.</p>
+    </details>
+  </div>
+  <script type="application/json" id="sim-data">
+    {
+      "idf":  {"t":[[24031,29253,40851],[35270,42933,60051],[42357,51564,71846],[49455,60208,84562],[56580,68877,96817]],"x":[7116,8663,12257]},
+      "hidf": {"t":[[17363,22259,31185],[25393,32553,45842],[30540,39148,55196],[35676,45735,64550],[40835,52348,73907]],"x":[5151,6598,9357]}
+    }
+  </script>
+</section>

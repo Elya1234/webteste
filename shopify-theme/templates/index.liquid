@@ -326,6 +326,8 @@ reno|Rénovation|Maison d'architecte|Bouquet de travaux|Classe DPE|avant → apr
   </div>
 </section>
 
+{% render 'simulator' %}
+
 {%- comment -%} ===================== AVIS ===================== {%- endcomment -%}
 <section class="section sand" id="avis">
   <div class="wrap">
@@ -503,6 +505,7 @@ Est-il normal d'être démarché par téléphone pour des travaux de rénovation
               <div class="field"><input id="f-cp" name="contact[Code postal]" placeholder=" " autocomplete="postal-code" inputmode="numeric" maxlength="5" data-rule="cp" required><label for="f-cp">Code postal du logement</label><span class="err-msg">Code postal à 5 chiffres attendu.</span></div>
             </div>
             <div class="field"><textarea id="f-msg" name="contact[body]" placeholder=" " rows="3"></textarea><label for="f-msg">Précisions (facultatif)</label></div>
+            <input type="hidden" name="contact[Profil revenus estimé]" value="" data-profile>
             <div class="hp" aria-hidden="true"><label for="f-web">Ne pas remplir</label><input id="f-web" type="text" name="website" tabindex="-1" autocomplete="off"></div>
             <div class="consent-wrap">
               <label class="consent"><input type="checkbox" name="contact[Consentement RGPD]" value="Oui" data-consent required><span>J'accepte que mes données soient utilisées par {{ settings.brand_name | default: 'Énergie Hachem Yazour' }} pour traiter ma demande et me recontacter à ce sujet. Elles ne sont ni vendues ni cédées. <a href="{{ h }}/pages/hachem-yazour-confidentialite">En savoir plus</a>.</span></label>

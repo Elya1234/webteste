@@ -21,6 +21,7 @@
     <div class="form lp-form fade-in d1" id="etude">
       {%- form 'contact', id: 'pac-form', novalidate: 'novalidate' -%}
         <input type="hidden" name="contact[Demande]" value="Pompe à chaleur — page aides">
+        <input type="hidden" name="contact[Profil revenus estimé]" value="" data-profile>
         {%- if form.posted_successfully? -%}
           <div class="form__ok" role="status">
             <span class="badge">{% render 'icon', name: 'check' %}</span>
@@ -94,6 +95,8 @@
     </div>
   </div>
 </section>
+
+{% render 'simulator' %}
 
 {%- comment -%} ============ MAISON INTERACTIVE PAC ============ {%- endcomment -%}
 <section class="section" aria-label="Comment fonctionne une pompe à chaleur">

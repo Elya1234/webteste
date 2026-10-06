@@ -243,6 +243,60 @@
     go(0);
   }
 
+
+  /* ---------- Simulateur de profil de revenus ---------- */
+  const sim = $('[data-sim]');
+  if (sim) {
+    const data = JSON.parse($('#sim-data').textContent);
+    const out = $('[data-out]', sim), nOut = $('[data-n]', sim), rfrIn = $('[data-rfr]', sim);
+    const names = ['', 'Profil Bleu', 'Profil Jaune', 'Profil Violet', 'Profil Rose'];
+    const labels = ['', 'très modeste', 'modeste', 'intermédiaire', 'aisé'];
+    const colors = ['', '#3AB8F2', '#F5C542', '#9A86EE', '#F29BB8'];
+    const txt = [
+      'Renseignez votre revenu fiscal de référence.',
+      'Revenus très modestes : c’est le profil qui peut ouvrir droit aux aides les plus importantes.',
+      'Revenus modestes : des aides renforcées peuvent s’appliquer à votre projet.',
+      'Revenus intermédiaires : des aides peuvent exister selon les travaux réalisés.',
+      'Revenus supérieurs : l’accès aux aides est plus limité, mais certaines primes peuvent rester possibles selon les travaux.'
+    ];
+    let n = 2;
+    const fmt = v => v.toLocaleString('fr-FR');
+    const limits = (z, k) => { const d = data[z]; if (k <= 5) return d.t[k - 1]; const b = d.t[4]; return b.map((v, i) => v + (k - 5) * d.x[i]); };
+    const update = () => {
+      const z = $('input[name="sim-zone"]:checked', sim).value;
+      nOut.textContent = n >= 10 ? '10+' : n;
+      const raw = rfrIn.value.replace(/[^\d]/g, '');
+      if (rfrIn.value !== (raw ? fmt(+raw) : '')) rfrIn.value = raw ? fmt(+raw) : '';
+      const L = limits(z, n);
+      let p = 0;
+      if (raw) { const v = +raw; p = v <= L[0] ? 1 : v <= L[1] ? 2 : v <= L[2] ? 3 : 4; }
+      out.dataset.p = p || 'none';
+      $('[data-name]', out).textContent = p ? names[p] : '—';
+      $('[data-txt]', out).textContent = txt[p];
+      if (p) {
+        const v = +raw, lo = [0, 0, L[0], L[1], L[2]][p], hi = [0, L[0], L[1], L[2], L[2] * 1.4][p];
+        const f = Math.min(1, Math.max(0, (v - lo) / (hi - lo || 1)));
+        $('[data-cursor]', out).style.setProperty('--x', ((p - 1 + f) * 25) + '%');
+        out.style.setProperty('--pc', colors[p]);
+      }
+      $$('input[data-profile]').forEach(i => i.value = p ? `${names[p]} (${labels[p]}) — ${z === 'idf' ? 'Île-de-France' : 'hors Île-de-France'}, ${n} pers.` : '');
+      // Surlignage du tableau
+      $$('.ptable', sim.parentElement).forEach(t => {
+        const on = t.dataset.zone === z;
+        $$('tbody tr', t).forEach((tr, i) => {
+          const hl = on && i === Math.min(n, 5) - 1;
+          tr.classList.toggle('hl', hl);
+          $$('td', tr).forEach((td, k) => td.classList.toggle('on', hl && k === p - 1));
+          if (hl) tr.style.setProperty('--pc', colors[p] || 'transparent');
+        });
+      });
+    };
+    $$('[data-step]', sim).forEach(b => b.addEventListener('click', () => { n = Math.min(10, Math.max(1, n + +b.dataset.step)); update(); }));
+    sim.addEventListener('input', update);
+    sim.addEventListener('change', update);
+    update();
+  }
+
   /* ---------- Année du pied de page ---------- */
   $$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
 })();
