@@ -252,25 +252,22 @@
 
 
 
-  /* ---------- Maison PAC pédagogique ---------- */
+  /* ---------- Maison PAC pédagogique : un numéro = une fiche, sans défilement ---------- */
   const px = $('[data-pacx]');
   if (px) {
     const pick = key => {
       px.dataset.active = key;
       $$('svg [data-k]', px).forEach(el => el.classList.toggle('on', el.dataset.k.split(' ').includes(key)));
-      $$('.hot', px).forEach(b => b.setAttribute('aria-pressed', b.dataset.part === key));
+      $$('.hot', px).forEach(b => {
+        const on = b.dataset.part === key;
+        b.setAttribute('aria-pressed', on);
+        b.classList.remove('blink'); if (on) { void b.offsetWidth; b.classList.add('blink'); }
+      });
+      $$('.pcnav button', px).forEach(b => b.setAttribute('aria-selected', b.dataset.part === key));
       $$('.pc', px).forEach(c => c.classList.toggle('is-on', c.dataset.part === key));
     };
-    $$('.hot', px).forEach(b => b.addEventListener('click', () => {
-      pick(b.dataset.part);
-      const c = $(`.pc[data-part="${b.dataset.part}"]`, px);
-      if (c && innerWidth < 1150) c.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-    }));
-    $$('.pc', px).forEach(c => {
-      c.addEventListener('click', () => pick(c.dataset.part));
-      c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(c.dataset.part); } });
-      if (canHover) c.addEventListener('mouseenter', () => pick(c.dataset.part));
-    });
+    $$('.hot, .pcnav button', px).forEach(b => b.addEventListener('click', () => pick(b.dataset.part)));
+    pick('ext');
   }
 
   /* ---------- Simulateur de profil de revenus ---------- */

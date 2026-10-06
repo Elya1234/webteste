@@ -694,3 +694,27 @@ body.no-scroll{overflow:hidden}
 .pc dl{display:grid;gap:4px;font-size:.9rem}
 .pc dt{font:500 .7rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mist);margin-top:6px}
 .pc dd{color:rgba(244,243,239,.88);line-height:1.5}
+
+/* Maison PAC : fiche unique à côté (ordinateur) ou juste dessous (mobile) */
+.pacx{display:grid;gap:16px}
+.pacx__stage{margin:0;max-width:none}
+.pacx__legend{margin:0}
+.pacx__cards{display:block}
+@media (min-width:1000px){
+  .pacx{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px 32px;align-items:center}
+  .pacx__stage{grid-column:1;grid-row:1}
+  .pacx__legend{grid-column:1;grid-row:2;justify-content:flex-start}
+  .pacx__cards{grid-column:2;grid-row:1 / span 2}
+}
+@media (max-width:999px){.pacx__cards{order:2}.pacx__legend{order:3}}
+.pacx .pc{display:none;cursor:default;padding:26px}
+.pacx .pc.is-on{display:block;transform:none;animation:pcIn .5s var(--ease)}
+@keyframes pcIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.pacx .pc h3{font-size:1.45rem}
+.pacx .pc dd{font-size:1rem}
+.pcnav{display:flex;gap:8px;margin-bottom:12px}
+.pcnav button{flex:1;height:44px;border-radius:var(--r-sm);border:1px solid var(--line-d);font:600 1rem var(--f-display);color:var(--mist);transition:all .3s var(--ease)}
+.pcnav button[aria-selected="true"]{background:var(--aurora);border-color:var(--aurora);color:var(--obsidian)}
+.hot.blink span{animation:blink .9s var(--ease) 2}
+@keyframes blink{0%,100%{transform:scale(1.2);box-shadow:0 0 0 4px rgba(59,227,161,.25)}50%{transform:scale(1.5);box-shadow:0 0 0 14px rgba(59,227,161,0)}}
+@media (max-width:700px){.hot--n span{width:22px;height:22px;font-size:.72rem}.hot--n span::after{animation:none;border:0}.hot.blink span{animation:blink .9s var(--ease) 2}}
