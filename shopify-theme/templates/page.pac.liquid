@@ -103,63 +103,76 @@
 
 {% render 'simulator' %}
 
-{%- comment -%} ============ MAISON INTERACTIVE PAC ============ {%- endcomment -%}
-<section class="section" aria-label="Comment fonctionne une pompe à chaleur">
+{%- comment -%} ============ MAISON INTERACTIVE PAC (version pédagogique) ============ {%- endcomment -%}
+<section class="section" aria-labelledby="pacx-title">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow rv">Comment ça marche</span>
-      <h2 class="rv">La chaleur de l'air, <span class="s">chez vous.</span></h2>
-      <p class="lead rv">Touchez un point pour comprendre.</p>
+      <h2 class="rv" id="pacx-title">Une pompe à chaleur, <span class="s">c'est simple.</span></h2>
+      <p class="lead rv">Elle prend la chaleur gratuite de l'air dehors et l'amène dans votre maison. Elle se compose de <b style="color:var(--porcelain)">2 appareils</b> : un dehors, un dedans. Touchez un numéro pour comprendre chaque élément.</p>
     </div>
-    <div class="house">
-      <div class="house__stage rv"><div class="house__canvas">
-        <svg class="house__svg" viewBox="0 0 800 480" role="img" aria-label="Schéma d'une maison chauffée par une pompe à chaleur">
+
+    <div class="pacx" data-pacx>
+      <div class="house__stage pacx__stage rv"><div class="house__canvas">
+        <svg class="house__svg" viewBox="0 0 800 480" role="img" aria-label="Schéma : unité extérieure, module intérieur, radiateur, plancher chauffant et thermostat">
           <line class="faint" x1="20" y1="440" x2="780" y2="440"/>
           <path class="stroke" d="M120 172 L350 60 L580 172"/>
           <path class="stroke" d="M140 162 V440 M560 162 V440"/>
           <line class="faint" x1="150" y1="300" x2="550" y2="300"/>
           <rect class="faint" x="200" y="200" width="70" height="56" rx="3"/>
+          <text class="lbl" x="350" y="130" text-anchor="middle">Votre maison</text>
+          <text class="lbl lbl--out" x="684" y="300" text-anchor="middle">Air extérieur</text>
           <g class="part" data-k="rad"><rect x="380" y="244" width="72" height="40" rx="5" fill="rgba(255,179,107,.1)" stroke="#FFB36B" stroke-width="1.4"/><path d="M394 248v32M408 248v32M422 248v32M436 248v32" stroke="#FFB36B" stroke-width="1" opacity=".6"/></g>
           <g class="part" data-k="pla"><path d="M160 430 h40 v-8 h40 v8 h40 v-8 h40 v8 h40 v-8 h40 v8 h40" fill="none" stroke="#FFB36B" stroke-width="1.6"/></g>
           <g class="part" data-k="mod"><rect x="472" y="330" width="50" height="96" rx="12" fill="rgba(59,227,161,.08)" stroke="#3BE3A1" stroke-width="1.4"/><circle cx="497" cy="352" r="6" fill="none" stroke="#3BE3A1" stroke-width="1.2"/></g>
           <g class="part" data-k="th"><rect x="300" y="350" width="22" height="32" rx="5" fill="none" stroke="#3BE3A1" stroke-width="1.3"/><circle cx="311" cy="362" r="5" fill="none" stroke="#3BE3A1" stroke-width="1.1"/></g>
           <g class="part" data-k="ext"><rect x="616" y="356" width="136" height="84" rx="8" fill="rgba(59,227,161,.08)" stroke="#3BE3A1" stroke-width="1.5"/><circle cx="660" cy="398" r="27" fill="none" stroke="#3BE3A1" stroke-width="1.3"/><path d="M660 371v54M633 398h54" stroke="#3BE3A1" stroke-width="1" opacity=".6"/><line x1="700" y1="378" x2="740" y2="378" stroke="#3BE3A1"/><line x1="700" y1="390" x2="740" y2="390" stroke="#3BE3A1"/><line x1="700" y1="402" x2="740" y2="402" stroke="#3BE3A1"/></g>
-          <path class="flow on" data-k="ext" d="M790 300 Q 720 320 690 360"/>
+          <path class="flow on" data-k="ext" d="M790 310 Q 730 320 700 352"/>
           <path class="flow on" data-k="ext mod" d="M616 400 H 522"/>
           <path class="flow warm on" data-k="mod rad" d="M497 330 V 264 H 452"/>
           <path class="flow warm on" data-k="mod pla" d="M472 420 H 440"/>
+          <text class="lbl" x="684" y="462" text-anchor="middle">1 · Unité extérieure</text>
+          <text class="lbl" x="497" y="462" text-anchor="middle">2 · Module intérieur</text>
+          <text class="lbl" x="416" y="232" text-anchor="middle">3 · Radiateur</text>
+          <text class="lbl" x="280" y="462" text-anchor="middle">4 · Plancher chauffant</text>
+          <text class="lbl" x="311" y="340" text-anchor="middle">5 · Thermostat</text>
         </svg>
-        <button class="hot" type="button" data-part="ext" aria-pressed="false" aria-label="Unité extérieure" style="left:85%;top:83%"><span></span></button>
-        <button class="hot" type="button" data-part="mod" aria-pressed="false" aria-label="Module intérieur" style="left:62.1%;top:78.5%"><span></span></button>
-        <button class="hot" type="button" data-part="rad" aria-pressed="false" aria-label="Radiateurs" style="left:52%;top:55%"><span></span></button>
-        <button class="hot" type="button" data-part="pla" aria-pressed="false" aria-label="Plancher chauffant" style="left:30%;top:89%"><span></span></button>
-        <button class="hot" type="button" data-part="th" aria-pressed="false" aria-label="Thermostat" style="left:38.9%;top:76.5%"><span></span></button>
+        <button class="hot hot--n" type="button" data-part="ext" aria-pressed="false" aria-label="1 : unité extérieure" style="left:85.5%;top:83%"><span>1</span></button>
+        <button class="hot hot--n" type="button" data-part="mod" aria-pressed="false" aria-label="2 : module intérieur" style="left:62.1%;top:79%"><span>2</span></button>
+        <button class="hot hot--n" type="button" data-part="rad" aria-pressed="false" aria-label="3 : radiateur" style="left:52%;top:55.5%"><span>3</span></button>
+        <button class="hot hot--n" type="button" data-part="pla" aria-pressed="false" aria-label="4 : plancher chauffant" style="left:35%;top:88.5%"><span>4</span></button>
+        <button class="hot hot--n" type="button" data-part="th" aria-pressed="false" aria-label="5 : thermostat" style="left:38.9%;top:76%"><span>5</span></button>
       </div></div>
-      <div class="house__panel rv">
-        <div class="house__tabs" role="tablist" aria-label="Éléments">
-          <button type="button" role="tab" data-part="ext" aria-selected="false">Unité extérieure</button>
-          <button type="button" role="tab" data-part="mod" aria-selected="false">Module intérieur</button>
-          <button type="button" role="tab" data-part="rad" aria-selected="false">Radiateurs</button>
-          <button type="button" role="tab" data-part="pla" aria-selected="false">Plancher</button>
-          <button type="button" role="tab" data-part="th" aria-selected="false">Thermostat</button>
-        </div>
-        <div class="house__card" aria-live="polite">
-          <span class="eyebrow" data-k>Dehors</span>
-          <h3 data-t>Unité extérieure</h3>
-          <p data-d>Elle capte les calories de l'air, même en hiver.</p>
-          <a class="link" href="#etude" data-l><span>Vérifier mes aides</span> {% render 'icon', name: 'arrow' %}</a>
-        </div>
+
+      <div class="pacx__legend">
+        <span class="pacx__l"><i class="dot dot--g"></i>Fait partie de la pompe à chaleur</span>
+        <span class="pacx__l"><i class="dot dot--o"></i>Souvent déjà chez vous</span>
+        <span class="pacx__l"><i class="flowkey"></i>Circulation de la chaleur</span>
+      </div>
+
+      <div class="pacx__cards">
+        <article class="pc rv" data-part="ext" tabindex="0">
+          <header><span class="pc__n">1</span><h3>Unité extérieure</h3><span class="tag tag--g">Pompe à chaleur</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Un boîtier avec un ventilateur, posé dehors contre le mur ou au sol.</dd><dt>Ça sert à quoi ?</dt><dd>Capter la chaleur contenue dans l'air extérieur, même quand il fait froid.</dd></dl>
+        </article>
+        <article class="pc rv" data-part="mod" tabindex="0">
+          <header><span class="pc__n">2</span><h3>Module intérieur</h3><span class="tag tag--g">Pompe à chaleur</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>L'appareil qui prend la place de votre ancienne chaudière (garage, cellier, cuisine…).</dd><dt>Ça sert à quoi ?</dt><dd>Envoyer la chaleur dans votre chauffage et, selon le modèle, chauffer l'eau du robinet.</dd></dl>
+        </article>
+        <article class="pc rv" data-part="rad" tabindex="0">
+          <header><span class="pc__n">3</span><h3>Radiateurs</h3><span class="tag tag--o">Déjà chez vous</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Vos radiateurs actuels, dans chaque pièce.</dd><dt>Ça sert à quoi ?</dt><dd>Diffuser la chaleur. Souvent conservés : nous vérifions qu'ils sont compatibles.</dd></dl>
+        </article>
+        <article class="pc rv" data-part="pla" tabindex="0">
+          <header><span class="pc__n">4</span><h3>Plancher chauffant</h3><span class="tag tag--o">Si vous en avez un</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Des tuyaux d'eau chaude cachés dans le sol.</dd><dt>Ça sert à quoi ?</dt><dd>Chauffer par le sol, en douceur. C'est l'idéal avec une pompe à chaleur.</dd></dl>
+        </article>
+        <article class="pc rv" data-part="th" tabindex="0">
+          <header><span class="pc__n">5</span><h3>Thermostat</h3><span class="tag tag--g">Fourni selon modèle</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Un petit boîtier au mur, ou une application sur votre téléphone.</dd><dt>Ça sert à quoi ?</dt><dd>Choisir la température. La pompe à chaleur s'adapte toute seule.</dd></dl>
+        </article>
       </div>
     </div>
-    <script type="application/json" id="house-data">
-      {
-        "ext": {"k":"Dehors","t":"Unité extérieure","d":"Elle capte les calories de l'air extérieur, même en hiver, et les envoie vers la maison.","l":"Vérifier mes aides"},
-        "mod": {"k":"Dedans","t":"Module intérieur","d":"Il transmet la chaleur à votre circuit de chauffage et, selon le modèle, à l'eau chaude.","l":"Vérifier mes aides"},
-        "rad": {"k":"Chauffage","t":"Vos radiateurs","d":"Souvent conservés : nous vérifions qu'ils sont compatibles lors de l'étude.","l":"Vérifier mes aides"},
-        "pla": {"k":"Chauffage","t":"Plancher chauffant","d":"L'émetteur idéal : une chaleur douce et un rendement optimal.","l":"Vérifier mes aides"},
-        "th":  {"k":"Pilotage","t":"Thermostat","d":"Vous réglez la température facilement, et à distance selon le modèle.","l":"Vérifier mes aides"}
-      }
-    </script>
   </div>
 </section>
 

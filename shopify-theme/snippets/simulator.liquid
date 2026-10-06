@@ -47,26 +47,46 @@
       </div>
     </div>
 
-    <details class="sim-table rv">
-      <summary>Voir le tableau complet des plafonds 2026 <span aria-hidden="true">+</span></summary>
+    <div class="ptab">
+      <div class="ptab__head rv">
+        <h3>Le tableau des plafonds 2026</h3>
+        <p class="muted">Pour savoir quelle couleur vous correspond, sans calcul.</p>
+      </div>
+
+      <div class="howto rv">
+        <div class="howto__s"><span>1</span><p>Choisissez le tableau de <b>votre région</b> : Île-de-France ou ailleurs en France.</p></div>
+        <div class="howto__s"><span>2</span><p>Trouvez la ligne du <b>nombre de personnes</b> dans votre foyer.</p></div>
+        <div class="howto__s"><span>3</span><p>Lisez de gauche à droite : la <b>première case</b> qui dépasse votre revenu fiscal donne votre couleur.</p></div>
+      </div>
+      <div class="example rv">{% render 'icon', name: 'info' %}<p><b>Exemple :</b> vous êtes <b>2 personnes</b>, hors Île-de-France, avec un revenu fiscal de <b>28 000 €</b>. C'est plus que 25 393 € (Bleu) mais moins que 32 553 € (Jaune) : vous êtes <b class="cj">Profil Jaune</b>.</p></div>
+
+      <div class="colors rv">
+        <div class="col col--1"><i></i><b>Bleu</b><span>Revenus très modestes</span><small>Les aides les plus importantes</small></div>
+        <div class="col col--2"><i></i><b>Jaune</b><span>Revenus modestes</span><small>Des aides renforcées</small></div>
+        <div class="col col--3"><i></i><b>Violet</b><span>Revenus intermédiaires</span><small>Des aides selon les travaux</small></div>
+        <div class="col col--4"><i></i><b>Rose</b><span>Revenus supérieurs</span><small>Des aides plus limitées</small></div>
+      </div>
+
       {%- liquid
         assign rows_idf = '1|24 031|29 253|40 851,2|35 270|42 933|60 051,3|42 357|51 564|71 846,4|49 455|60 208|84 562,5|56 580|68 877|96 817,+1|+ 7 116|+ 8 663|+ 12 257' | split: ','
         assign rows_hidf = '1|17 363|22 259|31 185,2|25 393|32 553|45 842,3|30 540|39 148|55 196,4|35 676|45 735|64 550,5|40 835|52 348|73 907,+1|+ 5 151|+ 6 598|+ 9 357' | split: ','
       -%}
+      <div class="ptab__grid">
       {%- for zone in (1..2) -%}
         {%- if zone == 1 -%}{%- assign rows = rows_hidf -%}{%- assign zt = 'Hors Île-de-France' -%}{%- assign zk = 'hidf' -%}{%- else -%}{%- assign rows = rows_idf -%}{%- assign zt = 'Île-de-France' -%}{%- assign zk = 'idf' -%}{%- endif -%}
-        <h3>{{ zt }}</h3>
-        <div class="tbl-wrap">
+        <div class="ptab__card rv">
+          <h4>{% render 'icon', name: 'pin' %}{{ zt }}</h4>
           <table class="ptable" data-zone="{{ zk }}">
-            <thead><tr><th scope="col">Personnes</th><th scope="col" class="c1">Bleu<small>très modeste</small></th><th scope="col" class="c2">Jaune<small>modeste</small></th><th scope="col" class="c3">Violet<small>intermédiaire</small></th><th scope="col" class="c4">Rose<small>aisé</small></th></tr></thead>
+            <caption class="sr-only">Plafonds de revenu fiscal de référence 2026, {{ zt }}</caption>
+            <thead><tr><th scope="col">Pers.</th><th scope="col" class="c1">Bleu</th><th scope="col" class="c2">Jaune</th><th scope="col" class="c3">Violet</th><th scope="col" class="c4">Rose</th></tr></thead>
             <tbody>
               {%- for r in rows -%}{%- assign c = r | split: '|' -%}
-                <tr data-row="{{ forloop.index }}">
-                  <th scope="row">{% if c[0] == '+1' %}Par personne en plus{% else %}{{ c[0] }}{% endif %}</th>
+                <tr{% if c[0] == '+1' %} class="extra"{% endif %}>
+                  <th scope="row">{% if c[0] == '+1' %}+1 pers.{% else %}{{ c[0] }}{% endif %}</th>
                   {%- if c[0] == '+1' -%}
-                    <td>{{ c[1] }} €</td><td>{{ c[2] }} €</td><td>{{ c[3] }} €</td><td>{{ c[3] }} €</td>
+                    <td>{{ c[1] }}</td><td>{{ c[2] }}</td><td>{{ c[3] }}</td><td>{{ c[3] }}</td>
                   {%- else -%}
-                    <td>≤ {{ c[1] }} €</td><td>≤ {{ c[2] }} €</td><td>≤ {{ c[3] }} €</td><td>&gt; {{ c[3] }} €</td>
+                    <td>{{ c[1] }}</td><td>{{ c[2] }}</td><td>{{ c[3] }}</td><td class="over">+ de {{ c[3] }}</td>
                   {%- endif -%}
                 </tr>
               {%- endfor -%}
@@ -74,8 +94,9 @@
           </table>
         </div>
       {%- endfor -%}
-      <p class="sim__note">Source : barème des plafonds de ressources 2026 de l'Anah (revenu fiscal de référence). À vérifier sur <a href="https://france-renov.gouv.fr" target="_blank" rel="noopener">france-renov.gouv.fr</a>.</p>
-    </details>
+      </div>
+      <p class="sim__note rv" style="margin-top:16px">Montants en euros : revenu fiscal de référence <b>maximum</b> pour chaque couleur (indiqué sur votre avis d'imposition). « +1 pers. » : montant à ajouter par personne au-delà de 5. Source : barème 2026 de l'Anah, à vérifier sur <a href="https://france-renov.gouv.fr" target="_blank" rel="noopener">france-renov.gouv.fr</a>.</p>
+    </div>
   </div>
   <script type="application/json" id="sim-data">
     {

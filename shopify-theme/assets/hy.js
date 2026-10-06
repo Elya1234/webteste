@@ -251,6 +251,28 @@
   }
 
 
+
+  /* ---------- Maison PAC pédagogique ---------- */
+  const px = $('[data-pacx]');
+  if (px) {
+    const pick = key => {
+      px.dataset.active = key;
+      $$('svg [data-k]', px).forEach(el => el.classList.toggle('on', el.dataset.k.split(' ').includes(key)));
+      $$('.hot', px).forEach(b => b.setAttribute('aria-pressed', b.dataset.part === key));
+      $$('.pc', px).forEach(c => c.classList.toggle('is-on', c.dataset.part === key));
+    };
+    $$('.hot', px).forEach(b => b.addEventListener('click', () => {
+      pick(b.dataset.part);
+      const c = $(`.pc[data-part="${b.dataset.part}"]`, px);
+      if (c && innerWidth < 1150) c.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    }));
+    $$('.pc', px).forEach(c => {
+      c.addEventListener('click', () => pick(c.dataset.part));
+      c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(c.dataset.part); } });
+      if (canHover) c.addEventListener('mouseenter', () => pick(c.dataset.part));
+    });
+  }
+
   /* ---------- Simulateur de profil de revenus ---------- */
   const sim = $('[data-sim]');
   if (sim) {
@@ -291,7 +313,7 @@
       $$('.ptable', sim.parentElement).forEach(t => {
         const on = t.dataset.zone === z;
         $$('tbody tr', t).forEach((tr, i) => {
-          const hl = on && i === Math.min(n, 5) - 1;
+          const hl = on && !tr.classList.contains('extra') && i === Math.min(n, 5) - 1;
           tr.classList.toggle('hl', hl);
           $$('td', tr).forEach((td, k) => td.classList.toggle('on', hl && k === p - 1));
           if (hl) tr.style.setProperty('--pc', colors[p] || 'transparent');
