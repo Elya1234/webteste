@@ -218,7 +218,14 @@
     form.addEventListener('change', e => { const g = e.target.closest('[data-group]'); if (g) g.classList.remove('err'); });
     // Étapes « un clic » : passage automatique à la question suivante
     form.addEventListener('click', e => {
-      if (e.target.type === 'radio' && e.target.closest('.step.is-current[data-auto]')) setTimeout(() => next.click(), reduce ? 0 : 280);
+      if (e.target.matches('[data-force]')) { go(cur + 1); return; }
+      if (e.target.type !== 'radio') return;
+      const step = e.target.closest('.step.is-current[data-auto]'); if (!step) return;
+      const ok = $('[data-ok-msg]', step), ko = $('[data-ko-msg]', step);
+      if (e.target.hasAttribute('data-ko')) { if (ok) ok.hidden = true; if (ko) ko.hidden = false; return; }
+      if (ko) ko.hidden = true;
+      if (ok) { ok.hidden = false; setTimeout(() => { if (steps[cur] === step) next.click(); }, reduce ? 0 : 900); }
+      else setTimeout(() => next.click(), reduce ? 0 : 280);
     });
     form.addEventListener('input', e => {
       const f = e.target.closest('.field.err');

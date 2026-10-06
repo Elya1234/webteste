@@ -33,15 +33,20 @@
           <div class="progress" aria-hidden="true"><div class="progress__bar"><i></i></div><span class="progress__lbl">Étape 1 / 4</span></div>
 
           <fieldset class="step is-current" data-auto>
-            <legend>Votre chauffage actuel ?</legend>
+            <legend>Quel type de chaudière avez-vous ?</legend>
             <div class="q" data-group>
-              <div class="tiles" role="radiogroup" aria-label="Chauffage actuel">
-                <label class="tile"><input type="radio" name="contact[Chauffage actuel]" value="Fioul"><span><b>{% render 'icon', name: 'drop' %}</b>Fioul</span></label>
-                <label class="tile"><input type="radio" name="contact[Chauffage actuel]" value="Gaz"><span><b>{% render 'icon', name: 'flame' %}</b>Gaz</span></label>
-                <label class="tile"><input type="radio" name="contact[Chauffage actuel]" value="Électrique"><span><b>{% render 'icon', name: 'spark' %}</b>Électrique</span></label>
-                <label class="tile"><input type="radio" name="contact[Chauffage actuel]" value="Bois / autre"><span><b>{% render 'icon', name: 'leaf' %}</b>Bois / autre</span></label>
+              <div class="tiles" role="radiogroup" aria-label="Type de chaudière">
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Gaz"><span><b>{% render 'icon', name: 'flame' %}</b>Gaz</span></label>
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Fioul"><span><b>{% render 'icon', name: 'drop' %}</b>Fioul</span></label>
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Bois"><span><b>{% render 'icon', name: 'leaf' %}</b>Bois</span></label>
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Pas de chaudière (électrique / autre)" data-ko><span><b>{% render 'icon', name: 'spark' %}</b>Électrique<small>ou pas de chaudière</small></span></label>
               </div>
               <span class="err-msg">Choisissez une réponse.</span>
+            </div>
+            <div class="okmsg" data-ok-msg hidden role="status">{% render 'icon', name: 'check' %}<span><b>Compatible.</b> Votre chaudière peut être remplacée par une pompe à chaleur. On continue.</span></div>
+            <div class="komsg" data-ko-msg hidden role="status">
+              <p><b>Sans chaudière, les aides au remplacement de chaudière ne s'appliquent pas.</b> D'autres solutions restent possibles selon votre logement.</p>
+              <button type="button" class="btn btn--glass btn--sm" data-force>Continuer quand même {% render 'icon', name: 'btn-arrow' %}</button>
             </div>
           </fieldset>
 
