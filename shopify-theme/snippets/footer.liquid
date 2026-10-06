@@ -1,4 +1,5 @@
 {%- assign h = routes.root_url | remove_last: '/' -%}
+{%- assign etude = h | append: '/#etude' -%}{%- if template.suffix == 'pac' -%}{%- assign etude = '#etude' -%}{%- endif -%}
 {%- assign brand = settings.brand_name | default: 'Énergie Hachem Yazour' -%}
 {%- capture tel -%}{{ settings.phone | remove: ' ' | remove: '.' | remove: '-' }}{%- endcapture -%}
 <footer class="ftr">
@@ -42,7 +43,7 @@
       <div>
         <h4>Contact</h4>
         <ul>
-          <li><a href="{{ h }}/#etude">Obtenir mon étude</a></li>
+          <li><a href="{{ etude }}">Obtenir mon étude</a></li>
           {%- if settings.phone != blank -%}<li><a href="tel:{{ tel }}">{{ settings.phone }}</a></li>{%- endif -%}
           {%- if settings.email != blank -%}<li><a href="mailto:{{ settings.email }}">{{ settings.email }}</a></li>{%- endif -%}
           {%- if settings.address != blank -%}<li><span class="muted">{{ settings.address }}</span></li>{%- endif -%}
@@ -68,5 +69,5 @@
   {%- else -%}
     <a class="btn btn--glass" href="{{ h }}/#faq" aria-label="Questions fréquentes">{% render 'icon', name: 'info' %}</a>
   {%- endif -%}
-  <a class="btn btn--primary" href="{{ h }}/#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+  <a class="btn btn--primary" href="{{ etude }}">{% if template.suffix == 'pac' %}Vérifier mes aides{% else %}Obtenir mon étude{% endif %} {% render 'icon', name: 'btn-arrow' %}</a>
 </div>

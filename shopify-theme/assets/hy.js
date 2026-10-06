@@ -122,6 +122,7 @@
     const show = key => {
       const it = data[key]; if (!it) return;
       house.dataset.active = key;
+      $$('svg [data-k]', house).forEach(el => el.classList.toggle('on', el.dataset.k.split(' ').includes(key)));
       tabs.forEach(t => {
         const on = t.dataset.part === key;
         t.setAttribute(t.getAttribute('role') === 'tab' ? 'aria-selected' : 'aria-pressed', on);
@@ -136,7 +137,7 @@
       t.addEventListener('click', () => show(t.dataset.part));
       if (canHover && t.classList.contains('hot')) t.addEventListener('mouseenter', () => show(t.dataset.part));
     });
-    show('pac');
+    show(data.pac ? 'pac' : Object.keys(data)[0]);
   }
 
   /* ---------- Filtres réalisations ---------- */
@@ -186,6 +187,7 @@
       cur = i;
       steps.forEach((s, k) => s.classList.toggle('is-current', k === i));
       wrap.classList.toggle('is-last', i === steps.length - 1);
+      wrap.classList.toggle('is-auto', steps[i].hasAttribute('data-auto'));
       back.hidden = i === 0;
       if (bar) bar.style.width = ((i + 1) / steps.length * 100) + '%';
       if (lbl) lbl.textContent = `Étape ${i + 1} / ${steps.length}`;
@@ -214,6 +216,10 @@
       return ok;
     };
     form.addEventListener('change', e => { const g = e.target.closest('[data-group]'); if (g) g.classList.remove('err'); });
+    // Étapes « un clic » : passage automatique à la question suivante
+    form.addEventListener('click', e => {
+      if (e.target.type === 'radio' && e.target.closest('.step.is-current[data-auto]')) setTimeout(() => next.click(), reduce ? 0 : 280);
+    });
     form.addEventListener('input', e => {
       const f = e.target.closest('.field.err');
       if (f && rules[e.target.dataset.rule]?.(e.target.value)) { f.classList.remove('err'); e.target.setAttribute('aria-invalid', false); }
