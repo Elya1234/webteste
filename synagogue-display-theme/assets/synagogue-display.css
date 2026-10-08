@@ -55,50 +55,61 @@ a { color: inherit; }
 .sd-col h2 .hebrew { font-size: 32px; margin-inline-start: 12px; color: var(--gold); -webkit-text-fill-color: var(--gold); }
 .sd-col > .hair { margin-bottom: 12px; }
 
-.sd-prayers { left: 56px; top: 206px; width: 600px; height: 800px; }
-.sd-groups { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
-.sd-gtitle { display: flex; align-items: center; justify-content: space-between; font-size: 20px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
-.sd-gtitle .hebrew { letter-spacing: normal; font-size: 26px; }
-.sd-row { display: flex; align-items: center; justify-content: space-between; border-radius: 12px; padding: 3px 16px; margin-bottom: 5px; border: 1px solid rgba(255,255,255,.05); background: rgba(255,255,255,.03); }
+.sd-prayers { left: 56px; top: 206px; width: 760px; height: 800px; padding: 26px 34px;
+  border: 1.5px solid rgba(217,191,140,.6);
+  background: linear-gradient(180deg, rgba(217,191,140,.10), rgba(255,255,255,.03) 40%, rgba(28,58,138,.18));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(217,191,140,.12), 0 0 60px rgba(217,191,140,.16), 0 24px 60px rgba(0,0,0,.45); }
+.sd-prayers h2 { font-size: 44px; }
+.sd-prayers h2 .hebrew { font-size: 36px; }
+.sd-groups { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; font-size: 10px; overflow: hidden; }
+.sd-phead { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; margin-bottom: 8px; }
+.sd-phead h2 { margin: 0; white-space: nowrap; }
+.sd-nlabel { white-space: nowrap; }
+.sd-gtitle { display: flex; align-items: center; justify-content: space-between; font-size: 2.3em; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.sd-gtitle .hebrew { letter-spacing: normal; font-size: 1.3em; }
+.sd-row { display: flex; align-items: center; justify-content: space-between; border-radius: 14px; padding: .5em 2em; margin-bottom: .6em; border: 1px solid rgba(255,255,255,.05); background: rgba(255,255,255,.03); }
 .sd-row.next-glow { background: linear-gradient(180deg, rgba(217,191,140,.16), rgba(217,191,140,.05)); }
 .sd-row > div:first-child { line-height: 1; }
-.sd-plabel { font-size: 29px; font-weight: 600; }
-.sd-phe { font-size: 19px; opacity: .7; direction: ltr; text-align: left; }
-.sd-ptimes { font-size: 35px; display: flex; gap: 16px; }
-.sd-next { margin-top: 8px; border-radius: 12px; padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; }
-.sd-nlabel { font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); line-height: 1.25; }
-.sd-cd { font-size: 48px; line-height: 1; }
+.sd-plabel { font-size: 3.8em; font-weight: 600; }
+.sd-phe { font-size: 2.3em; opacity: .7; direction: ltr; text-align: left; }
+.sd-ptimes { font-size: 4.6em; display: flex; gap: .55em; }
+.sd-next { border-radius: 14px; padding: 6px 18px; gap: 18px; display: flex; align-items: center; justify-content: space-between; }
+.sd-nlabel { font-size: 17px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); line-height: 1.25; }
+.sd-cd { font-size: 46px; line-height: 1; }
+.sd-nlabel b { font-size: 22px; letter-spacing: .04em; }
 
-.sd-zmanim { left: 680px; top: 206px; width: 640px; height: 800px; }
+.sd-zmanim { left: 840px; top: 206px; width: 540px; height: 800px; padding: 22px 24px; }
+.sd-zmanim h2, .sd-shabbat h2 { font-size: 34px; }
+.sd-zmanim h2 .hebrew, .sd-shabbat h2 .hebrew { font-size: 28px; }
 .sd-zmanim > .hair { margin-bottom: 4px; }
 .sd-zmanim ul { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .sd-zmanim li { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.07); }
 .sd-zmanim li:last-child { border-bottom: 0; }
 .sd-zl { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
-.sd-zfr { font-size: 26px; line-height: 1; white-space: nowrap; }
-.sd-zhe { font-size: 20px; color: var(--gold); opacity: .75; white-space: nowrap; direction: ltr; }
-.sd-zt { font-size: 34px; line-height: 1; }
+.sd-zfr { font-size: 23px; line-height: 1; white-space: nowrap; }
+.sd-zhe { font-size: 17px; color: var(--gold); opacity: .75; white-space: nowrap; direction: ltr; }
+.sd-zt { font-size: 30px; line-height: 1; }
 .sd-wait { font-size: 28px; opacity: .7; margin-top: 40px; }
 
-.sd-shabbat { right: 56px; top: 206px; width: 520px; height: 520px; }
+.sd-shabbat { right: 56px; top: 206px; width: 460px; height: 520px; padding: 22px 24px; }
 .sd-pbig { text-align: center; margin-bottom: 12px; }
-.sd-pbig .serif { font-size: 50px; line-height: 1; }
-.sd-pbig .hebrew { font-size: 38px; margin-top: 4px; direction: ltr; }
+.sd-pbig .serif { font-size: 44px; line-height: 1; }
+.sd-pbig .hebrew { font-size: 32px; margin-top: 4px; direction: ltr; }
 .sd-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .sd-tile { border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.05); padding: 12px; text-align: center; }
-.sd-tl { font-size: 18px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
-.sd-tv { font-size: 56px; line-height: 1; margin: 4px 0; }
-.sd-ts { display: flex; justify-content: space-between; font-size: 19px; opacity: .75; }
+.sd-tl { font-size: 16px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.sd-tv { font-size: 48px; line-height: 1; margin: 4px 0; }
+.sd-ts { display: flex; justify-content: space-between; font-size: 17px; opacity: .75; }
 .sd-ts span:first-child { text-transform: capitalize; }
 .sd-cal { margin-top: auto; text-align: center; line-height: 1.25; }
 .sd-rc { font-size: 24px; }
 .sd-rcd { font-size: 21px; opacity: .8; text-transform: capitalize; }
 .sd-hol { font-size: 22px; opacity: .85; margin-top: 4px; }
 
-.sd-ann { right: 56px; top: 750px; width: 520px; height: 256px; padding: 20px 28px; overflow: hidden; }
-.sd-ann h2 { font-size: 34px; }
+.sd-ann { right: 56px; top: 750px; width: 460px; height: 256px; padding: 18px 24px; overflow: hidden; }
+.sd-ann h2 { font-size: 30px; }
 .sd-ann h2 .hebrew { font-size: 28px; }
-.sd-ann ul { font-size: 25px; line-height: 1.35; }
+.sd-ann ul { font-size: 22px; line-height: 1.35; }
 .sd-ann li { white-space: pre-line; margin-bottom: 8px; }
 .sd-empty { font-size: 22px; opacity: .55; margin-top: 32px; text-align: center; }
 

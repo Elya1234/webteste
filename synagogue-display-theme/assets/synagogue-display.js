@@ -198,7 +198,12 @@
       "</div></header><div class=\"hair sd-hair\"></div>";
 
     // Offices
-    h += '<section class="glass sd-col sd-prayers"><h2 class="serif gold-text">Offices <span class="hebrew">תפילות</span></h2><div class="hair"></div><div class="sd-groups">';
+    h += '<section class="glass sd-col sd-prayers"><div class="sd-phead"><h2 class="serif gold-text">Offices <span class="hebrew">תפילות</span></h2>';
+    if (CFG.showCountdown && next) {
+      h += '<div class="next-glow sd-next"><div class="sd-nlabel">Prochain office<br><b>' + next.t + '</b></div><div class="num gold-text sd-cd" data-countdown>' +
+        pad(Math.floor(remain / 3600)) + ":" + pad(Math.floor((remain % 3600) / 60)) + ":" + pad(remain % 60) + "</div></div>";
+    }
+    h += '</div><div class="hair"></div><div class="sd-groups">';
     GROUPS.forEach(function (g) {
       var rows = prayers.filter(function (p) { return p.group === g.key; });
       if (!rows.length) return;
@@ -211,12 +216,7 @@
       });
       h += "</div>";
     });
-    h += "</div>";
-    if (CFG.showCountdown && next) {
-      h += '<div class="next-glow sd-next"><div class="sd-nlabel">Prochain office<br>' + next.t + '</div><div class="num gold-text sd-cd" data-countdown>' +
-        pad(Math.floor(remain / 3600)) + ":" + pad(Math.floor((remain % 3600) / 60)) + ":" + pad(remain % 60) + "</div></div>";
-    }
-    h += "</section>";
+    h += "</div></section>";
 
     // Zmanim
     h += '<section class="glass sd-col sd-zmanim"><h2 class="serif gold-text">Zmanim <span class="hebrew">זמני היום</span></h2><div class="hair"></div>';
@@ -250,6 +250,9 @@
       (CFG.validatedByRav ? "Méthodes de calcul validées" : "Méthodes de calcul à valider par le Rav") + "</span></footer>";
 
     stage.innerHTML = h;
+    // beaucoup d'offices : la liste rétrécit jusqu'à tenir dans le cadre
+    var groups = stage.querySelector(".sd-groups");
+    for (var fs = 10; fs > 6 && groups.scrollHeight > groups.clientHeight + 1; fs -= 0.25) groups.style.fontSize = (fs - 0.25) + "px";
   }
   function clockHtml(np) { return pad(np.h) + ":" + pad(np.m) + (CFG.showSeconds ? '<span class="sd-sec">:' + pad(np.s) + "</span>" : ""); }
   function tile(label, he, item, tz) {
