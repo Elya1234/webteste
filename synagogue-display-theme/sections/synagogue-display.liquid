@@ -21,6 +21,8 @@
   "validatedByRav": {{ section.settings.validated_by_rav | json }},
   "showSeconds": {{ section.settings.show_seconds | json }},
   "showCountdown": {{ section.settings.show_countdown | json }},
+  "dedication": {{ section.settings.dedication | json }},
+  "dedicationNames": {{ section.settings.dedication_names | json }},
   "adminUrl": {{ routes.root_url | append: '/pages/admin' | replace: '//', '/' | json }},
   "adminCodeHash": {{ section.settings.admin_code | strip | sha256 | json }},
   "prayers": [
@@ -148,6 +150,22 @@
       "id": "validated_by_rav",
       "label": "Méthodes validées par le Rav",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "Dédicace (bas de l'écran)"
+    },
+    {
+      "type": "text",
+      "id": "dedication",
+      "label": "Ligne principale (grande)",
+      "default": "לעלוי נשמת ציון בר סעדה לבית חורי דידו ואחיו משה בני ליזה לבית חורי"
+    },
+    {
+      "type": "textarea",
+      "id": "dedication_names",
+      "label": "Noms (plus petits, un par ligne)",
+      "default": "רבי פראזי בר צלטנה לבית ביתאן\nנורא בת חותה ומעתוק המכונה מותקי בר מזינה לבית ביתאן"
     },
     {
       "type": "header",

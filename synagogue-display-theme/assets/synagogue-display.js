@@ -245,6 +245,13 @@
                                 : '<div class="sd-empty">Aucune annonce pour le moment</div>') + "</section>";
 
     // Pied
+    // Dédicace : grande ligne, puis les noms en plus petit
+    var dedNames = String(CFG.dedicationNames || "").split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
+    if (CFG.dedication || dedNames.length) {
+      h += '<div class="sd-ded"><div class="hair"></div>' +
+        (CFG.dedication ? '<div class="hebrew gold-text sd-ded-main">' + esc(CFG.dedication) + "</div>" : "") +
+        (dedNames.length ? '<div class="hebrew sd-ded-names">' + dedNames.map(function (n) { return "<span>" + esc(n) + "</span>"; }).join("") + "</div>" : "") + "</div>";
+    }
     h += '<footer class="sd-foot"><span>Données : Hebcal.com (CC BY 4.0)' + (b ? " · actualisé " + hm(b.generatedAt, tz) : "") +
       (state.offline ? " · hors connexion, dernières données enregistrées" : "") + "</span><span>" +
       (CFG.validatedByRav ? "Méthodes de calcul validées" : "Méthodes de calcul à valider par le Rav") + "</span></footer>";

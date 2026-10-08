@@ -65,6 +65,8 @@
     return { name: s.name, nameHe: s.nameHe, geonameid: Number(s.geonameid) || 2988507, cityLabel: s.cityLabel || "",
       elevation: !!s.elevation, candleMinutes: Number(s.candleMinutes), havdalah: s.havdalah || "",
       validatedByRav: !!s.validatedByRav, showSeconds: !!s.showSeconds, showCountdown: !!s.showCountdown,
+      dedication: s.dedication || "", dedicationNames: s.dedicationNames || "",
+      dedication: s.dedication || "", dedicationNames: s.dedicationNames || "",
       prayers: s.prayers.map(function (p) { return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe, times: p.times }; }),
       announcements: s.announcements.filter(function (a) { return a.trim(); }).slice(0, 3),
       zmanim: s.zmanim.filter(function (z) { return z.visible; }).map(function (z) { return { id: z.id, method: z.method }; }) };
@@ -122,6 +124,14 @@
         '<input class="sd-in" data-p="' + i + '" data-f="times" value="' + esc(p.times) + '" placeholder="07:00 / 08:00 / 08:45"></div>';
     });
     h += '<button type="button" class="sd-btn sd-ghost" data-act="addp">+ Ajouter un office</button><p class="sd-help">Format HH:MM, séparés par « / ». Une heure invalide n\'est pas affichée.</p></section>';
+
+    h += '<section class="sd-card"><h2>Dédicace (bas de l\'écran)</h2>' +
+      '<label class="sd-lab">Ligne principale (grande)<input class="sd-in" dir="rtl" data-k="dedication" value="' + esc(s.dedication) + '" placeholder="לעלוי נשמת…"></label>' +
+      '<label class="sd-lab">Noms (plus petits, un par ligne)<textarea class="sd-in" dir="rtl" rows="3" data-k="dedicationNames">' + esc(s.dedicationNames) + "</textarea></label></section>";
+
+    h += '<section class="sd-card"><h2>Dédicace (bas de l\'écran)</h2>' +
+      '<label class="sd-lab">Ligne principale (grande)<input class="sd-in" dir="rtl" data-k="dedication" value="' + esc(s.dedication) + '" placeholder="לעלוי נשמת…"></label>' +
+      '<label class="sd-lab">Noms (plus petits, un par ligne)<textarea class="sd-in" dir="rtl" rows="3" data-k="dedicationNames">' + esc(s.dedicationNames) + "</textarea></label></section>";
 
     h += '<section class="sd-card"><h2>Annonces</h2><textarea class="sd-in" rows="4" data-k="announcements" placeholder="Une annonce par ligne (3 maximum)">' +
       esc(s.announcements.join("\n")) + "</textarea>" +
