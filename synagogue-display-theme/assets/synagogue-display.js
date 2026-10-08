@@ -5,7 +5,21 @@
 (function () {
   "use strict";
   var BASE = "https://www.hebcal.com";
-  var CFG = JSON.parse(document.getElementById("sd-config").textContent);
+  var BASE_CFG = JSON.parse(document.getElementById("sd-config").textContent);
+  var K_OVERRIDE = "sd.override.v1";
+  // Réglages faits dans /pages/admin : soit sur cet appareil (localStorage), soit reçus par lien (#sd=…)
+  var link = window.location.hash.match(/sd=([A-Za-z0-9_-]+)/);
+  if (link) {
+    try {
+      var json = decodeURIComponent(escape(atob(link[1].replace(/-/g, "+").replace(/_/g, "/"))));
+      JSON.parse(json); localStorage.setItem(K_OVERRIDE, json);
+    } catch (e) { /* lien abîmé : on l'ignore */ }
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }
+  var override = null;
+  try { override = JSON.parse(localStorage.getItem(K_OVERRIDE) || "null"); } catch (e) { override = null; }
+  var CFG = Object.assign({}, BASE_CFG, override || {});
+  window.addEventListener("storage", function (e) { if (e.key === K_OVERRIDE) window.location.reload(); });
   var root = document.getElementById("sd-root");
   var HDate = window.HebcalCore && window.HebcalCore.HDate;
 
@@ -261,7 +275,7 @@
       fetch(window.location.pathname + "?sd=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.text() : null; }).then(function (html) {
         if (!html) return;
         var m = html.match(/<script type="application\/json" id="sd-config">([\s\S]*?)<\/script>/);
-        if (m && m[1].trim() !== document.getElementById("sd-config").textContent.trim()) window.location.reload();
+        if (m && JSON.stringify(JSON.parse(m[1])) !== JSON.stringify(BASE_CFG)) window.location.reload();
       }).catch(function () { /* hors connexion : on garde l'affichage */ });
     }, 5 * 60 * 1000);
   }

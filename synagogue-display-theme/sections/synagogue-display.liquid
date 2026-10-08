@@ -21,7 +21,8 @@
   "validatedByRav": {{ section.settings.validated_by_rav | json }},
   "showSeconds": {{ section.settings.show_seconds | json }},
   "showCountdown": {{ section.settings.show_countdown | json }},
-  "adminUrl": {{ shop.url | append: '/admin/themes' | json }},
+  "adminUrl": {{ routes.root_url | append: '/pages/admin' | replace: '//', '/' | json }},
+  "adminCodeHash": {{ section.settings.admin_code | strip | sha256 | json }},
   "prayers": [
     {%- assign first = true -%}
     {%- for block in section.blocks -%}
@@ -134,6 +135,13 @@
           "label": "Coucher + 72 min"
         }
       ]
+    },
+    {
+      "type": "text",
+      "id": "admin_code",
+      "label": "Code d'accès de la page /pages/admin",
+      "default": "5787",
+      "info": "Code demandé pour modifier les textes depuis la page d'administration du site."
     },
     {
       "type": "checkbox",

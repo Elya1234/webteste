@@ -1,0 +1,13 @@
+<main class="sd-admin" id="sd-admin">
+  <form class="sd-card sd-login" id="sd-login">
+    <div class="sd-star">✡</div>
+    <h1>Espace administrateur</h1>
+    <p class="sd-muted">Entrez le code d'accès</p>
+    <input type="password" id="sd-code" inputmode="numeric" autocomplete="current-password" aria-label="Code d'accès" autofocus>
+    <p class="sd-err" id="sd-err" role="alert"></p>
+    <button class="sd-btn sd-full" type="submit">Entrer</button>
+    <a class="sd-back" href="{{ routes.root_url }}">← Retour à l'écran</a>
+  </form>
+  <div id="sd-panel" hidden></div>
+</main>
+<script src="{{ 'synagogue-admin.js' | asset_url }}" defer></script>

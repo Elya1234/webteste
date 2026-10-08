@@ -109,3 +109,37 @@ a { color: inherit; }
 .sd-page h1 { font-family: var(--font-serif), Georgia, serif; color: var(--gold); font-size: 44px; font-weight: 600; margin: 0 0 16px; }
 .sd-page a { color: var(--gold); }
 .sd-btn { display: inline-block; margin-top: 16px; padding: 12px 22px; border-radius: 12px; background: var(--gold); color: var(--night) !important; font-weight: 600; text-decoration: none; }
+
+/* Page d'administration (/pages/admin) */
+body:has(.sd-admin) { background: var(--night); overflow: auto; cursor: auto; }
+.sd-admin { max-width: 576px; margin: 0 auto; padding: 16px 16px 120px; color: var(--ivory); }
+.sd-admin h1 { font-family: var(--font-serif), Georgia, serif; color: var(--gold); font-size: 30px; font-weight: 600; margin: 0; }
+.sd-admin h2 { font-size: 20px; color: var(--gold); margin: 0 0 12px; font-weight: 500; }
+.sd-card { border-radius: 16px; border: 1px solid rgba(217,191,140,.3); background: rgba(255,255,255,.05); padding: 16px; margin-bottom: 16px; }
+.sd-login { margin-top: 12vh; text-align: center; }
+.sd-login h1 { font-size: 26px; margin-bottom: 4px; }
+.sd-login input { width: 100%; padding: 16px; font-size: 20px; text-align: center; letter-spacing: .3em; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.15); color: var(--ivory); outline: none; }
+.sd-star { font-size: 48px; color: var(--gold); margin-bottom: 8px; }
+.sd-muted { font-size: 14px; opacity: .72; margin: 0 0 16px; }
+.sd-help { display: block; font-size: 12px; opacity: .6; margin-top: 4px; }
+.sd-err { color: #fca5a5; font-size: 14px; min-height: 1em; }
+.sd-back { display: block; margin-top: 16px; font-size: 14px; opacity: .6; text-decoration: none; }
+.sd-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.sd-in { width: 100%; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.15); padding: 12px; font-size: 17px; color: var(--ivory); outline: none; margin-bottom: 8px; font-family: inherit; }
+.sd-in:focus, .sd-login input:focus { border-color: var(--gold); }
+select.sd-in option { color: #111; }
+.sd-lab { display: block; font-size: 14px; opacity: .9; margin-top: 8px; }
+.sd-lab .sd-in { margin-top: 4px; }
+.sd-chk { display: flex; align-items: center; gap: 12px; margin: 12px 0; font-size: 16px; }
+.sd-chk input { width: 22px; height: 22px; accent-color: var(--gold); }
+.sd-grow { flex: 1; margin: 0; }
+.sd-row2 { display: flex; gap: 8px; align-items: center; }
+.sd-row2 .sd-in { flex: 1; }
+.sd-prayer, .sd-z { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.sd-mini { flex: none; width: 44px; height: 44px; border-radius: 10px; border: 1px solid rgba(217,191,140,.5); background: none; color: var(--ivory); font-size: 16px; cursor: pointer; margin-bottom: 8px; }
+.sd-admin .sd-btn { border: 0; cursor: pointer; font-size: 16px; margin-top: 8px; text-align: center; }
+.sd-ghost { background: none !important; color: var(--ivory) !important; border: 1px solid rgba(217,191,140,.5) !important; }
+.sd-full { width: 100%; }
+.sd-link { background: none; border: 0; color: var(--ivory); opacity: .7; text-decoration: underline; font-size: 14px; cursor: pointer; padding: 8px 0; }
+.sd-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 576px; display: flex; gap: 12px; padding: 16px; background: rgba(5,11,31,.95); border-top: 1px solid rgba(255,255,255,.1); }
+.sd-bar .sd-btn { flex: 1; margin: 0; }
