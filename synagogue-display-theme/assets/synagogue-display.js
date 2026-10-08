@@ -250,7 +250,7 @@
     if (CFG.dedication || dedNames.length) {
       h += '<div class="sd-ded"><div class="hair"></div>' +
         (CFG.dedication ? '<div class="hebrew gold-text sd-ded-main">' + esc(CFG.dedication) + "</div>" : "") +
-        (dedNames.length ? '<div class="hebrew gold-text sd-ded-main sd-ded-names">' + esc(dedNames.join(" ")) + "</div>" : "") + "</div>";
+        (dedNames.length ? '<div class="hebrew gold-text sd-ded-main sd-ded-names">' + dedNames.map(esc).join('<span class="sd-sep">✦</span>') + "</div>" : "") + "</div>";
     }
     h += '<footer class="sd-foot"><span>Données : Hebcal.com (CC BY 4.0)' + (b ? " · actualisé " + hm(b.generatedAt, tz) : "") +
       (state.offline ? " · hors connexion, dernières données enregistrées" : "") + "</span><span>" +
