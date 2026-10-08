@@ -78,9 +78,13 @@ a { color: inherit; }
 .sd-row { display: flex; align-items: center; justify-content: space-between; border-radius: 14px; padding: .5em 2em; margin-bottom: .6em; border: 1px solid rgba(255,255,255,.05); background: rgba(255,255,255,.03); }
 .sd-row.next-glow { background: linear-gradient(180deg, rgba(217,191,140,.16), rgba(217,191,140,.05)); }
 .sd-row > div:first-child { line-height: 1; }
+.sd-gsub { font-size: 1.9em; color: var(--gold-hi); opacity: .9; margin: -2px 0 6px; line-height: 1.25; }
+.sd-rl { min-width: 0; flex: 1; padding-right: 1.6em; }
+.sd-pnote { font-size: 1.75em; line-height: 1.3; opacity: .78; margin-top: .25em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sd-ptext { font-size: .62em; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); }
 .sd-plabel { font-size: 3.8em; font-weight: 600; }
 .sd-phe { font-size: 2.3em; opacity: .7; direction: ltr; text-align: left; }
-.sd-ptimes { font-size: 4.6em; display: flex; gap: .55em; }
+.sd-ptimes { font-size: 4.6em; display: flex; align-items: center; gap: .55em; flex: none; }
 .sd-next { border-radius: 14px; padding: 6px 18px; gap: 18px; display: flex; align-items: center; justify-content: space-between; }
 .sd-nlabel { font-size: 17px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); line-height: 1.25; }
 .sd-cd { font-size: 52px; line-height: 1; }

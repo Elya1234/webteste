@@ -145,6 +145,46 @@
     return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe,
              times: String(p.times || "").split(/[\/,;]/).map(function (x) { return x.trim(); }).filter(validTime) };
   });
+  /* Calendrier des offices (assets/synagogue-horaires.json) : prioritaire sur les horaires de la semaine type */
+  var K_SCHED = "sd.schedule.v1";
+  var schedule = read(K_SCHED);
+  function loadSchedule() {
+    if (!CFG.scheduleUrl) return;
+    fetch(CFG.scheduleUrl).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (j) {
+      var by = {}; (j.days || []).forEach(function (d) { by[d.date] = d; });
+      schedule = { url: CFG.scheduleUrl, byDate: by }; write(K_SCHED, schedule); render(true);
+    }).catch(function () { /* hors connexion : on garde la copie locale */ });
+  }
+  if (schedule && schedule.url !== CFG.scheduleUrl) schedule = null;
+  var SROWS = [["chaharit", "Chaharit", "שחרית"], ["minha", "Minha", "מנחה"], ["arvit", "Arvit", "ערבית"], ["sortie", "", ""]];
+  var HE_DAY = ["יום ראשון", "יום שני", "יום שלישי", "יום רביעי", "יום חמישי", "ערב שבת", "שבת קודש"];
+
+  /* Colonne des offices : le calendrier s'il couvre aujourd'hui, sinon la semaine type */
+  function officeView(tz, today, group) {
+    var sd = schedule && schedule.byDate;
+    if (sd && sd[today]) {
+      var groups = [];
+      [0, 1].forEach(function (i) {
+        var d = sd[addDays(today, i)]; if (!d) return;
+        var dt = new Date(d.date + "T12:00:00Z");
+        var wdn = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(dt);
+        var rows = [];
+        SROWS.forEach(function (k) {
+          var c = d[k[0]]; if (!c) return;
+          rows.push({ id: d.date + k[0], label: k[0] === "sortie" ? (d.sortieLabel || "Sortie") : k[1], labelHe: k[2],
+                      times: (c.times || []).filter(validTime), text: c.text || "", note: c.note || "", counts: k[0] !== "sortie" });
+        });
+        groups.push({ title: (i === 0 ? "Aujourd'hui · " : i === 1 ? "Demain · " : "") + wdn, he: HE_DAY[dt.getUTCDay()],
+                      sub: [d.event, d.title].filter(Boolean).join(" · "), isToday: i === 0, rows: rows });
+      });
+      return groups;
+    }
+    return GROUPS.map(function (g) {
+      return { title: g.title + (g.key === group ? " · aujourd'hui" : ""), he: g.he, sub: "", isToday: g.key === group,
+               rows: prayers.filter(function (p) { return p.group === g.key; }).map(function (p) { return { id: p.id, label: p.label, labelHe: p.labelHe, times: p.times, counts: true }; }) };
+    }).filter(function (g) { return g.rows.length; });
+  }
+
   var GROUPS = [{ key: "weekday", title: "Semaine", he: "חול" }, { key: "friday", title: "Vendredi", he: "ערב שבת" }, { key: "shabbat", title: "Chabbat", he: "שבת" }];
 
   var stage = document.createElement("div");
@@ -162,8 +202,9 @@
     var nowMin = np.h * 60 + np.m;
     var wd = weekdayIn(tz, now);
     var group = wd === 6 ? "shabbat" : wd === 5 ? "friday" : "weekday";
+    var view = officeView(tz, todayIn(tz, now), group);
     var all = [];
-    prayers.filter(function (p) { return p.group === group; }).forEach(function (p) { p.times.forEach(function (t) { all.push({ id: p.id, t: t, min: toMin(t) }); }); });
+    view.filter(function (g) { return g.isToday; }).forEach(function (g) { g.rows.forEach(function (p) { if (p.counts) p.times.forEach(function (t) { all.push({ id: p.id, t: t, min: toMin(t) }); }); }); });
     all.sort(function (a, c) { return a.min - c.min; });
     var next = all.find(function (x) { return x.min * 60 > nowMin * 60 + np.s - 1; }) || null;
     var remain = next ? next.min * 60 - (nowMin * 60 + np.s) : 0;
@@ -204,15 +245,16 @@
         pad(Math.floor(remain / 3600)) + ":" + pad(Math.floor((remain % 3600) / 60)) + ":" + pad(remain % 60) + "</div></div>";
     }
     h += '</div><div class="hair"></div><div class="sd-groups">';
-    GROUPS.forEach(function (g) {
-      var rows = prayers.filter(function (p) { return p.group === g.key; });
-      if (!rows.length) return;
-      var isToday = g.key === group;
-      h += '<div class="' + (isToday ? "" : "dim") + '"><div class="sd-gtitle"><span>' + g.title + (isToday ? " · aujourd'hui" : "") + '</span><span class="hebrew">' + g.he + "</span></div>";
-      rows.forEach(function (p) {
-        var isNext = isToday && next && next.id === p.id;
-        h += '<div class="sd-row ' + (isNext ? "next-glow" : "") + '"><div><div class="serif sd-plabel">' + esc(p.label) + '</div><div class="hebrew sd-phe">' + esc(p.labelHe) + "</div></div>" +
-          '<div class="num sd-ptimes">' + p.times.map(function (t) { return '<span class="' + (isNext && next.t === t ? "gold-text" : "") + '">' + t + "</span>"; }).join("") + "</div></div>";
+    view.forEach(function (g) {
+      h += '<div class="' + (g.isToday ? "" : "dim") + '"><div class="sd-gtitle"><span>' + esc(g.title) + '</span><span class="hebrew">' + esc(g.he) + "</span></div>" +
+        (g.sub ? '<div class="sd-gsub">' + esc(g.sub) + "</div>" : "");
+      g.rows.forEach(function (p) {
+        var isNext = g.isToday && next && next.id === p.id;
+        h += '<div class="sd-row ' + (isNext ? "next-glow" : "") + '"><div class="sd-rl"><div class="serif sd-plabel">' + esc(p.label) + "</div>" +
+          (p.labelHe ? '<div class="hebrew sd-phe">' + esc(p.labelHe) + "</div>" : "") +
+          (p.note ? '<div class="sd-pnote">' + esc(p.note) + "</div>" : "") + "</div>" +
+          '<div class="num sd-ptimes">' + p.times.map(function (t) { return '<span class="' + (isNext && next.t === t ? "gold-text" : "") + '">' + t + "</span>"; }).join("") +
+          (p.text ? '<span class="sd-ptext">' + esc(p.text) + "</span>" : "") + "</div></div>";
       });
       h += "</div>";
     });
@@ -270,6 +312,8 @@
   /* ───────── Boucles : seconde, jour, 6 h, retour réseau, réglages publiés ───────── */
   render(true);
   refresh();
+  loadSchedule();
+  setInterval(loadSchedule, 6 * 3600 * 1000);
   setInterval(function () { render(false); }, 1000);
   setInterval(refresh, 6 * 3600 * 1000);
   var day = null;
