@@ -1,0 +1,5 @@
+<main class="sd-page">
+  <h1>{{ product.title }}</h1>
+  <div>{{ product.description }}</div><p>{{ product.price | money }}</p>{% form "product", product %}<input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}"><button class="sd-btn" style="border:0">Ajouter au panier</button>{% endform %}
+  <a class="sd-btn" href="{{ routes.root_url }}">← Retour à l'écran</a>
+</main>

@@ -1,0 +1,5 @@
+<main class="sd-page">
+  <h1>Panier</h1>
+  {% if cart.item_count > 0 %}<form action="{{ routes.cart_url }}" method="post"><ul>{% for item in cart.items %}<li>{{ item.quantity }} × {{ item.title }} — {{ item.final_line_price | money }}</li>{% endfor %}</ul><p>Total : {{ cart.total_price | money }}</p><button class="sd-btn" style="border:0" name="checkout">Commander</button></form>{% else %}<p>Votre panier est vide.</p>{% endif %}
+  <a class="sd-btn" href="{{ routes.root_url }}">← Retour à l'écran</a>
+</main>

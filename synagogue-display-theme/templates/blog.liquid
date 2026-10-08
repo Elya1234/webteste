@@ -1,0 +1,5 @@
+<main class="sd-page">
+  <h1>{{ blog.title }}</h1>
+  <ul>{% for a in blog.articles %}<li><a href="{{ a.url }}">{{ a.title }}</a></li>{% endfor %}</ul>
+  <a class="sd-btn" href="{{ routes.root_url }}">← Retour à l'écran</a>
+</main>

@@ -1,0 +1,562 @@
+{%- comment -%}
+  Écran d'affichage synagogue. L'administration se fait dans l'éditeur de thème Shopify
+  (Boutique en ligne → Thèmes → Personnaliser) : nom, ville, offices, zmanim, annonces.
+{%- endcomment -%}
+{%- liquid
+  assign geonameid = section.settings.geonameid | strip | plus: 0
+  if geonameid <= 0
+    assign geonameid = 2988507
+  endif
+-%}
+<div id="sd-root" {{ section.shopify_attributes }}></div>
+<script type="application/json" id="sd-config">
+{
+  "name": {{ section.settings.name | json }},
+  "nameHe": {{ section.settings.name_he | json }},
+  "geonameid": {{ geonameid | json }},
+  "cityLabel": {{ section.settings.city_label | json }},
+  "elevation": {{ section.settings.elevation | json }},
+  "candleMinutes": {{ section.settings.candle_minutes | json }},
+  "havdalah": {{ section.settings.havdalah | json }},
+  "validatedByRav": {{ section.settings.validated_by_rav | json }},
+  "showSeconds": {{ section.settings.show_seconds | json }},
+  "showCountdown": {{ section.settings.show_countdown | json }},
+  "adminUrl": {{ shop.url | append: '/admin/themes' | json }},
+  "prayers": [
+    {%- assign first = true -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'prayer' -%}
+        {%- unless first %},{% endunless -%}
+        {"id": {{ block.id | json }}, "group": {{ block.settings.group | json }}, "label": {{ block.settings.label | json }}, "labelHe": {{ block.settings.label_he | json }}, "times": {{ block.settings.times | json }}}
+        {%- assign first = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ],
+  "announcements": [
+    {%- assign first = true -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'announcement' and block.settings.text != blank -%}
+        {%- unless first %},{% endunless -%}{{ block.settings.text | json }}
+        {%- assign first = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ],
+  "zmanim": [
+    {%- assign first = true -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type contains 'zman_' -%}
+        {%- unless first %},{% endunless -%}
+        {"id": {{ block.type | remove_first: 'zman_' | json }}, "method": {{ block.settings.method | default: '' | json }}}
+        {%- assign first = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+<script src="{{ 'hebcal-core.js' | asset_url }}" defer></script>
+<script src="{{ 'synagogue-display.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Écran synagogue",
+  "tag": "section",
+  "class": "sd-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Synagogue"
+    },
+    {
+      "type": "text",
+      "id": "name",
+      "label": "Nom (français)",
+      "default": "Beth Chalom"
+    },
+    {
+      "type": "text",
+      "id": "name_he",
+      "label": "Nom (hébreu)",
+      "default": "בית שלום"
+    },
+    {
+      "type": "header",
+      "content": "Ville & calculs Hebcal"
+    },
+    {
+      "type": "text",
+      "id": "geonameid",
+      "label": "Identifiant de ville (GeoNames)",
+      "default": "2988507",
+      "info": "Paris = 2988507, Marseille = 2995469, Lyon = 2996944, Nice = 2990440, Strasbourg = 2973783, Toulouse = 2972315, Jérusalem = 281184. Autres villes : cherchez sur hebcal.com/zmanim, l'identifiant apparaît dans l'adresse (geonameid=…)."
+    },
+    {
+      "type": "text",
+      "id": "city_label",
+      "label": "Nom de ville affiché (facultatif)",
+      "info": "Laisser vide pour utiliser le nom fourni par Hebcal."
+    },
+    {
+      "type": "checkbox",
+      "id": "elevation",
+      "label": "Tenir compte de l'altitude (lever/coucher)",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "candle_minutes",
+      "label": "Allumage des bougies : minutes avant le coucher",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "unit": "min",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "havdalah",
+      "label": "Sortie de Chabbat (havdala)",
+      "default": "",
+      "options": [
+        {
+          "value": "",
+          "label": "Tzeit 8,5° (Hebcal par défaut)"
+        },
+        {
+          "value": "42",
+          "label": "Coucher + 42 min"
+        },
+        {
+          "value": "50",
+          "label": "Coucher + 50 min"
+        },
+        {
+          "value": "72",
+          "label": "Coucher + 72 min"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "validated_by_rav",
+      "label": "Méthodes validées par le Rav",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Affichage"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_seconds",
+      "label": "Afficher les secondes",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "Compte à rebours avant le prochain office",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "Zmanim : ajoutez, retirez, masquez ou faites glisser les blocs « Zman » pour choisir l'ordre affiché. Les écrans ouverts se mettent à jour d'eux-mêmes dans les 5 minutes suivant l'enregistrement."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "prayer",
+      "name": "Office",
+      "settings": [
+        {
+          "type": "select",
+          "id": "group",
+          "label": "Jour",
+          "options": [
+            {
+              "value": "weekday",
+              "label": "Semaine"
+            },
+            {
+              "value": "friday",
+              "label": "Vendredi"
+            },
+            {
+              "value": "shabbat",
+              "label": "Chabbat"
+            }
+          ],
+          "default": "weekday"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Nom (français)",
+          "default": "Chaharit"
+        },
+        {
+          "type": "text",
+          "id": "label_he",
+          "label": "Nom (hébreu)",
+          "default": "שחרית"
+        },
+        {
+          "type": "text",
+          "id": "times",
+          "label": "Horaires",
+          "default": "07:00 / 08:00",
+          "info": "Format HH:MM, séparés par « / ». Une heure invalide est ignorée."
+        }
+      ]
+    },
+    {
+      "type": "announcement",
+      "name": "Annonce",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Texte de l'annonce"
+        }
+      ]
+    },
+    {
+      "type": "zman_alot",
+      "name": "Zman · Alot HaShahar",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "alot16.1",
+              "label": "Hebcal – 16,1° sous l'horizon"
+            },
+            {
+              "value": "alot_bht",
+              "label": "Baal HaTanya"
+            }
+          ],
+          "default": "alot16.1",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_misheyakir",
+      "name": "Zman · Talit & Téfilines (Misheyakir)",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "mish11.5",
+              "label": "Hebcal – 11,5°"
+            },
+            {
+              "value": "mish10.2",
+              "label": "Hebcal – 10,2° (Machmir)"
+            }
+          ],
+          "default": "mish11.5",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_sunrise",
+      "name": "Zman · Hanetz HaHama",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Méthode : Lever du soleil (Hebcal)"
+        }
+      ]
+    },
+    {
+      "type": "zman_shemaMGA",
+      "name": "Zman · Sof Zman Shema – Maguen Avraham",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "mga16.1",
+              "label": "MGA – 16,1°"
+            },
+            {
+              "value": "mga72",
+              "label": "MGA – 72 min fixes"
+            },
+            {
+              "value": "mga19.8",
+              "label": "MGA – 19,8°"
+            }
+          ],
+          "default": "mga16.1",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_shemaGRA",
+      "name": "Zman · Sof Zman Shema – Gra",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "gra",
+              "label": "GR\"A (lever → coucher)"
+            },
+            {
+              "value": "bht",
+              "label": "Baal HaTanya"
+            }
+          ],
+          "default": "gra",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_tefilaMGA",
+      "name": "Zman · Sof Zman Tefila – Maguen Avraham",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "mga16.1",
+              "label": "MGA – 16,1°"
+            },
+            {
+              "value": "mga72",
+              "label": "MGA – 72 min fixes"
+            },
+            {
+              "value": "mga19.8",
+              "label": "MGA – 19,8°"
+            }
+          ],
+          "default": "mga16.1",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_tefilaGRA",
+      "name": "Zman · Sof Zman Tefila – Gra",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "gra",
+              "label": "GR\"A"
+            },
+            {
+              "value": "bht",
+              "label": "Baal HaTanya"
+            }
+          ],
+          "default": "gra",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_chatzot",
+      "name": "Zman · Hatsot HaYom",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Méthode : Milieu du jour (Hebcal)"
+        }
+      ]
+    },
+    {
+      "type": "zman_minchaG",
+      "name": "Zman · Minha Guedola",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "gra",
+              "label": "GR\"A – 6,5 h zmaniyot"
+            },
+            {
+              "value": "mga",
+              "label": "MGA"
+            },
+            {
+              "value": "chatzot30",
+              "label": "Hatsot + 30 min (dérivé, à valider)"
+            }
+          ],
+          "default": "gra",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_minchaK",
+      "name": "Zman · Minha Ketana",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "gra",
+              "label": "GR\"A – 9,5 h zmaniyot"
+            },
+            {
+              "value": "mga",
+              "label": "MGA"
+            }
+          ],
+          "default": "gra",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_plag",
+      "name": "Zman · Plag HaMinha",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "gra",
+              "label": "GR\"A – 10,75 h zmaniyot"
+            },
+            {
+              "value": "bht",
+              "label": "Baal HaTanya"
+            }
+          ],
+          "default": "gra",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_sunset",
+      "name": "Zman · Shkiat HaHama",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Méthode : Coucher du soleil (Hebcal)"
+        }
+      ]
+    },
+    {
+      "type": "zman_tzeit",
+      "name": "Zman · Tzeit HaKokhavim",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "deg7.083",
+              "label": "7,083°"
+            },
+            {
+              "value": "deg8.5",
+              "label": "8,5°"
+            },
+            {
+              "value": "min42",
+              "label": "Coucher + 42 min"
+            },
+            {
+              "value": "min50",
+              "label": "Coucher + 50 min"
+            },
+            {
+              "value": "min72",
+              "label": "Coucher + 72 min"
+            }
+          ],
+          "default": "deg8.5",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_rt",
+      "name": "Zman · Rabbenou Tam",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "method",
+          "label": "Méthode de calcul",
+          "options": [
+            {
+              "value": "rt72",
+              "label": "Coucher + 72 min fixes (Hebcal)"
+            },
+            {
+              "value": "rt72z",
+              "label": "72 min zmaniyot (dérivé, à valider)"
+            }
+          ],
+          "default": "rt72",
+          "info": "Les heures viennent toujours de Hebcal. Choisissez la méthode validée par votre Rav."
+        }
+      ]
+    },
+    {
+      "type": "zman_chatzotNight",
+      "name": "Zman · Hatsot Laila",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Méthode : Milieu de la nuit (Hebcal)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Écran synagogue"
+    }
+  ]
+}
+{% endschema %}

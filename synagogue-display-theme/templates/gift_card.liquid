@@ -1,0 +1,4 @@
+{% layout none %}
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Carte cadeau · {{ shop.name }}</title>{{ 'synagogue-display.css' | asset_url | stylesheet_tag }}</head>
+<body><main class="sd-page"><h1>Carte cadeau</h1><p>Solde : {{ gift_card.balance | money }}</p><p>Code : {{ gift_card.code | format_code }}</p></main></body></html>

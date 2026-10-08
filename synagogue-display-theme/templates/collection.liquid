@@ -1,0 +1,5 @@
+<main class="sd-page">
+  <h1>{{ collection.title }}</h1>
+  {% paginate collection.products by 24 %}<ul>{% for p in collection.products %}<li><a href="{{ p.url }}">{{ p.title }}</a> · {{ p.price | money }}</li>{% endfor %}</ul>{% endpaginate %}
+  <a class="sd-btn" href="{{ routes.root_url }}">← Retour à l'écran</a>
+</main>

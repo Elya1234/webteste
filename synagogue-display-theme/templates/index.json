@@ -1,0 +1,182 @@
+{
+  "sections": {
+    "display": {
+      "type": "synagogue-display",
+      "blocks": {
+        "prayer_w1": {
+          "type": "prayer",
+          "settings": {
+            "group": "weekday",
+            "label": "Chaharit",
+            "label_he": "שחרית",
+            "times": "07:00 / 08:00 / 08:45"
+          }
+        },
+        "prayer_w2": {
+          "type": "prayer",
+          "settings": {
+            "group": "weekday",
+            "label": "Minha-Arvit",
+            "label_he": "מנחה־ערבית",
+            "times": "19:00"
+          }
+        },
+        "prayer_w3": {
+          "type": "prayer",
+          "settings": {
+            "group": "weekday",
+            "label": "Arvit",
+            "label_he": "ערבית",
+            "times": "20:05"
+          }
+        },
+        "prayer_f1": {
+          "type": "prayer",
+          "settings": {
+            "group": "friday",
+            "label": "Minha",
+            "label_he": "מנחה",
+            "times": "18:30"
+          }
+        },
+        "prayer_s1": {
+          "type": "prayer",
+          "settings": {
+            "group": "shabbat",
+            "label": "Chaharit",
+            "label_he": "שחרית",
+            "times": "07:00 / 09:00 / 09:50"
+          }
+        },
+        "prayer_s2": {
+          "type": "prayer",
+          "settings": {
+            "group": "shabbat",
+            "label": "Minha",
+            "label_he": "מנחה",
+            "times": "18:30"
+          }
+        },
+        "prayer_s3": {
+          "type": "prayer",
+          "settings": {
+            "group": "shabbat",
+            "label": "Arvit",
+            "label_he": "ערבית",
+            "times": "19:58"
+          }
+        },
+        "zman_alot": {
+          "type": "zman_alot",
+          "settings": {
+            "method": "alot16.1"
+          }
+        },
+        "zman_misheyakir": {
+          "type": "zman_misheyakir",
+          "settings": {
+            "method": "mish11.5"
+          }
+        },
+        "zman_sunrise": {
+          "type": "zman_sunrise",
+          "settings": {}
+        },
+        "zman_shemaMGA": {
+          "type": "zman_shemaMGA",
+          "settings": {
+            "method": "mga16.1"
+          }
+        },
+        "zman_shemaGRA": {
+          "type": "zman_shemaGRA",
+          "settings": {
+            "method": "gra"
+          }
+        },
+        "zman_tefilaMGA": {
+          "type": "zman_tefilaMGA",
+          "settings": {
+            "method": "mga16.1"
+          }
+        },
+        "zman_tefilaGRA": {
+          "type": "zman_tefilaGRA",
+          "settings": {
+            "method": "gra"
+          }
+        },
+        "zman_chatzot": {
+          "type": "zman_chatzot",
+          "settings": {}
+        },
+        "zman_minchaG": {
+          "type": "zman_minchaG",
+          "settings": {
+            "method": "gra"
+          }
+        },
+        "zman_minchaK": {
+          "type": "zman_minchaK",
+          "settings": {
+            "method": "gra"
+          }
+        },
+        "zman_plag": {
+          "type": "zman_plag",
+          "settings": {
+            "method": "gra"
+          }
+        },
+        "zman_sunset": {
+          "type": "zman_sunset",
+          "settings": {}
+        },
+        "zman_tzeit": {
+          "type": "zman_tzeit",
+          "settings": {
+            "method": "deg8.5"
+          }
+        },
+        "zman_rt": {
+          "type": "zman_rt",
+          "settings": {
+            "method": "rt72"
+          }
+        },
+        "zman_chatzotNight": {
+          "type": "zman_chatzotNight",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "prayer_w1",
+        "prayer_w2",
+        "prayer_w3",
+        "prayer_f1",
+        "prayer_s1",
+        "prayer_s2",
+        "prayer_s3",
+        "zman_alot",
+        "zman_misheyakir",
+        "zman_sunrise",
+        "zman_shemaMGA",
+        "zman_shemaGRA",
+        "zman_tefilaMGA",
+        "zman_tefilaGRA",
+        "zman_chatzot",
+        "zman_minchaG",
+        "zman_minchaK",
+        "zman_plag",
+        "zman_sunset",
+        "zman_tzeit",
+        "zman_rt",
+        "zman_chatzotNight"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "display"
+  ]
+}

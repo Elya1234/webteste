@@ -1,0 +1,5 @@
+<main class="sd-page">
+  <h1>Recherche</h1>
+  <form action="{{ routes.search_url }}"><input name="q" value="{{ search.terms | escape }}"></form>{% if search.performed %}<ul>{% for r in search.results %}<li><a href="{{ r.url }}">{{ r.title }}</a></li>{% endfor %}</ul>{% endif %}
+  <a class="sd-btn" href="{{ routes.root_url }}">← Retour à l'écran</a>
+</main>
