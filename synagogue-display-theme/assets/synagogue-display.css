@@ -123,11 +123,14 @@ a { color: inherit; }
 
 .sd-foot { position: absolute; left: 56px; right: 56px; bottom: 8px; display: flex; justify-content: space-between; font-size: 13px; color: rgba(247,242,231,.4); }
 /* Dédicace (léilouy nichmat) */
-.sd-ded { position: absolute; left: 56px; right: 56px; top: 932px; text-align: center; }
-.sd-ded .hair { width: 640px; margin: 0 auto 10px; }
+.sd-ded { position: absolute; left: 56px; right: 56px; top: 926px; text-align: center; }
+.sd-ded .hair { width: 640px; margin: 0 auto 6px; }
 .sd-ded-main { font-size: 40px; font-weight: 700; line-height: 1.15; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
-.sd-ded-names { margin-top: 4px; }
-.sd-sep { display: inline-block; margin: 0 22px; font-family: system-ui, sans-serif; font-size: 22px; vertical-align: middle; transform: translateY(-3px); color: var(--gold); -webkit-text-fill-color: var(--gold); text-shadow: 0 0 10px rgba(217,191,140,.5); }
+.sd-ded-sep { display: flex; align-items: center; justify-content: center; gap: 14px; height: 18px; margin: 2px 0; }
+.sd-ded-sep i { display: block; width: 140px; height: 1px; }
+.sd-ded-sep i:first-child { background: linear-gradient(90deg, transparent, rgba(217,191,140,.8)); }
+.sd-ded-sep i:last-child { background: linear-gradient(90deg, rgba(217,191,140,.8), transparent); }
+.sd-ded-sep span { font-family: system-ui, sans-serif; font-size: 15px; color: var(--gold); text-shadow: 0 0 10px rgba(217,191,140,.6); }
 
 /* Pages secondaires (produit, page, 404…) */
 .sd-page { max-width: 760px; margin: 0 auto; padding: 48px 20px; line-height: 1.6; }
