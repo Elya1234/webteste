@@ -252,7 +252,7 @@
     stage.innerHTML = h;
     // beaucoup d'offices : la liste rétrécit jusqu'à tenir dans le cadre
     var groups = stage.querySelector(".sd-groups");
-    for (var fs = 10; fs > 6 && groups.scrollHeight > groups.clientHeight + 1; fs -= 0.25) groups.style.fontSize = (fs - 0.25) + "px";
+    for (var fs = 11; fs > 6 && groups.scrollHeight > groups.clientHeight + 1; fs -= 0.25) groups.style.fontSize = (fs - 0.25) + "px";
   }
   function clockHtml(np) { return pad(np.h) + ":" + pad(np.m) + (CFG.showSeconds ? '<span class="sd-sec">:' + pad(np.s) + "</span>" : ""); }
   function tile(label, he, item, tz) {
