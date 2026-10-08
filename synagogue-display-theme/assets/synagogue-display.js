@@ -253,9 +253,8 @@
         (CFG.dedication && dedNames.length ? '<div class="sd-ded-sep"><i></i><span>✦</span><i></i></div>' : "") +
         (dedNames.length ? '<div class="hebrew gold-text sd-ded-main">' + esc(dedNames.join(" ")) + "</div>" : "") + "</div>";
     }
-    h += '<footer class="sd-foot"><span>Données : Hebcal.com (CC BY 4.0)' + (b ? " · actualisé " + hm(b.generatedAt, tz) : "") +
-      (state.offline ? " · hors connexion, dernières données enregistrées" : "") + "</span><span>" +
-      (CFG.validatedByRav ? "Méthodes de calcul validées" : "Méthodes de calcul à valider par le Rav") + "</span></footer>";
+    h += '<footer class="sd-foot"><span>' + esc(CFG.footerLeft) + (state.offline ? " · hors connexion" : "") + "</span><span>" +
+      esc(CFG.footerRight) + "</span></footer>";
 
     stage.innerHTML = h;
     // beaucoup d'offices : la liste rétrécit jusqu'à tenir dans le cadre
