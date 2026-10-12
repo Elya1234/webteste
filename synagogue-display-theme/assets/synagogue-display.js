@@ -364,6 +364,6 @@
         var m = html.match(/<script type="application\/json" id="sd-config">([\s\S]*?)<\/script>/);
         if (m && JSON.stringify(JSON.parse(m[1])) !== JSON.stringify(BASE_CFG)) window.location.reload();
       }).catch(function () { /* hors connexion : on garde l'affichage */ });
-    }, 5 * 60 * 1000);
+    }, 60 * 1000);
   }
 })();
