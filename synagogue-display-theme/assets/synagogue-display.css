@@ -14,7 +14,7 @@ a { color: inherit; }
 .gold { color: var(--gold); }
 .dim { opacity: .85; }
 
-.sd-stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center center;
+.sd-stage { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0;
   background:
     radial-gradient(1200px 700px at 15% -10%, rgba(28,58,138,.55), transparent 60%),
     radial-gradient(900px 600px at 100% 110%, rgba(217,191,140,.12), transparent 60%),
@@ -175,3 +175,5 @@ select.sd-in option { color: #111; }
 .sd-link { background: none; border: 0; color: var(--ivory); opacity: .7; text-decoration: underline; font-size: 14px; cursor: pointer; padding: 8px 0; }
 .sd-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 576px; display: flex; gap: 12px; padding: 16px; background: rgba(5,11,31,.95); border-top: 1px solid rgba(255,255,255,.1); }
 .sd-bar .sd-btn { flex: 1; margin: 0; }
+
+.sd-zoomtip { position: fixed; left: 50%; top: 24px; transform: translateX(-50%); z-index: 9; padding: 10px 22px; border-radius: 12px; background: rgba(5,11,31,.9); color: var(--gold); font: 600 22px/1 var(--font-sans), system-ui, sans-serif; border: 1px solid rgba(217,191,140,.5); opacity: 0; transition: opacity .3s; pointer-events: none; }

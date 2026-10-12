@@ -135,10 +135,10 @@
 
   /* ───────── Rendu (scène 1920×1080 mise à l'échelle) ───────── */
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  var clean = function (x) { return x.normalize("NFC").replace(/[̲̣]/g, ""); };
+  var clean = function (x) { return x.normalize("NFC").replace(/[\u0331\u0332\u0323]/g, ""); };
   var toMin = function (t) { var p = t.split(":").map(Number); return p[0] * 60 + p[1]; };
   var pad = function (n) { return String(n).padStart(2, "0"); };
-  var parashaName = function (p) { return p.title.replace(/^Parach?a?h?\s*/i, ""); };
+  var parashaName = function (p) { return clean(p.title).replace(/^Parach?a?h?\s*/i, ""); };
   var validTime = function (t) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(t); };
 
   var prayers = CFG.prayers.map(function (p) {
@@ -190,8 +190,41 @@
   var stage = document.createElement("div");
   stage.className = "sd-stage";
   root.appendChild(stage);
-  function fit() { stage.style.transform = "translate(-50%,-50%) scale(" + Math.min(window.innerWidth / 1920, window.innerHeight / 1080) + ")"; }
-  window.addEventListener("resize", fit); fit();
+  /* Mise à l'échelle : certains navigateurs de télévision annoncent une taille de fenêtre fausse,
+     on prend donc la plus petite taille visible connue. Réglage manuel à la télécommande :
+     touches + / − (ou haut / bas) pour agrandir / réduire, 0 pour revenir au réglage auto. */
+  var K_ZOOM = "sd.zoom.v1";
+  var userZoom = Number(read(K_ZOOM)) || 1;
+  function viewSize() {
+    var w = [window.innerWidth, document.documentElement.clientWidth], h = [window.innerHeight, document.documentElement.clientHeight];
+    if (window.visualViewport) { w.push(window.visualViewport.width); h.push(window.visualViewport.height); }
+    var pick = function (a) { return Math.min.apply(null, a.filter(function (x) { return x > 0; })); };
+    return { w: pick(w), h: pick(h) };
+  }
+  function fit() {
+    var v = viewSize(), s = Math.min(v.w / 1920, v.h / 1080) * userZoom;
+    stage.style.left = Math.round((v.w - 1920 * s) / 2) + "px";
+    stage.style.top = Math.round((v.h - 1080 * s) / 2) + "px";
+    stage.style.transform = "scale(" + s + ")";
+  }
+  var zoomTip = null;
+  function setZoom(z) {
+    userZoom = Math.max(0.5, Math.min(1.5, Math.round(z * 100) / 100)); write(K_ZOOM, userZoom); fit();
+    if (!zoomTip) { zoomTip = document.createElement("div"); zoomTip.className = "sd-zoomtip"; document.body.appendChild(zoomTip); }
+    zoomTip.textContent = "Taille : " + Math.round(userZoom * 100) + " %"; zoomTip.style.opacity = "1";
+    clearTimeout(setZoom.t); setZoom.t = setTimeout(function () { zoomTip.style.opacity = "0"; }, 2000);
+  }
+  window.addEventListener("keydown", function (e) {
+    var k = e.key;
+    if (k === "+" || k === "=" || k === "ArrowUp" || k === "ChannelUp") { setZoom(userZoom + 0.02); e.preventDefault(); }
+    else if (k === "-" || k === "ArrowDown" || k === "ChannelDown") { setZoom(userZoom - 0.02); e.preventDefault(); }
+    else if (k === "0") setZoom(1);
+  });
+  window.addEventListener("resize", fit);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", fit);
+  fit();
+  // les navigateurs de télévision donnent souvent la bonne taille quelques secondes après l'ouverture
+  [500, 1500, 3000, 6000, 12000].forEach(function (t) { setTimeout(fit, t); });
 
   var lastMinute = "";
   function render(force) {
