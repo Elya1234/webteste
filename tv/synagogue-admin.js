@@ -105,6 +105,7 @@
   function render() {
     var known = CITIES.some(function (c) { return c[0] === String(s.geonameid); });
     var h = '<div class="sd-top"><h1>Administration</h1><button type="button" class="sd-link" data-act="logout">Se déconnecter</button></div>' +
+      '<button type="button" class="sd-btn sd-full sd-save-top" data-act="save">Enregistrer</button>' +
       '<p class="sd-muted">Après « Enregistrer », <b>toutes les télévisions</b> se mettent à jour toutes seules en moins d\'une minute.</p>';
 
     h += '<section class="sd-card"><h2>Synagogue</h2>' +

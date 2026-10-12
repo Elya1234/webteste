@@ -178,3 +178,6 @@ select.sd-in option { color: #111; }
 
 .sd-zoomtip { position: fixed; left: 50%; top: 24px; transform: translateX(-50%); z-index: 9; padding: 10px 22px; border-radius: 12px; background: rgba(5,11,31,.9); color: var(--gold); font: 600 22px/1 var(--font-sans), system-ui, sans-serif; border: 1px solid rgba(217,191,140,.5); opacity: 0; transition: opacity .3s; pointer-events: none; }
 .sd-star-ic { color: var(--gold); font-family: "Segoe UI Symbol", "Apple Symbols", "DejaVu Sans", serif; font-variant-emoji: text; }
+.sd-admin .sd-save-top { margin: 4px 0 14px; }
+.sd-bar { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+.sd-admin { padding-bottom: 200px; }
