@@ -1,0 +1,179 @@
+:root {
+  --font-serif: "Cormorant Garamond"; --font-sans: "Inter"; --font-he: "Frank Ruhl Libre";
+  --night: #050b1f; --navy: #0a1633; --royal: #1c3a8a; --gold: #d9bf8c; --gold-hi: #f0dcae; --ivory: #f7f2e7;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #02050f; color: var(--ivory); }
+body { font-family: var(--font-sans), system-ui, sans-serif; }
+body.sd-tv { overflow: hidden; cursor: none; }
+h2, ul { margin: 0; padding: 0; list-style: none; font-weight: inherit; }
+a { color: inherit; }
+.serif { font-family: var(--font-serif), Georgia, serif; }
+.hebrew { font-family: var(--font-he), "Times New Roman", serif; direction: rtl; unicode-bidi: isolate; }
+.num { font-family: var(--font-sans), system-ui, sans-serif; font-weight: 600; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.01em; }
+.gold { color: var(--gold); }
+.dim { opacity: .85; }
+
+.sd-stage { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0;
+  background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(28,58,138,.55), transparent 60%),
+    radial-gradient(900px 600px at 100% 110%, rgba(217,191,140,.12), transparent 60%),
+    linear-gradient(160deg, #060e26 0%, #040a1c 100%); }
+/* Fond : photo de la synagogue floutée (assets/synagogue-bg.jpg), assombrie pour garder le texte lisible */
+.sd-stage::before { content: ""; position: absolute; inset: 0; background: url("synagogue-bg.jpg") center / cover no-repeat; }
+.sd-stage::after { content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(1100px 650px at 50% 45%, rgba(4,10,28,.08), rgba(4,10,28,.28) 75%),
+    linear-gradient(180deg, rgba(4,10,28,.5) 0%, rgba(4,10,28,.1) 28%, rgba(4,10,28,.12) 75%, rgba(2,5,15,.6) 100%); }
+.sd-stage > * { z-index: 1; }
+.sd-header, .sd-hair, .sd-foot { position: absolute; }
+.glass { background: linear-gradient(180deg, rgba(10,22,51,.5), rgba(5,11,31,.6));
+  border: 1px solid rgba(217,191,140,.28); border-radius: 22px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 50px rgba(0,0,0,.35); }
+.gold-text { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hair { height: 1px; background: linear-gradient(90deg, transparent, rgba(217,191,140,.55), transparent); }
+.next-glow { box-shadow: 0 0 0 1.5px var(--gold), 0 0 34px rgba(217,191,140,.35); background: linear-gradient(180deg, rgba(217,191,140,.16), rgba(217,191,140,.05)); }
+
+/* En-tête */
+.sd-header { position: absolute; left: 56px; right: 56px; top: 36px; height: 130px; display: flex; align-items: center; justify-content: space-between; }
+.sd-brand { display: flex; align-items: center; gap: 28px; }
+.sd-logo { width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; text-decoration: none; cursor: pointer; }
+.sd-logo span { font-size: 54px; line-height: 1; }
+.sd-name { font-size: 58px; font-weight: 600; line-height: 1.05; }
+.sd-sub { display: flex; align-items: baseline; gap: 20px; margin-top: 4px; }
+.sd-sub .hebrew { font-size: 34px; opacity: .9; }
+.sd-city { font-size: 22px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); opacity: .8; }
+.sd-dates { text-align: center; }
+.sd-greg { font-size: 42px; text-transform: capitalize; }
+.sd-greg::first-letter { text-transform: uppercase; }
+.sd-hdate { margin-top: 4px; display: flex; justify-content: center; align-items: center; gap: 24px; }
+.sd-hdate .gold { font-size: 30px; }
+.sd-hdate .hebrew { font-size: 34px; opacity: .9; }
+.sd-right { text-align: right; }
+.sd-clock { font-size: 88px; line-height: 1; }
+.sd-sec { font-size: 44px; opacity: .7; }
+.sd-par { margin-top: 8px; display: flex; align-items: baseline; justify-content: flex-end; gap: 16px; font-size: 24px; color: var(--gold); }
+.sd-par .serif { font-size: 32px; color: var(--ivory); }
+.sd-par .hebrew { font-size: 30px; color: var(--ivory); opacity: .9; }
+.sd-hair { position: absolute; left: 56px; right: 56px; top: 182px; }
+
+/* Colonnes */
+.sd-col { position: absolute; display: flex; flex-direction: column; padding: 24px 28px; }
+.sd-col h2 { font-size: 38px; line-height: 1; margin-bottom: 8px; }
+.sd-col h2 .hebrew { font-size: 32px; margin-inline-start: 12px; color: var(--gold); -webkit-text-fill-color: var(--gold); }
+.sd-col > .hair { margin-bottom: 12px; }
+
+.sd-prayers { left: 56px; top: 206px; width: 860px; height: 712px; padding: 26px 36px;
+  border: 2px solid rgba(217,191,140,.75);
+  background: linear-gradient(180deg, rgba(40,34,26,.62), rgba(8,16,40,.68) 40%, rgba(16,32,80,.68));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(217,191,140,.12), 0 0 80px rgba(217,191,140,.22), 0 24px 60px rgba(0,0,0,.45); }
+.sd-prayers h2 { font-size: 52px; }
+.sd-prayers h2 .hebrew { font-size: 42px; }
+.sd-groups { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; font-size: 11px; overflow: hidden; }
+.sd-phead { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; margin-bottom: 8px; }
+.sd-phead h2 { margin: 0; white-space: nowrap; }
+.sd-nlabel { white-space: nowrap; }
+.sd-gtitle { display: flex; align-items: center; justify-content: space-between; font-size: 2.3em; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.sd-gtitle .hebrew { letter-spacing: normal; font-size: 1.3em; }
+.sd-row { display: flex; align-items: center; justify-content: space-between; border-radius: 14px; padding: .5em 2em; margin-bottom: .6em; border: 1px solid rgba(255,255,255,.05); background: rgba(255,255,255,.03); }
+.sd-row.next-glow { background: linear-gradient(180deg, rgba(217,191,140,.16), rgba(217,191,140,.05)); }
+.sd-row > div:first-child { line-height: 1; }
+.sd-gsub { font-size: 1.9em; color: var(--gold-hi); opacity: .9; margin: -2px 0 6px; line-height: 1.25; }
+.sd-rl { min-width: 0; flex: 1; padding-right: 1.6em; }
+.sd-pnote { font-size: 1.75em; line-height: 1.3; opacity: .78; margin-top: .25em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sd-ptext { font-size: .62em; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); }
+.sd-plabel { font-size: 3.8em; font-weight: 600; }
+.sd-phe { font-size: 2.3em; opacity: .7; direction: ltr; text-align: left; }
+.sd-ptimes { font-size: 4.6em; display: flex; align-items: center; gap: .55em; flex: none; }
+.sd-next { border-radius: 14px; padding: 6px 18px; gap: 18px; display: flex; align-items: center; justify-content: space-between; }
+.sd-nlabel { font-size: 17px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); line-height: 1.25; }
+.sd-cd { font-size: 52px; line-height: 1; }
+.sd-nlabel b { font-size: 22px; letter-spacing: .04em; }
+
+.sd-zmanim { left: 940px; top: 206px; width: 500px; height: 712px; padding: 20px 22px; }
+.sd-zmanim h2, .sd-shabbat h2 { font-size: 30px; }
+.sd-zmanim h2 .hebrew, .sd-shabbat h2 .hebrew { font-size: 25px; }
+.sd-zmanim > .hair { margin-bottom: 4px; }
+.sd-zmanim ul { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.sd-zmanim li { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.07); }
+.sd-zmanim li:last-child { border-bottom: 0; }
+.sd-zl { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.sd-zfr { font-size: 21px; line-height: 1; white-space: nowrap; }
+.sd-zhe { font-size: 15px; color: var(--gold); opacity: .75; white-space: nowrap; direction: ltr; }
+.sd-zt { font-size: 27px; line-height: 1; }
+.sd-wait { font-size: 28px; opacity: .7; margin-top: 40px; }
+
+.sd-shabbat { right: 56px; top: 206px; width: 400px; height: 470px; padding: 20px 20px; }
+.sd-pbig { text-align: center; margin-bottom: 12px; }
+.sd-pbig .serif { font-size: 38px; line-height: 1; }
+.sd-pbig .hebrew { font-size: 28px; margin-top: 4px; direction: ltr; }
+.sd-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sd-tile { border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.05); padding: 12px; text-align: center; }
+.sd-tl { font-size: 14px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.sd-tv { font-size: 42px; line-height: 1; margin: 4px 0; }
+.sd-ts { display: flex; justify-content: space-between; font-size: 15px; opacity: .75; }
+.sd-ts span:first-child { text-transform: capitalize; }
+.sd-cal { margin-top: auto; text-align: center; line-height: 1.25; }
+.sd-rc { font-size: 21px; }
+.sd-rcd { font-size: 18px; opacity: .8; text-transform: capitalize; }
+.sd-hol { font-size: 19px; opacity: .85; margin-top: 4px; }
+
+.sd-ann { right: 56px; top: 696px; width: 400px; height: 222px; padding: 16px 20px; overflow: hidden; }
+.sd-ann h2 { font-size: 27px; }
+.sd-ann h2 .hebrew { font-size: 28px; }
+.sd-ann ul { font-size: 20px; line-height: 1.35; }
+.sd-ann li { white-space: pre-line; margin-bottom: 8px; }
+.sd-empty { font-size: 22px; opacity: .55; margin-top: 32px; text-align: center; }
+
+.sd-foot { position: absolute; left: 56px; right: 56px; bottom: 8px; display: flex; justify-content: space-between; font-size: 15px; letter-spacing: .04em; color: rgba(247,242,231,.6); }
+/* Dédicace (léilouy nichmat) */
+.sd-ded { position: absolute; left: 56px; right: 56px; top: 926px; text-align: center; }
+.sd-ded .hair { width: 640px; margin: 0 auto 6px; }
+.sd-ded-main { font-size: 40px; font-weight: 700; line-height: 1.15; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+.sd-ded-sep { display: flex; align-items: center; justify-content: center; gap: 14px; height: 18px; margin: 2px 0; }
+.sd-ded-sep i { display: block; width: 140px; height: 1px; }
+.sd-ded-sep i:first-child { background: linear-gradient(90deg, transparent, rgba(217,191,140,.8)); }
+.sd-ded-sep i:last-child { background: linear-gradient(90deg, rgba(217,191,140,.8), transparent); }
+.sd-ded-sep span { font-family: system-ui, sans-serif; font-size: 15px; color: var(--gold); text-shadow: 0 0 10px rgba(217,191,140,.6); }
+
+/* Pages secondaires (produit, page, 404…) */
+.sd-page { max-width: 760px; margin: 0 auto; padding: 48px 20px; line-height: 1.6; }
+.sd-page h1 { font-family: var(--font-serif), Georgia, serif; color: var(--gold); font-size: 44px; font-weight: 600; margin: 0 0 16px; }
+.sd-page a { color: var(--gold); }
+.sd-btn { display: inline-block; margin-top: 16px; padding: 12px 22px; border-radius: 12px; background: var(--gold); color: var(--night) !important; font-weight: 600; text-decoration: none; }
+
+/* Page d'administration (/pages/admin) */
+body:has(.sd-admin) { background: var(--night); overflow: auto; cursor: auto; }
+.sd-admin { max-width: 576px; margin: 0 auto; padding: 16px 16px 120px; color: var(--ivory); }
+.sd-admin h1 { font-family: var(--font-serif), Georgia, serif; color: var(--gold); font-size: 30px; font-weight: 600; margin: 0; }
+.sd-admin h2 { font-size: 20px; color: var(--gold); margin: 0 0 12px; font-weight: 500; }
+.sd-card { border-radius: 16px; border: 1px solid rgba(217,191,140,.3); background: rgba(255,255,255,.05); padding: 16px; margin-bottom: 16px; }
+.sd-login { margin-top: 12vh; text-align: center; }
+.sd-login h1 { font-size: 26px; margin-bottom: 4px; }
+.sd-login input { width: 100%; padding: 16px; font-size: 20px; text-align: center; letter-spacing: .3em; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.15); color: var(--ivory); outline: none; }
+.sd-star { font-size: 48px; color: var(--gold); margin-bottom: 8px; }
+.sd-muted { font-size: 14px; opacity: .72; margin: 0 0 16px; }
+.sd-help { display: block; font-size: 12px; opacity: .6; margin-top: 4px; }
+.sd-err { color: #fca5a5; font-size: 14px; min-height: 1em; }
+.sd-back { display: block; margin-top: 16px; font-size: 14px; opacity: .6; text-decoration: none; }
+.sd-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.sd-in { width: 100%; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.15); padding: 12px; font-size: 17px; color: var(--ivory); outline: none; margin-bottom: 8px; font-family: inherit; }
+.sd-in:focus, .sd-login input:focus { border-color: var(--gold); }
+select.sd-in option { color: #111; }
+.sd-lab { display: block; font-size: 14px; opacity: .9; margin-top: 8px; }
+.sd-lab .sd-in { margin-top: 4px; }
+.sd-chk { display: flex; align-items: center; gap: 12px; margin: 12px 0; font-size: 16px; }
+.sd-chk input { width: 22px; height: 22px; accent-color: var(--gold); }
+.sd-grow { flex: 1; margin: 0; }
+.sd-row2 { display: flex; gap: 8px; align-items: center; }
+.sd-row2 .sd-in { flex: 1; }
+.sd-prayer, .sd-z { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.sd-mini { flex: none; width: 44px; height: 44px; border-radius: 10px; border: 1px solid rgba(217,191,140,.5); background: none; color: var(--ivory); font-size: 16px; cursor: pointer; margin-bottom: 8px; }
+.sd-admin .sd-btn { border: 0; cursor: pointer; font-size: 16px; margin-top: 8px; text-align: center; }
+.sd-ghost { background: none !important; color: var(--ivory) !important; border: 1px solid rgba(217,191,140,.5) !important; }
+.sd-full { width: 100%; }
+.sd-link { background: none; border: 0; color: var(--ivory); opacity: .7; text-decoration: underline; font-size: 14px; cursor: pointer; padding: 8px 0; }
+.sd-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 576px; display: flex; gap: 12px; padding: 16px; background: rgba(5,11,31,.95); border-top: 1px solid rgba(255,255,255,.1); }
+.sd-bar .sd-btn { flex: 1; margin: 0; }
+
+.sd-zoomtip { position: fixed; left: 50%; top: 24px; transform: translateX(-50%); z-index: 9; padding: 10px 22px; border-radius: 12px; background: rgba(5,11,31,.9); color: var(--gold); font: 600 22px/1 var(--font-sans), system-ui, sans-serif; border: 1px solid rgba(217,191,140,.5); opacity: 0; transition: opacity .3s; pointer-events: none; }

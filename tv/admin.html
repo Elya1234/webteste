@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050b1f">
+<meta name="robots" content="noindex, nofollow">
+<title>Administration écran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="synagogue-display.css">
+<script>window.Shopify = { routes: { root: "./" } };</script>
+</head>
+<body>
+<main class="sd-admin" id="sd-admin">
+  <form class="sd-card sd-login" id="sd-login">
+    <div class="sd-star">✡</div>
+    <h1>Espace administrateur</h1>
+    <p class="sd-muted">Entrez le code d'accès</p>
+    <input type="password" id="sd-code" inputmode="numeric" autocomplete="current-password" aria-label="Code d'accès" autofocus>
+    <p class="sd-err" id="sd-err" role="alert"></p>
+    <button class="sd-btn sd-full" type="submit">Entrer</button>
+    <a class="sd-back" href="./">← Retour à l'écran</a>
+  </form>
+  <div id="sd-panel" hidden></div>
+</main>
+<script src="synagogue-admin.js" defer></script>
+</body>
+</html>

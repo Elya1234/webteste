@@ -74,7 +74,7 @@
   function shareLink() {
     var json = JSON.stringify(payload());
     var b64 = btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    return window.location.origin + home + "#sd=" + b64;
+    return new URL(home, window.location.href).href.split("#")[0] + "#sd=" + b64;
   }
 
   /* ───────── Connexion ───────── */
