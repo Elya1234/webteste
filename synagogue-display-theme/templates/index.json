@@ -173,7 +173,9 @@
         "zman_rt",
         "zman_chatzotNight"
       ],
-      "settings": {}
+      "settings": {
+        "remote_url": "https://script.google.com/macros/s/AKfycbxfsUIHwUQCGC3oQvioq3IJFXLBZQHobTr0K2SOBB-LliZ7ZisnSNGuMlHQnEep_Lswdw/exec"
+      }
     }
   },
   "order": [
