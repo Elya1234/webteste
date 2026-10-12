@@ -21,12 +21,12 @@
   "validatedByRav": {{ section.settings.validated_by_rav | json }},
   "showSeconds": {{ section.settings.show_seconds | json }},
   "showCountdown": {{ section.settings.show_countdown | json }},
-  "scheduleUrl": {{ 'synagogue-horaires.json' | asset_url | json }},
+  "scheduleUrl": {% if section.settings.use_schedule %}{{ 'synagogue-horaires.json' | asset_url | json }}{% else %}""{% endif %},
   "footerLeft": {{ section.settings.footer_left | json }},
   "footerRight": {{ section.settings.footer_right | json }},
   "dedication": {{ section.settings.dedication | json }},
   "dedicationNames": {{ section.settings.dedication_names | json }},
-  "adminUrl": {{ routes.root_url | append: '/pages/admin' | replace: '//', '/' | json }},
+  "adminUrl": "https://admin.shopify.com/store/nj2kyp-qf/themes/208574611798/editor",
   "adminCodeHash": {{ section.settings.admin_code | strip | sha256 | json }},
   "prayers": [
     {%- assign first = true -%}
@@ -169,6 +169,17 @@
       "id": "dedication_names",
       "label": "Noms (plus petits, un par ligne)",
       "default": "רבי פראזי בר צלטנה לבית ביתאן ואשתו מזינה בת זוריא\nנורא בת חותה ומעתוק המכונה מותקי בר מזינה לבית ביתאן"
+    },
+    {
+      "type": "header",
+      "content": "Calendrier des offices"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_schedule",
+      "label": "Utiliser le calendrier de la feuille des horaires",
+      "default": true,
+      "info": "Activé : pour les dates de la feuille, l'écran affiche ses horaires (aujourd'hui et demain). Désactivé : l'écran affiche toujours les blocs « Office » ci-dessous."
     },
     {
       "type": "header",

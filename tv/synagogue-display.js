@@ -6,20 +6,11 @@
   "use strict";
   var BASE = "https://www.hebcal.com";
   var BASE_CFG = JSON.parse(document.getElementById("sd-config").textContent);
-  var K_OVERRIDE = "sd.override.v1";
-  // Réglages faits dans /pages/admin : soit sur cet appareil (localStorage), soit reçus par lien (#sd=…)
-  var link = window.location.hash.match(/sd=([A-Za-z0-9_-]+)/);
-  if (link) {
-    try {
-      var json = decodeURIComponent(escape(atob(link[1].replace(/-/g, "+").replace(/_/g, "/"))));
-      JSON.parse(json); localStorage.setItem(K_OVERRIDE, json);
-    } catch (e) { /* lien abîmé : on l'ignore */ }
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-  }
-  var override = null;
-  try { override = JSON.parse(localStorage.getItem(K_OVERRIDE) || "null"); } catch (e) { override = null; }
-  var CFG = Object.assign({}, BASE_CFG, override || {});
-  window.addEventListener("storage", function (e) { if (e.key === K_OVERRIDE) window.location.reload(); });
+  // Les réglages viennent uniquement de l'éditeur de thème Shopify (partagés par toutes les télévisions).
+  // On efface les anciens réglages enregistrés sur un seul appareil par l'ancienne page d'administration.
+  try { localStorage.removeItem("sd.override.v1"); } catch (e) { /* mode privé */ }
+  if (/sd=/.test(window.location.hash)) history.replaceState(null, "", window.location.pathname + window.location.search);
+  var CFG = BASE_CFG;
   var root = document.getElementById("sd-root");
   var HDate = window.HebcalCore && window.HebcalCore.HDate;
 
