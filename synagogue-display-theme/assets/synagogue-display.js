@@ -144,16 +144,19 @@
   var parashaName = function (p) { return clean(p.title).replace(/^Parach?a?h?\s*/i, ""); };
   var validTime = function (t) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(t); };
 
-  var prayers = CFG.prayers.map(function (p) {
-    return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe,
-             times: String(p.times || "").split(/[\/,;]/).map(function (x) { return x.trim(); }).filter(validTime) };
-  });
+  function buildPrayers() {
+    return (CFG.prayers || []).map(function (p) {
+      return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe,
+               times: String(p.times || "").split(/[\/,;]/).map(function (x) { return x.trim(); }).filter(validTime) };
+    });
+  }
+  var prayers = buildPrayers();
   /* Calendrier des offices (assets/synagogue-horaires.json) : prioritaire sur les horaires de la semaine type */
   var K_SCHED = "sd.schedule.v1";
   var schedule = read(K_SCHED);
   function loadSchedule() {
     if (!CFG.scheduleUrl) return;
-    fetch(CFG.scheduleUrl).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (j) {
+    fetch(CFG.scheduleUrl, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (j) {
       var by = {}; (j.days || []).forEach(function (d) { by[d.date] = d; });
       schedule = { url: CFG.scheduleUrl, byDate: by }; write(K_SCHED, schedule); render(true);
     }).catch(function () { /* hors connexion : on garde la copie locale */ });
@@ -352,15 +355,26 @@
   setInterval(loadSchedule, 6 * 3600 * 1000);
 
   // Base partagée : vérifiée toutes les 30 s ; si quelqu'un a enregistré depuis son téléphone, l'écran se recharge seul.
+  // Applique les réglages partagés sans recharger la page (marche aussi quand le navigateur n'a pas de stockage).
+  function applyShared(rs) {
+    var before = [CFG.geonameid, CFG.candleMinutes, CFG.havdalah, CFG.elevation].join("|");
+    remoteSettings = rs;
+    CFG = withShared(BASE_CFG, rs);
+    // changement de ville ou de bougies : il faut d'autres données Hebcal, on repart de zéro
+    if ([CFG.geonameid, CFG.candleMinutes, CFG.havdalah, CFG.elevation].join("|") !== before) { window.location.reload(); return; }
+    prayers = buildPrayers();
+    if (!CFG.scheduleUrl) schedule = null;
+    else if (!schedule || schedule.url !== CFG.scheduleUrl) loadSchedule();
+    render(true);
+  }
   function checkRemote() {
     if (!BASE_CFG.remoteUrl) return;
     fetch(BASE_CFG.remoteUrl + (BASE_CFG.remoteUrl.indexOf("?") < 0 ? "?" : "&") + "t=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.ok) return;
         if (JSON.stringify(j.settings || null) !== JSON.stringify(remoteSettings || null)) {
-          // si le navigateur ne peut rien enregistrer, on ne recharge pas (sinon boucle infinie)
-          try { localStorage.setItem(K_REMOTE, JSON.stringify(j.settings || null)); } catch (e) { return; }
-          if (localStorage.getItem(K_REMOTE) === JSON.stringify(j.settings || null)) window.location.reload();
+          try { localStorage.setItem(K_REMOTE, JSON.stringify(j.settings || null)); } catch (e) { /* page sans stockage */ }
+          applyShared(j.settings || null);
         }
       }).catch(function () { /* hors connexion : on garde les derniers réglages */ });
   }
