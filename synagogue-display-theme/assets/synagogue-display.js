@@ -264,7 +264,7 @@
 
     // En-tête
     h += '<header class="sd-header"><div class="sd-brand">' +
-      '<a class="sd-logo glass" href="' + esc(CFG.adminUrl) + '" aria-label="Espace administrateur"><span class="serif gold-text">✡</span></a><div>' +
+      '<a class="sd-logo glass" href="' + esc(CFG.adminUrl) + '" aria-label="Modifier l\'écran"><span class="serif sd-star-ic">✡\uFE0E</span></a><div>' +
       '<div class="serif gold-text sd-name">' + esc(CFG.name) + "</div>" +
       '<div class="sd-sub"><span class="hebrew">' + esc(CFG.nameHe) + "</span>" +
       (loc ? '<span class="sd-city">' + esc(CFG.cityLabel || loc.city) + " · " + esc(loc.country) + "</span>" : "") + "</div></div></div>" +

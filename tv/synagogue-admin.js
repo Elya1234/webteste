@@ -38,12 +38,15 @@
 
   var base = null, s = null;
 
+  // Réglages de départ : ceux de la page d'accueil si on peut les lire ; sinon on se contente de la base
+  // partagée (son adresse est aussi écrite dans cette page), pour que l'administration marche toujours.
   function loadBase() {
-    return fetch(home + "?sd-admin=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.text(); }).then(function (html) {
+    var own = {};
+    try { own = JSON.parse(($("sd-admin-config") || {}).textContent || "{}"); } catch (e) { own = {}; }
+    return fetch(home + "?sd-admin=" + Date.now(), { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.text(); }).then(function (html) {
       var m = html.match(/<script type="application\/json" id="sd-config">([\s\S]*?)<\/script>/);
-      if (!m) throw new Error("Réglages de l'écran introuvables sur la page d'accueil.");
-      return JSON.parse(m[1]);
-    });
+      return Object.assign(m ? JSON.parse(m[1]) : {}, own.remoteUrl ? { remoteUrl: own.remoteUrl } : {});
+    }, function () { return own; });
   }
   /* Base partagée (Google Apps Script) : le code est vérifié côté Google, pas dans le téléphone. */
   var remote = null, code = "";
@@ -83,7 +86,7 @@
   loadBase().then(function (b) {
     base = b;
     if (!base.remoteUrl) $("sd-err").textContent = "La base partagée n'est pas encore installée : les modifications ne peuvent pas encore être enregistrées.";
-    return loadRemote().then(function (r) { remote = r; });
+    return loadRemote().then(function (r) { remote = r; }, function () { $("sd-err").textContent = "Impossible de joindre la base Google. Vérifiez Internet puis rechargez la page."; });
   }).catch(function (e) { $("sd-err").textContent = e.message || "Impossible de charger les réglages."; });
   $("sd-login").addEventListener("submit", function (e) {
     e.preventDefault();
