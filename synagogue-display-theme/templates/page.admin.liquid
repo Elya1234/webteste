@@ -1,16 +1,13 @@
-{%- comment -%}
-  Les réglages se font dans l'éditeur de thème Shopify : c'est le seul endroit dont les changements
-  arrivent sur toutes les télévisions (elles vérifient chaque minute). Cette page y renvoie.
-{%- endcomment -%}
-{%- assign editor = 'https://admin.shopify.com/store/nj2kyp-qf/themes/208574611798/editor' -%}
-<main class="sd-admin">
-  <div class="sd-card sd-login">
+<main class="sd-admin" id="sd-admin">
+  <form class="sd-card sd-login" id="sd-login">
     <div class="sd-star">✡</div>
-    <h1>Modifier l'écran</h1>
-    <p class="sd-muted">Les changements se font dans Shopify, puis toutes les télévisions se mettent à jour toutes seules en moins d'une minute.</p>
-    <a class="sd-btn sd-full" href="{{ editor }}">Ouvrir l'éditeur Shopify</a>
-    <p class="sd-help" style="margin-top:14px">Dans l'éditeur : cliquez sur « Écran synagogue » à gauche, modifiez, puis « Enregistrer » en haut à droite.</p>
+    <h1>Espace administrateur</h1>
+    <p class="sd-muted">Entrez le code d'accès</p>
+    <input type="password" id="sd-code" inputmode="numeric" autocomplete="current-password" aria-label="Code d'accès" autofocus>
+    <p class="sd-err" id="sd-err" role="alert"></p>
+    <button class="sd-btn sd-full" type="submit">Entrer</button>
     <a class="sd-back" href="{{ routes.root_url }}">← Retour à l'écran</a>
-  </div>
+  </form>
+  <div id="sd-panel" hidden></div>
 </main>
-<script>setTimeout(function () { window.location.href = {{ editor | json }}; }, 2500);</script>
+<script src="{{ 'synagogue-admin.js' | asset_url }}" defer></script>

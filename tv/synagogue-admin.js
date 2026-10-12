@@ -38,11 +38,6 @@
 
   var base = null, s = null;
 
-  function sha256(text) {
-    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)).then(function (b) {
-      return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, "0"); }).join("");
-    });
-  }
   function loadBase() {
     return fetch(home + "?sd-admin=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.text(); }).then(function (html) {
       var m = html.match(/<script type="application\/json" id="sd-config">([\s\S]*?)<\/script>/);
@@ -50,9 +45,20 @@
       return JSON.parse(m[1]);
     });
   }
+  /* Base partagée (Google Apps Script) : le code est vérifié côté Google, pas dans le téléphone. */
+  var remote = null, code = "";
+  function api(body) {
+    // envoi en text/plain : pas de requête préalable CORS, accepté par Google Apps Script
+    return fetch(base.remoteUrl, { method: "POST", body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  }
+  function loadRemote() {
+    if (!base.remoteUrl) return Promise.resolve(null);
+    return fetch(base.remoteUrl + (base.remoteUrl.indexOf("?") < 0 ? "?" : "&") + "t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.json(); }).then(function (j) { return j && j.ok ? j.settings : null; });
+  }
   function current() {
-    var ov = null; try { ov = JSON.parse(store.get(K_OVERRIDE) || "null"); } catch (e) { ov = null; }
-    var c = Object.assign({}, base, ov || {});
+    var c = Object.assign({}, base, remote || {});
+    c.useSchedule = !(remote && remote.useSchedule === false);
     // ajoute les zmanim que la sauvegarde ne connaît pas (masqués), pour pouvoir les réactiver
     c.zmanim = (c.zmanim || []).map(function (z) { return { id: z.id, method: z.method, visible: z.visible !== false }; });
     ZMANIM.forEach(function (d) { if (!c.zmanim.some(function (z) { return z.id === d[0]; })) c.zmanim.push({ id: d[0], method: d[2][0][0], visible: false }); });
@@ -65,31 +71,30 @@
     return { name: s.name, nameHe: s.nameHe, geonameid: Number(s.geonameid) || 2988507, cityLabel: s.cityLabel || "",
       elevation: !!s.elevation, candleMinutes: Number(s.candleMinutes), havdalah: s.havdalah || "",
       validatedByRav: !!s.validatedByRav, showSeconds: !!s.showSeconds, showCountdown: !!s.showCountdown,
-      dedication: s.dedication || "", dedicationNames: s.dedicationNames || "",
-      dedication: s.dedication || "", dedicationNames: s.dedicationNames || "",
+      dedication: s.dedication || "", dedicationNames: s.dedicationNames || "", useSchedule: s.useSchedule !== false,
       prayers: s.prayers.map(function (p) { return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe, times: p.times }; }),
       announcements: s.announcements.filter(function (a) { return a.trim(); }).slice(0, 3),
       zmanim: s.zmanim.filter(function (z) { return z.visible; }).map(function (z) { return { id: z.id, method: z.method }; }) };
   }
-  function shareLink() {
-    var json = JSON.stringify(payload());
-    var b64 = btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    return new URL(home, window.location.href).href.split("#")[0] + "#sd=" + b64;
-  }
 
   /* ───────── Connexion ───────── */
   function unlock() { $("sd-login").hidden = true; $("sd-panel").hidden = false; s = current(); render(); }
+  store.del(K_OVERRIDE); store.del(K_AUTH); // anciens réglages « sur cet appareil »
   loadBase().then(function (b) {
     base = b;
-    if (Number(store.get(K_AUTH) || 0) > Date.now()) unlock();
-  }).catch(function (e) { $("sd-err").textContent = e.message; });
+    if (!base.remoteUrl) $("sd-err").textContent = "La base partagée n'est pas encore installée : les modifications ne peuvent pas encore être enregistrées.";
+    return loadRemote().then(function (r) { remote = r; });
+  }).catch(function (e) { $("sd-err").textContent = e.message || "Impossible de charger les réglages."; });
   $("sd-login").addEventListener("submit", function (e) {
     e.preventDefault();
-    if (!base) { $("sd-err").textContent = "Chargement… réessayez dans un instant."; return; }
-    sha256($("sd-code").value.trim()).then(function (h) {
-      if (h !== base.adminCodeHash) { $("sd-err").textContent = "Code incorrect."; return; }
-      store.set(K_AUTH, String(Date.now() + 12 * 3600 * 1000)); unlock();
-    });
+    if (!base || !base.remoteUrl) { $("sd-err").textContent = base ? "La base partagée n'est pas encore installée." : "Chargement… réessayez dans un instant."; return; }
+    var typed = $("sd-code").value.trim(), btn = e.target.querySelector("button");
+    btn.disabled = true; $("sd-err").textContent = "";
+    api({ action: "check", code: typed }).then(function (j) {
+      btn.disabled = false;
+      if (!j.ok) { $("sd-err").textContent = j.error || "Code incorrect."; return; }
+      code = typed; unlock();
+    }).catch(function () { btn.disabled = false; $("sd-err").textContent = "Pas de connexion. Réessayez."; });
   });
 
   /* ───────── Formulaire ───────── */
@@ -97,7 +102,7 @@
   function render() {
     var known = CITIES.some(function (c) { return c[0] === String(s.geonameid); });
     var h = '<div class="sd-top"><h1>Administration</h1><button type="button" class="sd-link" data-act="logout">Se déconnecter</button></div>' +
-      '<p class="sd-muted">Enregistrer applique les changements à l\'écran ouvert sur <b>cet appareil</b>. Pour une autre télévision, utilisez « Copier le lien pour un autre écran » et ouvrez ce lien sur la télévision.</p>';
+      '<p class="sd-muted">Après « Enregistrer », <b>toutes les télévisions</b> se mettent à jour toutes seules en moins d\'une minute.</p>';
 
     h += '<section class="sd-card"><h2>Synagogue</h2>' +
       '<input class="sd-in" data-k="name" value="' + esc(s.name) + '" placeholder="Nom (français)">' +
@@ -114,7 +119,9 @@
       [["", "Tzeit 8,5° (Hebcal par défaut)"], ["42", "Coucher + 42 min"], ["50", "Coucher + 50 min"], ["72", "Coucher + 72 min"]].map(function (o) {
         return '<option value="' + o[0] + '"' + (String(s.havdalah || "") === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></label></section>";
 
-    h += '<section class="sd-card"><h2>Horaires des offices</h2>';
+    h += '<section class="sd-card"><h2>Horaires des offices</h2>' +
+      '<label class="sd-chk"><input type="checkbox" data-k="useSchedule"' + (s.useSchedule ? " checked" : "") + '> Suivre la feuille des horaires (calendrier)</label>' +
+      '<p class="sd-help" style="margin:-4px 0 10px">Coché : pour les dates de la feuille, l\'écran affiche ses horaires. Décoché : l\'écran affiche toujours les horaires ci-dessous.</p>';
     s.prayers.forEach(function (p, i) {
       h += '<div class="sd-prayer"><div class="sd-row2"><select class="sd-in" data-p="' + i + '" data-f="group">' +
         Object.keys(GROUP).map(function (g) { return '<option value="' + g + '"' + (p.group === g ? " selected" : "") + ">" + GROUP[g] + "</option>"; }).join("") +
@@ -148,8 +155,6 @@
     });
     h += '<label class="sd-chk"><input type="checkbox" data-k="validatedByRav"' + (s.validatedByRav ? " checked" : "") + "> Méthodes validées par le Rav</label></section>";
 
-    h += '<section class="sd-card"><h2>Autres écrans</h2><button type="button" class="sd-btn sd-ghost sd-full" data-act="share">Copier le lien pour un autre écran</button>' +
-      '<input class="sd-in" id="sd-share" readonly hidden><button type="button" class="sd-link" data-act="reset">Revenir aux réglages d\'origine (thème Shopify)</button></section>';
 
     h += '<div class="sd-bar"><a class="sd-btn sd-ghost" href="' + home + '" target="_blank">Voir l\'écran</a><button type="button" class="sd-btn" data-act="save" id="sd-save">Enregistrer</button></div>';
     $("sd-panel").innerHTML = h;
@@ -174,15 +179,14 @@
     if (act === "addp") { s.prayers.push({ id: "p" + Date.now(), group: "weekday", label: "", labelHe: "", times: "" }); render(); dirty(); }
     if (act === "save") {
       if (!(Number(s.geonameid) > 0)) { alert("Indiquez l'identifiant GeoNames de la ville."); return; }
-      var ok = store.set(K_OVERRIDE, JSON.stringify(payload()));
-      t.textContent = ok ? "Enregistré ✓" : "Impossible d'enregistrer (navigation privée ?)";
+      t.disabled = true; t.textContent = "Enregistrement…";
+      var data = payload();
+      api({ action: "save", code: code, settings: data }).then(function (j) {
+        t.disabled = false;
+        if (!j.ok) { t.textContent = "Erreur : " + (j.error || "non enregistré"); return; }
+        remote = data; t.textContent = "Enregistré ✓ (télés à jour dans 1 min)";
+      }).catch(function () { t.disabled = false; t.textContent = "Pas de connexion, réessayez"; });
     }
-    if (act === "share") {
-      var url = shareLink(), box = $("sd-share"); box.hidden = false; box.value = url; box.select();
-      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { t.textContent = "Lien copié ✓ : ouvrez-le sur la télévision"; },
-        function () { t.textContent = "Copiez le lien ci-dessous et ouvrez-le sur la télévision"; });
-    }
-    if (act === "reset" && confirm("Effacer les modifications faites sur cet appareil ?")) { store.del(K_OVERRIDE); s = current(); render(); }
-    if (act === "logout") { store.del(K_AUTH); window.location.href = home; }
+    if (act === "logout") { code = ""; window.location.href = home; }
   });
 })();

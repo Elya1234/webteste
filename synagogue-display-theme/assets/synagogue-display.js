@@ -6,11 +6,23 @@
   "use strict";
   var BASE = "https://www.hebcal.com";
   var BASE_CFG = JSON.parse(document.getElementById("sd-config").textContent);
-  // Les réglages viennent uniquement de l'éditeur de thème Shopify (partagés par toutes les télévisions).
-  // On efface les anciens réglages enregistrés sur un seul appareil par l'ancienne page d'administration.
+  // Réglages : ceux du thème Shopify, remplacés par ceux de la base partagée (Google) modifiés depuis
+  // la page d'administration. Les anciens réglages enregistrés sur un seul appareil sont effacés.
   try { localStorage.removeItem("sd.override.v1"); } catch (e) { /* mode privé */ }
   if (/sd=/.test(window.location.hash)) history.replaceState(null, "", window.location.pathname + window.location.search);
-  var CFG = BASE_CFG;
+  var K_REMOTE = "sd.remote.v1";
+  var SHARED_KEYS = ["name", "nameHe", "geonameid", "cityLabel", "elevation", "candleMinutes", "havdalah", "validatedByRav",
+    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim"];
+  function withShared(base, rs) {
+    var c = Object.assign({}, base);
+    if (!rs) return c;
+    SHARED_KEYS.forEach(function (k) { if (rs[k] !== undefined && rs[k] !== null) c[k] = rs[k]; });
+    if (rs.useSchedule === false) c.scheduleUrl = "";
+    return c;
+  }
+  var remoteSettings = null;
+  try { remoteSettings = BASE_CFG.remoteUrl ? JSON.parse(localStorage.getItem(K_REMOTE) || "null") : null; } catch (e) { remoteSettings = null; }
+  var CFG = withShared(BASE_CFG, remoteSettings);
   var root = document.getElementById("sd-root");
   var HDate = window.HebcalCore && window.HebcalCore.HDate;
 
@@ -338,6 +350,22 @@
   refresh();
   loadSchedule();
   setInterval(loadSchedule, 6 * 3600 * 1000);
+
+  // Base partagée : vérifiée toutes les 30 s ; si quelqu'un a enregistré depuis son téléphone, l'écran se recharge seul.
+  function checkRemote() {
+    if (!BASE_CFG.remoteUrl) return;
+    fetch(BASE_CFG.remoteUrl + (BASE_CFG.remoteUrl.indexOf("?") < 0 ? "?" : "&") + "t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        if (!j || !j.ok) return;
+        if (JSON.stringify(j.settings || null) !== JSON.stringify(remoteSettings || null)) {
+          // si le navigateur ne peut rien enregistrer, on ne recharge pas (sinon boucle infinie)
+          try { localStorage.setItem(K_REMOTE, JSON.stringify(j.settings || null)); } catch (e) { return; }
+          if (localStorage.getItem(K_REMOTE) === JSON.stringify(j.settings || null)) window.location.reload();
+        }
+      }).catch(function () { /* hors connexion : on garde les derniers réglages */ });
+  }
+  checkRemote();
+  setInterval(checkRemote, 30 * 1000);
   setInterval(function () { render(false); }, 1000);
   setInterval(refresh, 6 * 3600 * 1000);
   var day = null;

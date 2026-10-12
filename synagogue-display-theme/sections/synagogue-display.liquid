@@ -26,8 +26,8 @@
   "footerRight": {{ section.settings.footer_right | json }},
   "dedication": {{ section.settings.dedication | json }},
   "dedicationNames": {{ section.settings.dedication_names | json }},
-  "adminUrl": "https://admin.shopify.com/store/nj2kyp-qf/themes/208574611798/editor",
-  "adminCodeHash": {{ section.settings.admin_code | strip | sha256 | json }},
+  "adminUrl": {{ routes.root_url | append: '/pages/admin' | replace: '//', '/' | json }},
+  "remoteUrl": {{ section.settings.remote_url | strip | json }},
   "prayers": [
     {%- assign first = true -%}
     {%- for block in section.blocks -%}
@@ -143,10 +143,9 @@
     },
     {
       "type": "text",
-      "id": "admin_code",
-      "label": "Code d'accès de la page /pages/admin",
-      "default": "5787",
-      "info": "Code demandé pour modifier les textes depuis la page d'administration du site."
+      "id": "remote_url",
+      "label": "Adresse de la base partagée (Google Apps Script)",
+      "info": "Adresse « /exec » du script Google. Les réglages enregistrés depuis le bouton ✡ (page /pages/admin) y sont gardés et remplacent ceux d'ici sur toutes les télévisions. Le code d'accès se règle dans le script Google."
     },
     {
       "type": "checkbox",
