@@ -518,13 +518,106 @@
   });
   $$('[data-wa-answers]').forEach(b => b.addEventListener('click', () => {
     const f = b.closest('form') || b.closest('.form')?.querySelector('form');
-    const wa = $('.wa')?.getAttribute('href')?.split('?')[0]; if (!f || !wa) return;
+    const wa = $('[data-wa-url]')?.dataset.waUrl; if (!f || !wa) return;
     const lines = ['Bonjour, je souhaite être rappelé pour une pompe à chaleur.'];
     $$('input:checked', f).forEach(i => { if (i.type === 'radio' || (i.type === 'checkbox' && !i.hasAttribute('data-consent'))) { const k = (i.name.match(/\[(.+)\]/) || [])[1] || ''; lines.push(i.value === 'Oui' ? k : `${k} : ${i.value}`); } });
     const val = n => (f.querySelector(`[name="contact[${n}]"]`) || {}).value || '';
     [['Prénom', 'Prénom'], ['Code postal', 'Code postal'], ['Ville', 'Ville'], ['Profil revenus estimé', 'Profil']].forEach(([n, l]) => { const v = val(n); if (v) lines.push(`${l} : ${v}`); });
     open(`${wa}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
   }));
+
+
+  /* ---------- Assistant automatique + WhatsApp (bouton noir) ---------- */
+  const ai = $('[data-ai]');
+  if (ai) {
+    const panel = $('.ai__panel', ai), log = $('[data-ai-log]', ai), chipsBox = $('[data-ai-chips]', ai), fab = $('.ai__fab', ai);
+    const input = $('#ai-q', ai), home = ai.dataset.home || '', waUrl = ai.dataset.waUrl;
+    const S = { get: k => { try { return JSON.parse(sessionStorage.getItem(k)); } catch (e) { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+    let hist = S.get('ai-hist') || [];
+    const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9€ ]/g, ' ');
+    const L = (t, href) => `<a href="${href}">${t}</a>`;
+    const KB = [
+      { k: ['bonjour', 'salut', 'hello', 'bonsoir', 'coucou'], a: 'Bonjour ! Je réponds à vos questions sur la pompe à chaleur et les aides. Que souhaitez-vous savoir ?', c: ['Suis-je éligible ?', 'Quelles aides ?', 'Combien ça coûte ?'] },
+      { k: ['eligib', 'droit', 'eligible', 'possible pour moi', 'ai je le droit'], flow: 'elig' },
+      { k: ['1 €', '1€', '1 euro', 'un euro', 'gratuit', 'gratuite'], a: 'Personne ne peut garantir une pompe à chaleur à 1 € sans étude. Selon vos revenus et votre logement, les aides peuvent couvrir une part importante du coût. ' + L('Lire notre réponse honnête', home + '/blogs/guides-energie/pompe-a-chaleur-a-1-euro-vrai-ou-faux') + '.', c: ['Suis-je éligible ?', 'Être rappelé'] },
+      { k: ['aide', 'maprimerenov', 'prime', 'cee', 'coup de pouce', 'subvention', 'financement', 'eco ptz', 'pret', 'tva'], a: 'Plusieurs aides peuvent s\'additionner : MaPrimeRénov\', prime CEE « Coup de pouce », TVA réduite, éco-prêt à taux zéro, aides locales. Leur montant dépend surtout de vos revenus et de votre logement.', c: ['Mon profil de revenus', 'Suis-je éligible ?', 'Être rappelé'] },
+      { k: ['profil', 'revenu', 'bleu', 'jaune', 'violet', 'rose', 'plafond', 'rfr', 'impot'], a: 'Votre profil (Bleu, Jaune, Violet ou Rose) dépend de votre revenu fiscal de référence et du nombre de personnes du foyer. ' + L('Calculez-le en 10 secondes', home + '/pages/pompe-a-chaleur-aides#profil') + '.', c: ['Quelles aides ?', 'Être rappelé'] },
+      { k: ['prix', 'cout', 'combien', 'tarif', 'cher', 'devis', 'budget'], a: 'Le prix dépend du type de pompe à chaleur, de la puissance, de votre maison et des travaux annexes. Les aides réduisent ensuite le reste à payer. Le plus simple : une étude gratuite pour un devis précis.', c: ['Être rappelé', 'Quelles aides ?'] },
+      { k: ['delai', 'duree', 'combien de temps', 'quand', 'installation', 'installer', 'pose', 'jours'], a: 'La pose d\'une pompe à chaleur prend en général quelques jours. Le calendrier précis vous est donné avec la proposition, après l\'étude.', c: ['Être rappelé', 'Comment ça marche ?'] },
+      { k: ['radiateur', 'plancher'], a: 'Vos radiateurs actuels peuvent souvent être conservés. Nous vérifions leur compatibilité pendant l\'étude. Un plancher chauffant est idéal.', c: ['Suis-je éligible ?', 'Être rappelé'] },
+      { k: ['froid', 'hiver', 'gel', 'neige', 'temperature'], a: 'Oui, les pompes à chaleur actuelles fonctionnent même par températures négatives. Leur puissance est choisie selon le climat de votre région.', c: ['Comment ça marche ?', 'Être rappelé'] },
+      { k: ['marche', 'fonctionne', 'comment ca', 'principe', 'c est quoi', 'cest quoi'], a: 'Elle capte la chaleur de l\'air extérieur grâce à une unité posée dehors, puis l\'envoie dans votre chauffage par un module intérieur, à la place de votre ancienne chaudière. ' + L('Voir le schéma', home + '/pages/pompe-a-chaleur-aides') + '.', c: ['Suis-je éligible ?', 'Quelles aides ?'] },
+      { k: ['entretien', 'entretenir', 'maintenance', 'panne'], a: 'Un entretien est obligatoire tous les deux ans pour les pompes à chaleur de 4 à 70 kW. Nous restons disponibles pour le suivi.', c: ['Être rappelé'] },
+      { k: ['bruit', 'bruyant', 'son'], a: 'L\'unité extérieure fait un léger bruit de ventilateur. Nous choisissons son emplacement avec vous pour limiter la gêne.', c: ['Être rappelé'] },
+      { k: ['fioul', 'mazout', 'cuve'], a: 'Les chaudières neuves au fioul sont interdites depuis 2022 : la pompe à chaleur est le remplacement le plus courant, et des aides peuvent s\'appliquer. ' + L('Notre guide', home + '/blogs/guides-energie/remplacer-chaudiere-fioul-par-pompe-a-chaleur') + '.', c: ['Suis-je éligible ?', 'Être rappelé'] },
+      { k: ['gaz'], a: 'Remplacer une chaudière gaz par une pompe à chaleur est possible et peut ouvrir droit à des aides, selon votre situation.', c: ['Suis-je éligible ?', 'Être rappelé'] },
+      { k: ['zone', 'ville', 'region', 'intervenez', 'ou etes', 'departement', 'secteur', 'france'], a: 'Nous intervenons partout en France métropolitaine. Indiquez votre code postal dans le formulaire et nous vous confirmons le calendrier.', c: ['Être rappelé'] },
+      { k: ['arnaque', 'demarchage', 'fiable', 'confiance', 'serieux', 'rge'], a: 'Bons réflexes : jamais de signature sous pression, pas d\'acompte avant étude, et vérifiez la certification RGE sur l\'annuaire France Rénov\'. Nous ne promettons aucun montant d\'aide sans étude.', c: ['Être rappelé'] },
+      { k: ['rappel', 'rappeler', 'appel', 'appeler', 'telephone', 'contact', 'conseiller', 'humain', 'parler', 'etude'], act: 'cb', a: 'Avec plaisir ! Laissez votre prénom et votre numéro, un conseiller vous rappelle au créneau choisi.' },
+      { k: ['whatsapp', 'message'], act: 'wa', a: 'Je vous ouvre WhatsApp avec le résumé de notre échange.' },
+      { k: ['merci', 'super', 'parfait', 'ok', 'top'], a: 'Avec plaisir ! Autre chose ?', c: ['Être rappelé', 'Parler sur WhatsApp'] }
+    ];
+    const CHIP = {
+      'Suis-je éligible ?': () => flowElig(0), 'Quelles aides ?': () => ask('aides'), 'Combien ça coûte ?': () => ask('prix'),
+      'Mon profil de revenus': () => ask('profil'), 'Comment ça marche ?': () => ask('comment ca marche'),
+      'Être rappelé': () => ask('rappel'), 'Parler sur WhatsApp': () => ask('whatsapp')
+    };
+    const save = () => S.set('ai-hist', hist.slice(-30));
+    const bubble = (who, html, store = true) => {
+      const m = d.createElement('div'); m.className = 'ai__msg ai__msg--' + who; m.innerHTML = html; log.append(m);
+      log.scrollTop = log.scrollHeight; if (store) { hist.push([who, html]); save(); }
+    };
+    const chips = list => { chipsBox.innerHTML = ''; (list || []).forEach(t => { const b = d.createElement('button'); b.type = 'button'; b.textContent = t; b.addEventListener('click', () => { bubble('me', t); (CHIP[t] || (() => ask(t)))(); }); chipsBox.append(b); }); };
+    const say = (html, list, then) => {
+      chips([]); const t = d.createElement('div'); t.className = 'ai__msg ai__msg--bot ai__typing'; t.innerHTML = '<i></i><i></i><i></i>'; log.append(t); log.scrollTop = log.scrollHeight;
+      setTimeout(() => { t.remove(); bubble('bot', html); chips(list); then && then(); }, reduce ? 0 : 650);
+    };
+    const summary = () => hist.filter(h => h[0] === 'me').map(h => '• ' + h[1].replace(/<[^>]+>/g, '')).slice(-6).join('\n');
+    const openWA = () => {
+      if (!waUrl) return;
+      const txt = 'Bonjour, je souhaite des informations sur une pompe à chaleur.' + (summary() ? '\nMes questions :\n' + summary() : '');
+      open(`${waUrl}?text=${encodeURIComponent(txt)}`, '_blank', 'noopener');
+    };
+    let elig = {};
+    const flowElig = step => {
+      if (step === 0) { say('Quel type de chaudière avez-vous ?', ['Gaz', 'Fioul', 'Bois', 'Électrique / aucune']); CHIP['Gaz'] = CHIP['Fioul'] = CHIP['Bois'] = () => { elig.ch = 1; flowElig(1); }; CHIP['Électrique / aucune'] = () => { elig.ch = 0; flowElig(1); }; }
+      if (step === 1) { say('Vous êtes propriétaire du logement ?', ['Oui, j\'y habite', 'Oui, je le loue', 'Non, locataire']); CHIP['Oui, j\'y habite'] = CHIP['Oui, je le loue'] = () => { elig.pr = 1; flowElig(2); }; CHIP['Non, locataire'] = () => { elig.pr = 0; flowElig(2); }; }
+      if (step === 2) {
+        if (elig.ch && elig.pr) say('Bonne nouvelle : votre situation est <b>compatible</b> avec un remplacement par pompe à chaleur, et des aides peuvent s\'appliquer. Un conseiller peut vérifier le montant avec vous.', ['Être rappelé', 'Parler sur WhatsApp', 'Mon profil de revenus']);
+        else if (!elig.pr) say('En tant que locataire, les travaux se décident avec votre propriétaire. Il peut lui-même bénéficier de certaines aides.', ['Être rappelé', 'Quelles aides ?']);
+        else say('Sans chaudière, les aides au remplacement de chaudière ne s\'appliquent pas, mais d\'autres solutions existent selon votre logement.', ['Être rappelé', 'Parler sur WhatsApp']);
+      }
+    };
+    const ask = q => {
+      const n = ' ' + norm(q) + ' ';
+      let best = null, score = 0;
+      KB.forEach(e => { let s = 0; e.k.forEach(k => { if (n.includes(norm(k))) s += k.length; }); if (s > score) { score = s; best = e; } });
+      if (!best) return say('Je n\'ai pas de réponse précise à cette question. Un conseiller peut vous répondre rapidement :', ['Être rappelé', 'Parler sur WhatsApp']);
+      if (best.flow === 'elig') return flowElig(0);
+      say(best.a, best.c, () => { if (best.act === 'cb') { $('[data-cb-open]')?.click(); } if (best.act === 'wa') openWA(); });
+    };
+    const toggle = force => {
+      const show = force ?? panel.hidden;
+      panel.hidden = !show; ai.classList.toggle('is-open', show); fab.setAttribute('aria-expanded', show);
+      $('[data-ai-hint]', ai)?.classList.remove('on'); $('.ai__badge', ai)?.remove();
+      if (show) {
+        try { sessionStorage.setItem('ai-seen', 1); } catch (e) {}
+        if (!log.children.length) {
+          if (hist.length) { hist.forEach(([w, h]) => bubble(w, h, false)); chips(['Être rappelé', 'Parler sur WhatsApp']); }
+          else say('Bonjour 👋 Je suis l\'assistant automatique d\'Énergie Hachem Yazour. Posez votre question ou choisissez :', ['Suis-je éligible ?', 'Quelles aides ?', 'Combien ça coûte ?', 'Être rappelé', 'Parler sur WhatsApp']);
+        }
+        if (innerWidth >= 760) setTimeout(() => input.focus(), 300);
+      }
+    };
+    $$('[data-ai-toggle]', ai).forEach(b => b.addEventListener('click', () => toggle()));
+    d.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) { toggle(false); fab.focus(); } });
+    $('[data-ai-wa]', ai)?.addEventListener('click', e => { e.preventDefault(); openWA(); });
+    $('[data-ai-form]', ai).addEventListener('submit', e => { e.preventDefault(); const q = input.value.trim(); if (!q) return; input.value = ''; bubble('me', q.replace(/</g, '&lt;')); ask(q); });
+    // Petite bulle d'invitation, une fois par visite
+    let seen = null; try { seen = sessionStorage.getItem('ai-seen'); } catch (e) {}
+    if (!seen) setTimeout(() => { if (panel.hidden && fab.classList.contains('on')) $('[data-ai-hint]', ai)?.classList.add('on'); }, 9000);
+    else $('.ai__badge', ai)?.remove();
+  }
 
   /* ---------- Année du pied de page ---------- */
   $$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
