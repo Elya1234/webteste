@@ -128,7 +128,7 @@
   {% render 'footer' %}
   {% render 'whatsapp' %}
   {% render 'callback' %}
-  {% render 'welcome' %}
+  {%- unless template.suffix == 'pac' -%}{% render 'welcome' %}{%- endunless -%}
   <button class="cb-fab" type="button" data-cb-open aria-label="Être rappelé gratuitement">{% render 'icon', name: 'phone' %}<span>Être rappelé</span></button>
 </body>
 </html>

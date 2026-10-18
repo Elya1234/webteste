@@ -271,7 +271,7 @@
       });
       const st = Math.min(saved.step || 0, steps.length - 1);
       go(st);
-      if (st > 0) {
+      if (st > 0 && saved.from !== 'wel') {
         const note = d.createElement('p'); note.className = 'resume'; note.innerHTML = 'Vos réponses ont été conservées. <button type="button">Recommencer</button>';
         $('.progress', wrap)?.after(note);
         $('button', note).addEventListener('click', () => { ls.del(); form.reset(); note.remove(); go(0); });
@@ -645,8 +645,8 @@
         const text = resume
           ? `${hello} 👋 Votre demande de pompe à chaleur vous attend. On la termine ensemble ?`
           : back
-            ? `${hello} 👋 Bon retour ! Toujours partant pour une pompe à chaleur ? Vérifiez vos aides en 30 secondes.`
-            : `${hello} 👋 Vous pensez à une pompe à chaleur ? Vérifiez vos aides en 30 secondes.`;
+            ? `${hello} 👋 Bon retour ! Vérifions si votre maison peut passer à la pompe à chaleur.`
+            : `${hello} 👋 Bienvenue chez Énergie Hachem Yazour. Vérifions en 10 secondes si votre maison peut passer à la pompe à chaleur.`;
         const msg = $('[data-wel-msg]', wel), last = d.activeElement;
         wel.hidden = false; d.body.classList.add('wel-lock');
         if (resume) $('[data-wel-resume]', wel).hidden = false;
@@ -658,15 +658,31 @@
           step();
         };
         setTimeout(type, reduce ? 0 : 550);
-        setTimeout(() => $('.wel__opt', wel)?.focus({ preventScroll: true }), 700);
+        setTimeout(() => $('[data-wel-ch]', wel)?.focus({ preventScroll: true }), 700);
         wel._close = () => { wel.classList.remove('is-open'); setTimeout(() => { wel.hidden = true; }, reduce ? 0 : 450); d.body.classList.remove('wel-lock'); last?.focus?.(); };
       };
       const close = () => wel._close && wel._close();
       $$('[data-wel-close]', wel).forEach(b => b.addEventListener('click', close));
       d.addEventListener('keydown', e => { if (e.key === 'Escape' && !wel.hidden) close(); });
       $$('[data-wel-go]', wel).forEach(a => a.addEventListener('click', () => close()));
-      $('[data-wel-ai]', wel)?.addEventListener('click', () => { close(); setTimeout(() => $('.ai__fab')?.click(), 300); });
-      $('[data-wel-cb]', wel)?.addEventListener('click', () => { close(); setTimeout(() => $('[data-cb-open]')?.click(), 300); });
+      $$('[data-wel-ai]', wel).forEach(b => b.addEventListener('click', () => { close(); setTimeout(() => $('.ai__fab')?.click(), 300); }));
+      $$('[data-wel-cb]', wel).forEach(b => b.addEventListener('click', () => { close(); setTimeout(() => $('[data-cb-open]')?.click(), 300); }));
+      // Éligibilité : type de chaudière, puis suite sur la page pompe à chaleur avec la réponse déjà cochée
+      let choice = '';
+      $$('[data-wel-ch]', wel).forEach(b => b.addEventListener('click', () => {
+        choice = b.dataset.welCh;
+        $$('[data-wel-ch]', wel).forEach(x => x.classList.toggle('is-sel', x === b));
+        const ko = b.hasAttribute('data-ko');
+        $('[data-wel-ok]', wel).hidden = ko; $('[data-wel-next]', wel).hidden = ko; $('[data-wel-ko]', wel).hidden = !ko;
+        (ko ? $('[data-wel-force]', wel) : $('[data-wel-next]', wel))?.focus({ preventScroll: true });
+      }));
+      $$('[data-wel-next], [data-wel-force]', wel).forEach(a => a.addEventListener('click', () => {
+        try {
+          const path = new URL(a.href, location.href).pathname;
+          localStorage.setItem('hy-form:' + path, JSON.stringify({ v: { ['contact[Chaudière actuelle]|' + choice]: 1 }, step: 1, t: Date.now(), from: 'wel' }));
+        } catch (e) {}
+        close();
+      }));
       setTimeout(show, Math.max(1500, DELAY - (Date.now() - +ss('hy-start'))));
     }
   }

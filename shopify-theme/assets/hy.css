@@ -1073,3 +1073,19 @@ body.wel-lock{overflow:hidden}
 .wel__grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:759px){.wel__grid{grid-template-columns:repeat(3,minmax(0,1fr))}.wel__grid .wel__opt:not(.wel__opt--main){padding:12px 10px}.wel__grid .wel__opt:not(.wel__opt--main) small{display:none}.wel__grid .wel__opt:not(.wel__opt--main) b{font-size:.82rem}.wel__grid .wel__opt:not(.wel__opt--main) .wel__ic{width:34px;height:34px;margin-bottom:4px}}
 @media (min-width:760px){.wel__grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Accueil : question d'éligibilité */
+.wel__q{font:600 1rem var(--f-display);margin:-4px 0 12px;color:var(--aurora)}
+.wel__tiles{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:559px){.wel__tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.wel__tiles .tile{padding:0;text-align:inherit;color:inherit}
+.wel__tiles .tile>span{min-height:96px}
+.wel__tiles .tile.is-sel>span{background:var(--aurora);color:var(--obsidian);border-color:var(--aurora);box-shadow:var(--glow)}
+.wel__tiles .tile.is-sel>span b{background:var(--obsidian);color:var(--aurora)}
+.wel__tiles .tile.is-sel small{color:rgba(10,11,13,.7)}
+.wel__res{margin-top:12px}
+.wel__next{width:100%;justify-content:space-between;margin-top:10px}
+.wel__next[hidden]{display:none}
+.wel__links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-top:16px}
+.wel__links button{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--mist);padding:6px 2px}
+.wel__links button svg{width:15px;height:15px;color:var(--aurora)}
+.wel__links button:hover{color:var(--porcelain)}

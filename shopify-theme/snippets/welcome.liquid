@@ -1,6 +1,7 @@
 {%- comment -%}
-  Accueil « comptoir » centré pompe à chaleur : s'affiche une fois par visite, après ~12 s passées sur le site,
-  jamais pendant qu'un formulaire est en cours. Fermeture libre : croix, fond, Échap, « Je visite simplement ».
+  Accueil « comptoir » pompe à chaleur : commence par la question d'éligibilité (type de chaudière).
+  Une fois par visite, après ~12 s sur le site, jamais sur la page pompe à chaleur ni pendant un formulaire.
+  Gaz / fioul / bois : « Compatible », puis suite sur la page pompe à chaleur avec la réponse déjà cochée.
 {%- endcomment -%}
 {%- liquid
   assign h = routes.root_url | remove_last: '/'
@@ -24,26 +25,26 @@
     <div class="wel__resume" data-wel-resume hidden>
       <a class="btn btn--primary" href="{{ pac }}#etude" data-wel-go>Reprendre ma demande {% render 'icon', name: 'btn-arrow' %}</a>
     </div>
-    <div class="wel__grid" data-wel-grid>
-      <a class="wel__opt wel__opt--main" href="{{ pac }}#etude" data-wel-go>
-        <span class="wel__ic">{% render 'icon', name: 'flame' %}</span>
-        <span class="wel__main-t"><b>Vérifier mes aides pompe à chaleur</b><small>4 questions · 30 secondes · gratuit</small></span>
-        <span class="wel__go" aria-hidden="true">{% render 'icon', name: 'arrow' %}</span>
-      </a>
-      <a class="wel__opt" href="{{ pac }}#profil" data-wel-go>
-        <span class="wel__ic">{% render 'icon', name: 'shield' %}</span>
-        <b>Mon profil de revenus</b><small>Bleu, Jaune, Violet, Rose</small>
-      </a>
-      <button class="wel__opt" type="button" data-wel-ai>
-        <span class="wel__ic">{% render 'icon', name: 'info' %}</span>
-        <b>Une question ?</b><small>Réponse immédiate</small>
-      </button>
-      <button class="wel__opt" type="button" data-wel-cb>
-        <span class="wel__ic">{% render 'icon', name: 'phone' %}</span>
-        <b>Être rappelé</b><small>Gratuit</small>
-      </button>
+    <div class="wel__elig" data-wel-elig>
+      <p class="wel__q">Quel type de chaudière avez-vous ?</p>
+      <div class="tiles wel__tiles" role="group" aria-label="Type de chaudière">
+        <button type="button" class="tile" data-wel-ch="Gaz"><span><b>{% render 'icon', name: 'flame' %}</b>Gaz</span></button>
+        <button type="button" class="tile" data-wel-ch="Fioul"><span><b>{% render 'icon', name: 'drop' %}</b>Fioul</span></button>
+        <button type="button" class="tile" data-wel-ch="Bois"><span><b>{% render 'icon', name: 'leaf' %}</b>Bois</span></button>
+        <button type="button" class="tile" data-wel-ch="Pas de chaudière (électrique / autre)" data-ko><span><b>{% render 'icon', name: 'spark' %}</b>Électrique<small>ou pas de chaudière</small></span></button>
+      </div>
+      <div class="okmsg wel__res" data-wel-ok hidden role="status">{% render 'icon', name: 'check' %}<span><b>Compatible !</b> Votre chaudière peut être remplacée par une pompe à chaleur. Des aides peuvent s'appliquer.</span></div>
+      <a class="btn btn--primary wel__next" href="{{ pac }}#etude" data-wel-next hidden>Continuer : vérifier mes aides {% render 'icon', name: 'btn-arrow' %}</a>
+      <div class="komsg wel__res" data-wel-ko hidden role="status">
+        <p><b>Sans chaudière, les aides au remplacement de chaudière ne s'appliquent pas.</b> D'autres solutions restent possibles selon votre logement.</p>
+        <div class="ctas"><a class="btn btn--glass btn--sm" href="{{ pac }}#etude" data-wel-force>Continuer quand même {% render 'icon', name: 'btn-arrow' %}</a><button type="button" class="btn btn--glass btn--sm" data-wel-ai>Poser une question {% render 'icon', name: 'btn-arrow' %}</button></div>
+      </div>
     </div>
-    <button class="wel__skip" type="button" data-wel-close>Je visite simplement {% render 'icon', name: 'arrow' %}</button>
+    <div class="wel__links">
+      <button type="button" data-wel-cb>{% render 'icon', name: 'phone' %}Être rappelé</button>
+      <button type="button" data-wel-ai>{% render 'icon', name: 'info' %}Une question ?</button>
+      <button type="button" data-wel-close>Je visite simplement</button>
+    </div>
     <span class="wel__light" aria-hidden="true"></span>
   </section>
 </div>
