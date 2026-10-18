@@ -1,8 +1,14 @@
 {%- comment -%}
-  Accueil « comptoir » : salue le visiteur à son arrivée (une fois par visite) et l'oriente en un toucher.
-  Non affiché sur la page pompe à chaleur (formulaire prioritaire). Fermeture libre : croix, fond, Échap, « Je visite simplement ».
+  Accueil « comptoir » centré pompe à chaleur : s'affiche une fois par visite, après ~12 s passées sur le site,
+  jamais pendant qu'un formulaire est en cours. Fermeture libre : croix, fond, Échap, « Je visite simplement ».
 {%- endcomment -%}
-{%- assign h = routes.root_url | remove_last: '/' -%}
+{%- liquid
+  assign h = routes.root_url | remove_last: '/'
+  assign pac = h | append: '/pages/pompe-a-chaleur-aides'
+  if template.suffix == 'pac'
+    assign pac = ''
+  endif
+-%}
 <div class="wel" data-wel hidden>
   <div class="wel__bg" data-wel-close></div>
   <section class="wel__desk" role="dialog" aria-modal="true" aria-labelledby="wel-msg">
@@ -16,20 +22,21 @@
     </div>
     <p class="wel__msg" id="wel-msg" data-wel-msg aria-live="polite"></p>
     <div class="wel__resume" data-wel-resume hidden>
-      <a class="btn btn--primary" href="{{ h }}/pages/pompe-a-chaleur-aides#etude">Reprendre ma demande {% render 'icon', name: 'btn-arrow' %}</a>
+      <a class="btn btn--primary" href="{{ pac }}#etude" data-wel-go>Reprendre ma demande {% render 'icon', name: 'btn-arrow' %}</a>
     </div>
     <div class="wel__grid" data-wel-grid>
-      <a class="wel__opt" href="{{ h }}/pages/pompe-a-chaleur-aides" data-wel-go>
+      <a class="wel__opt wel__opt--main" href="{{ pac }}#etude" data-wel-go>
         <span class="wel__ic">{% render 'icon', name: 'flame' %}</span>
-        <b>Remplacer ma chaudière</b><small>Pompe à chaleur</small>
+        <span class="wel__main-t"><b>Vérifier mes aides pompe à chaleur</b><small>4 questions · 30 secondes · gratuit</small></span>
+        <span class="wel__go" aria-hidden="true">{% render 'icon', name: 'arrow' %}</span>
       </a>
-      <a class="wel__opt" href="{{ h }}/pages/pompe-a-chaleur-aides#profil" data-wel-go>
+      <a class="wel__opt" href="{{ pac }}#profil" data-wel-go>
         <span class="wel__ic">{% render 'icon', name: 'shield' %}</span>
-        <b>Connaître mes aides</b><small>En 10 secondes</small>
+        <b>Mon profil de revenus</b><small>Bleu, Jaune, Violet, Rose</small>
       </a>
       <button class="wel__opt" type="button" data-wel-ai>
         <span class="wel__ic">{% render 'icon', name: 'info' %}</span>
-        <b>Poser une question</b><small>Réponse immédiate</small>
+        <b>Une question ?</b><small>Réponse immédiate</small>
       </button>
       <button class="wel__opt" type="button" data-wel-cb>
         <span class="wel__ic">{% render 'icon', name: 'phone' %}</span>

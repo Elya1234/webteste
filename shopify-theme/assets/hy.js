@@ -620,43 +620,54 @@
   }
 
 
-  /* ---------- Accueil « comptoir » (une fois par visite) ---------- */
+  /* ---------- Accueil « comptoir » : après ~12 s sur le site, centré pompe à chaleur ---------- */
   const wel = $('[data-wel]');
   if (wel) {
     const ss = (k, v) => { try { if (v !== undefined) sessionStorage.setItem(k, v); return sessionStorage.getItem(k); } catch (e) { return '1'; } };
     const lsg = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
     const lss = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
     const posted = /contact_posted=true/.test(location.search);
+    if (!ss('hy-start')) ss('hy-start', Date.now());
+    const DELAY = 12000;
+    const formStarted = () => !!d.querySelector('.form form :is(input,textarea):focus') || $$('.form form input[type=radio]:checked, .form form input[type=checkbox]:checked, .form form input[type=text]:not([name=website]), .form form input[type=tel], .form form input[type=email]').some(i => i.type === 'radio' || i.type === 'checkbox' ? i.checked : i.value);
+    const busy = () => !$('[data-cb]')?.hidden || !$('.ai__panel')?.hidden || !!d.querySelector('.menu.is-open') || !!d.querySelector('.cb__form :focus, .ai__bar :focus');
     if (!ss('hy-welcomed') && !posted) {
-      ss('hy-welcomed', 1); ss('cb-auto', 1); // évite d'enchaîner deux fenêtres
       const back = !!lsg('hy-visited'); lss('hy-visited', 1);
-      const hr = new Date().getHours(), hello = hr >= 18 || hr < 5 ? 'Bonsoir' : 'Bonjour';
-      let resume = false;
-      try { resume = Object.keys(localStorage).some(k => k.startsWith('hy-form:') && (JSON.parse(localStorage.getItem(k)) || {}).step > 0); } catch (e) {}
-      const text = back
-        ? `${hello} 👋 Bon retour parmi nous ! ${resume ? 'Votre demande vous attend.' : 'Que pouvons-nous faire pour vous ?'}`
-        : `${hello} 👋 Bienvenue chez Énergie Hachem Yazour. Qu'est-ce qui vous amène aujourd'hui ?`;
-      const msg = $('[data-wel-msg]', wel);
-      let last = d.activeElement;
-      const close = () => { wel.classList.remove('is-open'); setTimeout(() => { wel.hidden = true; }, reduce ? 0 : 450); d.body.classList.remove('wel-lock'); last?.focus?.(); };
-      const type = () => {
-        if (reduce) { msg.textContent = text; wel.classList.add('typed'); return; }
-        let i = 0; msg.textContent = '';
-        const step = () => { msg.textContent = text.slice(0, ++i); if (i < text.length) setTimeout(step, text[i - 1] === ' ' ? 18 : 24); else wel.classList.add('typed'); };
-        step();
-      };
-      setTimeout(() => {
+      let tries = 0;
+      const show = () => {
+        if (ss('hy-welcomed')) return;
+        if (formStarted()) { ss('hy-welcomed', 1); return; }        // la personne remplit déjà : on ne la dérange pas
+        if (busy() || d.hidden) { if (++tries < 6) setTimeout(show, 8000); return; }
+        ss('hy-welcomed', 1); ss('cb-auto', 1);
+        const hr = new Date().getHours(), hello = hr >= 18 || hr < 5 ? 'Bonsoir' : 'Bonjour';
+        let resume = false;
+        try { resume = Object.keys(localStorage).some(k => k.startsWith('hy-form:') && (JSON.parse(localStorage.getItem(k)) || {}).step > 0); } catch (e) {}
+        const text = resume
+          ? `${hello} 👋 Votre demande de pompe à chaleur vous attend. On la termine ensemble ?`
+          : back
+            ? `${hello} 👋 Bon retour ! Toujours partant pour une pompe à chaleur ? Vérifiez vos aides en 30 secondes.`
+            : `${hello} 👋 Vous pensez à une pompe à chaleur ? Vérifiez vos aides en 30 secondes.`;
+        const msg = $('[data-wel-msg]', wel), last = d.activeElement;
         wel.hidden = false; d.body.classList.add('wel-lock');
         if (resume) $('[data-wel-resume]', wel).hidden = false;
         requestAnimationFrame(() => wel.classList.add('is-open'));
+        const type = () => {
+          if (reduce) { msg.textContent = text; wel.classList.add('typed'); return; }
+          let i = 0; msg.textContent = '';
+          const step = () => { msg.textContent = text.slice(0, ++i); if (i < text.length) setTimeout(step, text[i - 1] === ' ' ? 18 : 24); else wel.classList.add('typed'); };
+          step();
+        };
         setTimeout(type, reduce ? 0 : 550);
         setTimeout(() => $('.wel__opt', wel)?.focus({ preventScroll: true }), 700);
-      }, reduce ? 0 : 900);
+        wel._close = () => { wel.classList.remove('is-open'); setTimeout(() => { wel.hidden = true; }, reduce ? 0 : 450); d.body.classList.remove('wel-lock'); last?.focus?.(); };
+      };
+      const close = () => wel._close && wel._close();
       $$('[data-wel-close]', wel).forEach(b => b.addEventListener('click', close));
       d.addEventListener('keydown', e => { if (e.key === 'Escape' && !wel.hidden) close(); });
-      $$('[data-wel-go]', wel).forEach(a => a.addEventListener('click', () => { wel.classList.remove('is-open'); }));
+      $$('[data-wel-go]', wel).forEach(a => a.addEventListener('click', () => close()));
       $('[data-wel-ai]', wel)?.addEventListener('click', () => { close(); setTimeout(() => $('.ai__fab')?.click(), 300); });
       $('[data-wel-cb]', wel)?.addEventListener('click', () => { close(); setTimeout(() => $('[data-cb-open]')?.click(), 300); });
+      setTimeout(show, Math.max(1500, DELAY - (Date.now() - +ss('hy-start'))));
     }
   }
 

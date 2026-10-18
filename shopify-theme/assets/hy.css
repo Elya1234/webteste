@@ -1061,3 +1061,15 @@ body.cb-lock{overflow:hidden}
 .wel__skip svg{width:15px;height:15px}
 .wel__skip:hover{color:var(--porcelain)}
 body.wel-lock{overflow:hidden}
+/* Accueil centré pompe à chaleur : option principale large */
+.wel__opt--main{grid-column:1/-1;flex-direction:row;align-items:center;gap:14px;padding:16px 18px;background:var(--aurora);border-color:var(--aurora);color:var(--obsidian);box-shadow:var(--glow)}
+.wel__opt--main:hover,.wel__opt--main:focus-visible{background:#52eab0;border-color:#52eab0}
+.wel__opt--main .wel__ic{background:var(--obsidian);color:var(--aurora);margin:0;flex:none}
+.wel__main-t{display:grid;gap:2px;flex:1;min-width:0}
+.wel__opt--main b{font-size:1.05rem}
+.wel__opt--main small{color:rgba(10,11,13,.7)}
+.wel__go{width:36px;height:36px;border-radius:50%;background:var(--obsidian);color:var(--aurora);display:grid;place-items:center;flex:none}
+.wel__go svg{width:16px;height:16px}
+.wel__grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:759px){.wel__grid{grid-template-columns:repeat(3,minmax(0,1fr))}.wel__grid .wel__opt:not(.wel__opt--main){padding:12px 10px}.wel__grid .wel__opt:not(.wel__opt--main) small{display:none}.wel__grid .wel__opt:not(.wel__opt--main) b{font-size:.82rem}.wel__grid .wel__opt:not(.wel__opt--main) .wel__ic{width:34px;height:34px;margin-bottom:4px}}
+@media (min-width:760px){.wel__grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
