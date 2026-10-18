@@ -1,0 +1,318 @@
+{%- liquid
+  assign img = 'https://images.unsplash.com/photo-'
+  assign q = '?auto=format&fit=crop&q=72'
+  assign h = routes.root_url | remove_last: '/'
+-%}
+
+{%- comment -%} ============ HERO + FORMULAIRE EXPRESS ============ {%- endcomment -%}
+<section class="lp-hero" aria-label="Pompe à chaleur">
+  <div class="lp-hero__bg" data-parallax="8"><img src="{{ img }}1613490493576-7fde63acd811{{ q }}&w=1800" srcset="{{ img }}1613490493576-7fde63acd811{{ q }}&w=900 900w, {{ img }}1613490493576-7fde63acd811{{ q }}&w=1800 1800w" sizes="100vw" alt="Maison contemporaine équipée d'une pompe à chaleur" fetchpriority="high"></div>
+  <div class="wrap lp-hero__grid">
+    <div class="lp-hero__txt">
+      <span class="eyebrow fade-in">Pompe à chaleur</span>
+      <h1><span class="ln"><span>Passez à la</span></span><span class="ln"><span>pompe à chaleur.</span></span><span class="ln"><span class="s">On vérifie vos aides.</span></span></h1>
+      <ul class="lp-ticks fade-in d2">
+        <li>{% render 'icon', name: 'clock' %}<span><b>30 secondes</b><em> pour répondre</em></span></li>
+        <li>{% render 'icon', name: 'shield' %}<span><b>Aides vérifiées</b><em> selon votre situation</em></span></li>
+        <li>{% render 'icon', name: 'check' %}<span><b>Gratuit</b><em> et sans engagement</em></span></li>
+      </ul>
+    </div>
+
+    <div class="form lp-form fade-in d1" id="etude">
+      <span class="lp-badge" aria-hidden="true"><i></i>Gratuit · Sans engagement</span>
+      {%- form 'contact', id: 'pac-form', novalidate: 'novalidate' -%}
+        <input type="hidden" name="contact[Demande]" value="Pompe à chaleur — page aides">
+        <input type="hidden" name="contact[Profil revenus estimé]" value="" data-profile>
+        {%- if form.posted_successfully? -%}
+          <div class="form__ok" role="status">
+            <span class="badge">{% render 'icon', name: 'check' %}</span>
+            <h2 style="font-size:1.6rem">C'est envoyé !</h2>
+            <p class="muted">Un conseiller vous rappelle pour étudier votre projet et vérifier vos aides.</p>
+          </div>
+        {%- else -%}
+          {%- if form.errors -%}<div class="form__err" role="alert">Envoi impossible. Vérifiez les champs ({{ form.errors | default_errors }}).</div>{%- endif -%}
+          <div class="progress" aria-hidden="true"><div class="progress__bar"><i></i></div><span class="progress__lbl">Étape 1 / 4</span></div>
+
+          <fieldset class="step is-current" data-auto>
+            <legend>Quel type de chaudière avez-vous ?</legend>
+            <div class="q" data-group>
+              <div class="tiles" role="radiogroup" aria-label="Type de chaudière">
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Gaz"><span><b>{% render 'icon', name: 'flame' %}</b>Gaz</span></label>
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Fioul"><span><b>{% render 'icon', name: 'drop' %}</b>Fioul</span></label>
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Bois"><span><b>{% render 'icon', name: 'leaf' %}</b>Bois</span></label>
+                <label class="tile"><input type="radio" name="contact[Chaudière actuelle]" value="Pas de chaudière (électrique / autre)" data-ko><span><b>{% render 'icon', name: 'spark' %}</b>Électrique<small>ou pas de chaudière</small></span></label>
+              </div>
+              <span class="err-msg">Choisissez une réponse.</span>
+            </div>
+            <div class="okmsg" data-ok-msg hidden role="status">{% render 'icon', name: 'check' %}<span><b>Compatible.</b> Votre chaudière peut être remplacée par une pompe à chaleur. On continue.</span></div>
+            <div class="komsg" data-ko-msg hidden role="status">
+              <p><b>Sans chaudière, les aides au remplacement de chaudière ne s'appliquent pas.</b> D'autres solutions restent possibles selon votre logement.</p>
+              <button type="button" class="btn btn--glass btn--sm" data-force>Continuer quand même {% render 'icon', name: 'btn-arrow' %}</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="step" data-auto>
+            <legend>Vous êtes…</legend>
+            <div class="q" data-group>
+              <div class="tiles tiles--3" role="radiogroup" aria-label="Statut">
+                <label class="tile"><input type="radio" name="contact[Statut]" value="Propriétaire occupant"><span><b>{% render 'icon', name: 'home' %}</b>Propriétaire<small>j'y habite</small></span></label>
+                <label class="tile"><input type="radio" name="contact[Statut]" value="Propriétaire bailleur"><span><b>{% render 'icon', name: 'key' %}</b>Propriétaire<small>je loue</small></span></label>
+                <label class="tile"><input type="radio" name="contact[Statut]" value="Locataire"><span><b>{% render 'icon', name: 'doc' %}</b>Locataire</span></label>
+              </div>
+              <span class="err-msg">Choisissez une réponse.</span>
+            </div>
+          </fieldset>
+
+          <fieldset class="step" data-auto>
+            <legend>Votre logement ?</legend>
+            <div class="q" data-group>
+              <div class="tiles" role="radiogroup" aria-label="Logement">
+                <label class="tile"><input type="radio" name="contact[Logement]" value="Maison de plus de 15 ans"><span><b>{% render 'icon', name: 'home' %}</b>Maison<small>plus de 15 ans</small></span></label>
+                <label class="tile"><input type="radio" name="contact[Logement]" value="Maison de 2 à 15 ans"><span><b>{% render 'icon', name: 'home' %}</b>Maison<small>2 à 15 ans</small></span></label>
+                <label class="tile"><input type="radio" name="contact[Logement]" value="Maison de moins de 2 ans"><span><b>{% render 'icon', name: 'home' %}</b>Maison<small>moins de 2 ans</small></span></label>
+                <label class="tile"><input type="radio" name="contact[Logement]" value="Appartement"><span><b>{% render 'icon', name: 'building' %}</b>Appartement</span></label>
+              </div>
+              <span class="err-msg">Choisissez une réponse.</span>
+            </div>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend><span class="last-tag">Dernière étape</span>Où vous rappeler ?</legend>
+            <div class="grid2">
+              <div class="field"><input id="p-fn" name="contact[Prénom]" placeholder=" " autocomplete="given-name" data-rule="req" required><label for="p-fn">Prénom</label><span class="err-msg">Indiquez votre prénom.</span></div>
+              <div class="field"><input id="p-tel" type="tel" name="contact[phone]" placeholder=" " autocomplete="tel" inputmode="tel" data-rule="tel" required><label for="p-tel">Téléphone</label><span class="err-msg">10 chiffres.</span></div>
+              <div class="field"><input id="p-cp" name="contact[Code postal]" placeholder=" " autocomplete="postal-code" inputmode="numeric" maxlength="5" data-rule="cp" required><label for="p-cp">Code postal</label><span class="err-msg">5 chiffres.</span></div>
+              <div class="field"><input id="p-mail" type="email" name="contact[email]" placeholder=" " autocomplete="email" data-rule="email" required><label for="p-mail">Email</label><span class="err-msg">Email invalide.</span></div>
+            </div>
+            <input type="hidden" name="contact[Ville]" value="" data-city>
+            <div class="hp" aria-hidden="true"><label for="p-web">Ne pas remplir</label><input id="p-web" type="text" name="website" tabindex="-1" autocomplete="off"></div>
+            <div class="consent-wrap">
+              <label class="consent"><input type="checkbox" name="contact[Consentement RGPD]" value="Oui" data-consent required><span>J'accepte d'être recontacté au sujet de ma demande. <a href="{{ h }}/pages/hachem-yazour-confidentialite">Confidentialité</a></span></label>
+              <span class="err-msg">Votre accord est nécessaire.</span>
+            </div>
+          </fieldset>
+
+          <div class="form__nav">
+            <button type="button" class="back" data-back hidden>{% render 'icon', name: 'arrow' %}Retour</button>
+            <button type="button" class="btn btn--primary" data-next>Continuer {% render 'icon', name: 'btn-arrow' %}</button>
+            <button type="submit" class="btn btn--primary" data-submit>Vérifier mes aides {% render 'icon', name: 'btn-arrow' %}</button>
+          </div>
+          <div class="form__extra">
+            <p class="secure">{% render 'icon', name: 'shield' %}Vos informations servent uniquement à vous rappeler.</p>
+            {%- if settings.whatsapp_number != blank -%}<button type="button" class="alt-wa" data-wa-answers>Ou envoyer mes réponses sur <b>WhatsApp</b></button>{%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% render 'simulator' %}
+
+{%- comment -%} ============ MAISON INTERACTIVE PAC (version pédagogique) ============ {%- endcomment -%}
+<section class="section" aria-labelledby="pacx-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow rv">Comment ça marche</span>
+      <h2 class="rv" id="pacx-title">Une pompe à chaleur, <span class="s">c'est simple.</span></h2>
+      <p class="lead rv">Elle prend la chaleur gratuite de l'air dehors et l'amène dans votre maison. Elle se compose de <b style="color:var(--porcelain)">2 appareils</b> : un dehors, un dedans. Touchez un numéro pour comprendre chaque élément.</p>
+    </div>
+
+    <div class="pacx" data-pacx>
+      <div class="house__stage pacx__stage rv"><div class="house__canvas">
+        <svg class="house__svg" viewBox="0 0 800 480" role="img" aria-label="Schéma : unité extérieure, module intérieur, radiateur, plancher chauffant et thermostat">
+          <line class="faint" x1="20" y1="440" x2="780" y2="440"/>
+          <path class="stroke" d="M120 172 L350 60 L580 172"/>
+          <path class="stroke" d="M140 162 V440 M560 162 V440"/>
+          <line class="faint" x1="150" y1="300" x2="550" y2="300"/>
+          <rect class="faint" x="200" y="200" width="70" height="56" rx="3"/>
+          <text class="lbl" x="350" y="130" text-anchor="middle">Votre maison</text>
+          <text class="lbl lbl--out" x="684" y="300" text-anchor="middle">Air extérieur</text>
+          <g class="part" data-k="rad"><rect x="380" y="244" width="72" height="40" rx="5" fill="rgba(255,179,107,.1)" stroke="#FFB36B" stroke-width="1.4"/><path d="M394 248v32M408 248v32M422 248v32M436 248v32" stroke="#FFB36B" stroke-width="1" opacity=".6"/></g>
+          <g class="part" data-k="pla"><path d="M160 430 h40 v-8 h40 v8 h40 v-8 h40 v8 h40 v-8 h40 v8 h40" fill="none" stroke="#FFB36B" stroke-width="1.6"/></g>
+          <g class="part" data-k="mod"><rect x="472" y="330" width="50" height="96" rx="12" fill="rgba(59,227,161,.08)" stroke="#3BE3A1" stroke-width="1.4"/><circle cx="497" cy="352" r="6" fill="none" stroke="#3BE3A1" stroke-width="1.2"/></g>
+          <g class="part" data-k="th"><rect x="300" y="350" width="22" height="32" rx="5" fill="none" stroke="#3BE3A1" stroke-width="1.3"/><circle cx="311" cy="362" r="5" fill="none" stroke="#3BE3A1" stroke-width="1.1"/></g>
+          <g class="part" data-k="ext"><rect x="616" y="356" width="136" height="84" rx="8" fill="rgba(59,227,161,.08)" stroke="#3BE3A1" stroke-width="1.5"/><circle cx="660" cy="398" r="27" fill="none" stroke="#3BE3A1" stroke-width="1.3"/><path d="M660 371v54M633 398h54" stroke="#3BE3A1" stroke-width="1" opacity=".6"/><line x1="700" y1="378" x2="740" y2="378" stroke="#3BE3A1"/><line x1="700" y1="390" x2="740" y2="390" stroke="#3BE3A1"/><line x1="700" y1="402" x2="740" y2="402" stroke="#3BE3A1"/></g>
+          <path class="flow on" data-k="ext" d="M790 310 Q 730 320 700 352"/>
+          <path class="flow on" data-k="ext mod" d="M616 400 H 522"/>
+          <path class="flow warm on" data-k="mod rad" d="M497 330 V 264 H 452"/>
+          <path class="flow warm on" data-k="mod pla" d="M472 420 H 440"/>
+          <text class="lbl" x="684" y="462" text-anchor="middle">1 · Unité extérieure</text>
+          <text class="lbl" x="497" y="462" text-anchor="middle">2 · Module intérieur</text>
+          <text class="lbl" x="416" y="232" text-anchor="middle">3 · Radiateur</text>
+          <text class="lbl" x="280" y="462" text-anchor="middle">4 · Plancher chauffant</text>
+          <text class="lbl" x="311" y="340" text-anchor="middle">5 · Thermostat</text>
+        </svg>
+        <button class="hot hot--n" type="button" data-part="ext" aria-pressed="false" aria-label="1 : unité extérieure" style="left:85.5%;top:83%"><span>1</span></button>
+        <button class="hot hot--n" type="button" data-part="mod" aria-pressed="false" aria-label="2 : module intérieur" style="left:62.1%;top:79%"><span>2</span></button>
+        <button class="hot hot--n" type="button" data-part="rad" aria-pressed="false" aria-label="3 : radiateur" style="left:52%;top:55.5%"><span>3</span></button>
+        <button class="hot hot--n" type="button" data-part="pla" aria-pressed="false" aria-label="4 : plancher chauffant" style="left:35%;top:88.5%"><span>4</span></button>
+        <button class="hot hot--n" type="button" data-part="th" aria-pressed="false" aria-label="5 : thermostat" style="left:38.9%;top:76%"><span>5</span></button>
+      </div></div>
+
+      <div class="pacx__legend">
+        <span class="pacx__l"><i class="dot dot--g"></i>Fait partie de la pompe à chaleur</span>
+        <span class="pacx__l"><i class="dot dot--o"></i>Souvent déjà chez vous</span>
+        <span class="pacx__l"><i class="flowkey"></i>Circulation de la chaleur</span>
+      </div>
+
+      <div class="pacx__cards" aria-live="polite">
+        <div class="pcnav" role="tablist" aria-label="Choisir un élément">
+          <button type="button" role="tab" data-part="ext" aria-label="Unité extérieure">1</button>
+          <button type="button" role="tab" data-part="mod" aria-label="Module intérieur">2</button>
+          <button type="button" role="tab" data-part="rad" aria-label="Radiateurs">3</button>
+          <button type="button" role="tab" data-part="pla" aria-label="Plancher chauffant">4</button>
+          <button type="button" role="tab" data-part="th" aria-label="Thermostat">5</button>
+        </div>
+        <article class="pc" data-part="ext" tabindex="0">
+          <header><span class="pc__n">1</span><h3>Unité extérieure</h3><span class="tag tag--g">Pompe à chaleur</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Un boîtier avec un ventilateur, posé dehors contre le mur ou au sol.</dd><dt>Ça sert à quoi ?</dt><dd>Capter la chaleur contenue dans l'air extérieur, même quand il fait froid.</dd></dl>
+        </article>
+        <article class="pc" data-part="mod" tabindex="0">
+          <header><span class="pc__n">2</span><h3>Module intérieur</h3><span class="tag tag--g">Pompe à chaleur</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>L'appareil qui prend la place de votre ancienne chaudière (garage, cellier, cuisine…).</dd><dt>Ça sert à quoi ?</dt><dd>Envoyer la chaleur dans votre chauffage et, selon le modèle, chauffer l'eau du robinet.</dd></dl>
+        </article>
+        <article class="pc" data-part="rad" tabindex="0">
+          <header><span class="pc__n">3</span><h3>Radiateurs</h3><span class="tag tag--o">Déjà chez vous</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Vos radiateurs actuels, dans chaque pièce.</dd><dt>Ça sert à quoi ?</dt><dd>Diffuser la chaleur. Souvent conservés : nous vérifions qu'ils sont compatibles.</dd></dl>
+        </article>
+        <article class="pc" data-part="pla" tabindex="0">
+          <header><span class="pc__n">4</span><h3>Plancher chauffant</h3><span class="tag tag--o">Si vous en avez un</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Des tuyaux d'eau chaude cachés dans le sol.</dd><dt>Ça sert à quoi ?</dt><dd>Chauffer par le sol, en douceur. C'est l'idéal avec une pompe à chaleur.</dd></dl>
+        </article>
+        <article class="pc" data-part="th" tabindex="0">
+          <header><span class="pc__n">5</span><h3>Thermostat</h3><span class="tag tag--g">Fourni selon modèle</span></header>
+          <dl><dt>C'est quoi ?</dt><dd>Un petit boîtier au mur, ou une application sur votre téléphone.</dd><dt>Ça sert à quoi ?</dt><dd>Choisir la température. La pompe à chaleur s'adapte toute seule.</dd></dl>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============ COMPARATIF ============ {%- endcomment -%}
+<section class="section cmp-sec" aria-labelledby="cmp-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow rv">Pourquoi changer ?</span>
+      <h2 class="rv" id="cmp-title">Chaudière ou pompe à chaleur ? <span class="s">Le match.</span></h2>
+    </div>
+    <div class="cmp rv">
+      <div class="cmp__col cmp__col--old">
+        <div class="cmp__h"><span class="cmp__ic">{% render 'icon', name: 'flame' %}</span><div><small>Aujourd'hui</small><b>Chaudière gaz ou fioul</b></div></div>
+        <ul>
+          <li><i>✕</i><span><b>Énergie fossile</b> au prix qui varie</span></li>
+          <li><i>✕</i><span><b>Combustion</b> dans la maison</span></li>
+          <li><i>✕</i><span><b>Cuve et livraisons</b> pour le fioul</span></li>
+          <li><i>✕</i><span><b>Fioul</b> : installation de chaudière neuve interdite depuis 2022</span></li>
+          <li><i>✕</i><span><b>Chauffage seul</b>, pas de fraîcheur l'été</span></li>
+        </ul>
+      </div>
+      <div class="cmp__vs" aria-hidden="true">VS</div>
+      <div class="cmp__col cmp__col--new">
+        <div class="cmp__h"><span class="cmp__ic">{% render 'icon', name: 'leaf' %}</span><div><small>Demain</small><b>Pompe à chaleur</b></div></div>
+        <ul>
+          <li><i>✓</i><span><b>Chaleur de l'air</b>, disponible gratuitement</span></li>
+          <li><i>✓</i><span><b>Aucune flamme</b> dans la maison</span></li>
+          <li><i>✓</i><span><b>Rien à stocker</b>, rien à faire livrer</span></li>
+          <li><i>✓</i><span><b>Aides publiques</b> possibles selon votre situation</span></li>
+          <li><i>✓</i><span><b>Fraîcheur l'été</b> avec certains modèles</span></li>
+        </ul>
+        <a class="btn btn--primary" href="#etude">Je passe à la pompe à chaleur {% render 'icon', name: 'btn-arrow' %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============ 3 ÉTAPES ============ {%- endcomment -%}
+<section class="section light" style="padding-block:clamp(72px,9vw,128px)">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow rv">C'est simple</span><h2 class="rv">3 étapes. <span class="s">C'est tout.</span></h2></div>
+    <div class="lp-steps">
+      <div class="lp-step rv"><span class="lp-step__n">1</span><h3>Vous répondez</h3><p>4 questions, 30 secondes.</p></div>
+      <div class="lp-step rv"><span class="lp-step__n">2</span><h3>On étudie</h3><p>Votre maison et vos aides possibles.</p></div>
+      <div class="lp-step rv"><span class="lp-step__n">3</span><h3>On installe</h3><p>Pose, mise en service, suivi.</p></div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============ AIDES ============ {%- endcomment -%}
+<section class="section" style="padding-block:clamp(72px,9vw,128px)">
+  <div class="wrap lp-aids">
+    <div>
+      <span class="eyebrow rv">Les aides</span>
+      <h2 class="rv" style="margin-top:18px">Plusieurs aides <span class="s">peuvent s'additionner.</span></h2>
+    </div>
+    <div>
+      <div class="lp-chips rv">
+        <span>MaPrimeRénov'</span><span>Prime CEE « Coup de pouce »</span><span>TVA réduite</span><span>Éco-prêt à taux zéro</span><span>Aides locales</span>
+      </div>
+      <p class="muted rv" style="font-size:.88rem;margin-top:20px">Montant selon vos revenus, votre logement et les conditions du moment. Aucune aide n'est garantie avant étude. <a href="{{ h }}/pages/aides-renovation-energetique" style="color:var(--porcelain)">En savoir plus</a></p>
+      <a class="btn btn--primary rv" href="#etude" style="margin-top:28px">Vérifier mes aides {% render 'icon', name: 'btn-arrow' %}</a>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============ L'ESSENTIEL (contenu pour Google) ============ {%- endcomment -%}
+<section class="section" style="padding-top:0" aria-labelledby="ess-title">
+  <div class="wrap ess">
+    <div>
+      <span class="eyebrow rv">L'essentiel</span>
+      <h2 class="rv" id="ess-title" style="margin-top:18px">La pompe à chaleur <span class="s">en 4 points.</span></h2>
+    </div>
+    <div class="ess__grid">
+      <div class="ess__i rv"><h3>Pour quelles maisons ?</h3><p>Surtout les maisons chauffées au <b>gaz</b>, au <b>fioul</b> ou au <b>bois</b> avec des radiateurs à eau ou un plancher chauffant.</p></div>
+      <div class="ess__i rv"><h3>Quelles aides ?</h3><p>MaPrimeRénov', prime CEE « Coup de pouce », TVA réduite, éco-PTZ : selon votre <a href="#profil">profil de revenus</a> et les conditions du moment.</p></div>
+      <div class="ess__i rv"><h3>Combien ça coûte ?</h3><p>Le prix dépend de la puissance, du logement et des travaux. <a href="{{ h }}/blogs/guides-energie/prix-pompe-a-chaleur-ce-qui-fait-varier-le-devis">Ce qui fait varier le devis</a>.</p></div>
+      <div class="ess__i rv"><h3>Et le « 1 € » ?</h3><p>Personne ne peut le garantir sans étude. <a href="{{ h }}/blogs/guides-energie/pompe-a-chaleur-a-1-euro-vrai-ou-faux">Notre réponse honnête</a>.</p></div>
+    </div>
+    <p class="ess__more rv">À lire aussi : <a href="{{ h }}/blogs/guides-energie/maprimerenov-2026-profils-bleu-jaune-violet-rose">les profils MaPrimeRénov' 2026</a> · <a href="{{ h }}/blogs/guides-energie/remplacer-chaudiere-fioul-par-pompe-a-chaleur">remplacer une chaudière fioul</a> · <a href="{{ h }}/blogs/guides-energie/pompe-a-chaleur-air-eau-ou-air-air-comment-choisir">air/eau ou air/air ?</a> · <a href="{{ h }}/pages/pompe-a-chaleur">notre page pompe à chaleur</a></p>
+  </div>
+</section>
+
+{%- comment -%} ============ FAQ ============ {%- endcomment -%}
+{%- capture faq -%}
+La pompe à chaleur à 1 € existe-t-elle ?|Certaines publicités l'affirment, mais personne ne peut garantir un prix avant d'avoir étudié votre dossier. Le reste à payer dépend de vos revenus, de votre logement et des aides en vigueur. Pour certains foyers aux revenus modestes, les aides peuvent couvrir une grande partie du coût. Méfiez-vous des promesses faites sans étude ni visite.
+Combien de temps dure l'installation ?|En général quelques jours de travaux. Le calendrier précis vous est donné avec la proposition.
+Puis-je garder mes radiateurs ?|Souvent oui. Nous vérifions leur compatibilité pendant l'étude.
+Ça marche quand il fait très froid ?|Oui. Les modèles actuels fonctionnent par températures négatives ; le dimensionnement tient compte de votre région.
+{%- endcapture -%}
+{%- assign fl = faq | strip | newline_to_br | split: '<br />' -%}
+<section class="section" id="faq" style="padding-top:0">
+  <div class="wrap" style="max-width:880px">
+    <div class="sec-head"><span class="eyebrow rv">Questions</span><h2 class="rv">Réponses <span class="s">rapides.</span></h2></div>
+    {%- for l in fl -%}{%- assign f = l | strip | split: '|' -%}
+      <div class="acc rv">
+        <h3 style="font-size:inherit;letter-spacing:inherit"><button class="acc__q" type="button" aria-expanded="false" aria-controls="pf-{{ forloop.index }}" id="pfq-{{ forloop.index }}">{{ f[0] }}<span class="acc__i" aria-hidden="true"></span></button></h3>
+        <div class="acc__a" id="pf-{{ forloop.index }}" role="region" aria-labelledby="pfq-{{ forloop.index }}"><div><p>{{ f[1] }}</p></div></div>
+      </div>
+    {%- endfor -%}
+  </div>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {%- for l in fl -%}{%- assign f = l | strip | split: '|' -%}
+    {"@type":"Question","name":{{ f[0] | json }},"acceptedAnswer":{"@type":"Answer","text":{{ f[1] | json }}}}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]}
+  </script>
+</section>
+
+{%- comment -%} ============ CTA FINAL ============ {%- endcomment -%}
+<section class="final">
+  <div class="final__bg" data-parallax="8"><img src="{{ img }}1600585154340-be6161a56a0c{{ q }}&w=1800" alt="" loading="lazy" decoding="async"></div>
+  <div class="wrap">
+    <h2 class="rv">Votre pompe à chaleur <span class="s">commence ici.</span></h2>
+    <div class="ctas rv" style="margin-top:36px"><a class="btn btn--primary" href="#etude">Vérifier mes aides {% render 'icon', name: 'btn-arrow' %}</a></div>
+  </div>
+</section>
+
+<script type="application/ld+json">
+[{
+  "@context":"https://schema.org","@type":"Service",
+  "name":"Installation de pompe à chaleur",
+  "serviceType":"Pompe à chaleur air/eau et air/air",
+  "description":{{ settings.seo_description | json }},
+  "areaServed":{"@type":"Country","name":"France"},
+  "provider":{"@id":{{ shop.url | append: '/#entreprise' | json }}},
+  "url":{{ shop.url | append: routes.root_url | json }}
+}]
+</script>

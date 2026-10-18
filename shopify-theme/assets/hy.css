@@ -1142,3 +1142,16 @@ html[style*="font-size"] .hdr__bar{padding-left:12px}
 .ptab__card{overflow-x:auto}
 html[style*="font-size"] .ptab .ptable{min-width:520px}
 @media (max-width:340px){.hdr__bar{padding:0 6px 0 12px;gap:8px}.hdr .logo svg{width:30px;height:30px}.hdr .logo{gap:8px}.hdr .logo__wm b{font-size:12px}}
+
+/* ---------------- Languette A+ / A− sur le bord droit ---------------- */
+.zoom{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:75;display:flex;align-items:center}
+.zoom__tab{width:30px;height:64px;border-radius:14px 0 0 14px;background:rgba(17,19,23,.7);border:1px solid rgba(255,255,255,.14);border-right:0;color:var(--porcelain);font:600 15px/1 var(--f-display);display:grid;place-items:center;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:.75;transition:opacity .3s,background-color .3s}
+.zoom__tab span{display:block;font-size:12px;color:var(--aurora)}
+.zoom__tab:hover,.zoom.is-open .zoom__tab{opacity:1}
+.zoom__box{display:grid;justify-items:center;gap:6px;width:0;overflow:hidden;padding:8px 0;background:rgba(17,19,23,.88);border:1px solid rgba(255,255,255,.14);border-right:0;border-left:0;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:width .35s var(--ease),padding .35s var(--ease)}
+.zoom.is-open .zoom__box{width:64px;padding:8px 8px}
+.zoom__box button{width:48px;height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:var(--porcelain);font:600 18px/1 var(--f-display)}
+.zoom__box button:disabled{opacity:.3}
+.zoom__box button:not(:disabled):hover{border-color:var(--aurora);color:var(--aurora)}
+.zoom__box output{font:600 12px/1 var(--f-mono);color:var(--aurora);white-space:nowrap}
+html.hc .zoom__tab{opacity:1;background:#000}

@@ -694,22 +694,26 @@
     const SIZES = [100, 115, 130, 150];
     const btn = $('[data-a11y-toggle]', a11y), panel = $('.a11y__panel', a11y), val = $('[data-a11y-val]', a11y), hc = $('[data-a11y-hc]', a11y);
     let st = { s: 0, hc: false };
-    try { st = Object.assign(st, JSON.parse(localStorage.getItem('hy-a11y') || '{}')); } catch (e) {}
+    try { const saved = JSON.parse(localStorage.getItem('hy-a11y') || 'null'); if (saved) st = Object.assign(st, saved); else if (innerWidth < 760) st.s = 3; } catch (e) {}
     const apply = () => {
       d.documentElement.style.fontSize = st.s ? SIZES[st.s] + '%' : '';
       d.documentElement.classList.toggle('hc', !!st.hc);
-      val.textContent = SIZES[st.s] + ' %';
+      $$('[data-a11y-val]').forEach(v => v.textContent = SIZES[st.s] + ' %');
       hc.checked = !!st.hc;
       $$('.a11y__steps i', a11y).forEach((i, k) => i.classList.toggle('on', k <= st.s));
-      $('[data-a11y-size="-1"]', a11y).disabled = st.s === 0;
-      $('[data-a11y-size="1"]', a11y).disabled = st.s === SIZES.length - 1;
+      $$('[data-a11y-size="-1"]').forEach(b => b.disabled = st.s === 0);
+      $$('[data-a11y-size="1"]').forEach(b => b.disabled = st.s === SIZES.length - 1);
       btn.classList.toggle('is-set', st.s > 0 || !!st.hc);
       try { localStorage.setItem('hy-a11y', JSON.stringify(st)); } catch (e) {}
       dispatchEvent(new Event('resize'));
     };
     const toggle = force => { const open = force ?? panel.hidden; panel.hidden = !open; btn.setAttribute('aria-expanded', open); if (open) $('[data-a11y-size="1"]', a11y)?.focus(); };
     btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
-    $$('[data-a11y-size]', a11y).forEach(b => b.addEventListener('click', () => { st.s = Math.min(SIZES.length - 1, Math.max(0, st.s + +b.dataset.a11ySize)); apply(); }));
+    $$('[data-a11y-size]').forEach(b => b.addEventListener('click', () => { st.s = Math.min(SIZES.length - 1, Math.max(0, st.s + +b.dataset.a11ySize)); apply(); zoomKeep(); }));
+    // Languette A± sur le bord droit : s'ouvre d'un toucher, se replie seule
+    const zoom = $('[data-zoom]'); let zt = 0;
+    const zoomKeep = () => { if (!zoom) return; clearTimeout(zt); zt = setTimeout(() => { zoom.classList.remove('is-open'); $('[data-zoom-tab]', zoom).setAttribute('aria-expanded', false); }, 4500); };
+    $('[data-zoom-tab]', zoom || d)?.addEventListener('click', () => { const o = !zoom.classList.contains('is-open'); zoom.classList.toggle('is-open', o); $('[data-zoom-tab]', zoom).setAttribute('aria-expanded', o); if (o) zoomKeep(); });
     hc.addEventListener('change', () => { st.hc = hc.checked; apply(); });
     $('[data-a11y-reset]', a11y).addEventListener('click', () => { st = { s: 0, hc: false }; apply(); });
     d.addEventListener('click', e => { if (!panel.hidden && !a11y.contains(e.target)) toggle(false); });

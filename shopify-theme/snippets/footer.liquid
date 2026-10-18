@@ -1,5 +1,5 @@
 {%- assign h = routes.root_url | remove_last: '/' -%}
-{%- assign etude = h | append: '/#etude' -%}{%- if template.suffix == 'pac' -%}{%- assign etude = '#etude' -%}{%- endif -%}
+{%- assign etude = h | append: '/#etude' -%}{%- if template.suffix == 'pac' or template.name == 'index' -%}{%- assign etude = '#etude' -%}{%- endif -%}
 {%- assign brand = settings.brand_name | default: 'Énergie Hachem Yazour' -%}
 {%- capture tel -%}{{ settings.phone | remove: ' ' | remove: '.' | remove: '-' }}{%- endcapture -%}
 <footer class="ftr">
@@ -31,12 +31,12 @@
       <div>
         <h4>Entreprise</h4>
         <ul>
-          <li><a href="{{ h }}/#methode">Notre méthode</a></li>
-          <li><a href="{{ h }}/#realisations">Réalisations</a></li>
+          <li><a href="{{ h }}/pages/nos-solutions#methode">Notre méthode</a></li>
+          <li><a href="{{ h }}/pages/nos-solutions#realisations">Réalisations</a></li>
           <li><a href="{{ h }}/pages/aides-renovation-energetique">Aides et financements</a></li>
           <li><a href="{{ h }}/blogs/guides-energie">Guides et conseils</a></li>
           <li><a href="{{ h }}/pages/zones-intervention">Zones d'intervention</a></li>
-          <li><a href="{{ h }}/#avis">Avis clients</a></li>
+          <li><a href="{{ h }}/pages/nos-solutions#avis">Avis clients</a></li>
           <li><a href="{{ h }}/#faq">Questions fréquentes</a></li>
         </ul>
       </div>
@@ -69,5 +69,5 @@
   {%- else -%}
     <button class="btn btn--glass" type="button" data-cb-open aria-label="Être rappelé">{% render 'icon', name: 'phone' %}</button>
   {%- endif -%}
-  <a class="btn btn--primary" href="{{ etude }}">{% if template.suffix == 'pac' %}Vérifier mes aides{% else %}Obtenir mon étude{% endif %} {% render 'icon', name: 'btn-arrow' %}</a>
+  <a class="btn btn--primary" href="{{ etude }}">{% if template.suffix == 'pac' or template.name == 'index' %}Vérifier mes aides{% else %}Obtenir mon étude{% endif %} {% render 'icon', name: 'btn-arrow' %}</a>
 </div>

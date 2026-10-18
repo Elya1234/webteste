@@ -1,5 +1,5 @@
 {%- assign h = routes.root_url | remove_last: '/' -%}
-{%- assign etude = h | append: '/#etude' -%}{%- if template.suffix == 'pac' -%}{%- assign etude = '#etude' -%}{%- endif -%}
+{%- assign etude = h | append: '/#etude' -%}{%- if template.suffix == 'pac' or template.name == 'index' -%}{%- assign etude = '#etude' -%}{%- endif -%}
 {%- capture tel -%}{{ settings.phone | remove: ' ' | remove: '.' | remove: '-' }}{%- endcapture -%}
 <header class="hdr">
   <div class="wrap">
@@ -10,11 +10,11 @@
       </a>
       <nav class="nav" aria-label="Navigation principale">
         <ul>
-          <li><a href="{{ h }}/pages/pompe-a-chaleur-aides">Pompe à chaleur</a></li>
-          <li><a href="{{ h }}/#solutions">Solutions</a></li>
+          <li><a href="{{ routes.root_url }}">Pompe à chaleur</a></li>
+          <li><a href="{{ h }}/pages/nos-solutions">Nos solutions</a></li>
           <li><a href="{{ h }}/pages/aides-renovation-energetique">Aides</a></li>
-          <li><a href="{{ h }}/#realisations">Réalisations</a></li>
-          <li><a href="{{ h }}/#methode">Méthode</a></li>
+          <li><a href="{{ h }}/pages/nos-solutions#realisations">Réalisations</a></li>
+          <li><a href="{{ h }}/pages/nos-solutions#methode">Méthode</a></li>
           <li><a href="{{ h }}/blogs/guides-energie">Guides</a></li>
           <li><a href="{{ h }}/#faq">FAQ</a></li>
         </ul>
@@ -47,12 +47,12 @@
 <div class="menu" id="menu" aria-hidden="true">
   <nav aria-label="Menu mobile">
     <ul>
-      <li><a href="{{ h }}/pages/pompe-a-chaleur-aides"><small>00</small>Pompe à chaleur</a></li>
-      <li><a href="{{ h }}/#solutions"><small>01</small>Solutions</a></li>
+      <li><a href="{{ routes.root_url }}"><small>00</small>Pompe à chaleur</a></li>
+      <li><a href="{{ h }}/pages/nos-solutions"><small>01</small>Nos solutions</a></li>
       <li><a href="{{ h }}/pages/aides-renovation-energetique"><small>02</small>Aides</a></li>
-      <li><a href="{{ h }}/#realisations"><small>03</small>Réalisations</a></li>
-      <li><a href="{{ h }}/#methode"><small>04</small>Méthode</a></li>
-      <li><a href="{{ h }}/#avis"><small>05</small>Avis</a></li>
+      <li><a href="{{ h }}/pages/nos-solutions#realisations"><small>03</small>Réalisations</a></li>
+      <li><a href="{{ h }}/pages/nos-solutions#methode"><small>04</small>Méthode</a></li>
+      <li><a href="{{ h }}/pages/nos-solutions#avis"><small>05</small>Avis</a></li>
       <li><a href="{{ h }}/blogs/guides-energie"><small>06</small>Guides</a></li>
       <li><a href="{{ h }}/#faq"><small>07</small>FAQ</a></li>
       <li><a href="{{ etude }}"><small>08</small>Contact</a></li>

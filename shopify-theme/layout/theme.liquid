@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0A0B0D">
-  <script>document.documentElement.className = 'js';try{var a=JSON.parse(localStorage.getItem('hy-a11y')||'{}');if(a.s)document.documentElement.style.fontSize=[100,115,130,150][a.s]+'%';if(a.hc)document.documentElement.classList.add('hc');}catch(e){}</script>
+  <script>document.documentElement.className = 'js';try{var a=JSON.parse(localStorage.getItem('hy-a11y')||'null');if(!a&&window.innerWidth<760)a={s:3};a=a||{};if(a.s)document.documentElement.style.fontSize=[100,115,130,150][a.s]+'%';if(a.hc)document.documentElement.classList.add('hc');}catch(e){}</script>
   {%- liquid
     assign brand = settings.brand_name | default: 'Énergie Hachem Yazour'
     if template.name == 'index'
@@ -22,6 +22,9 @@
     endif
     assign img = 'https://images.unsplash.com/photo-'
     assign og = '1600585154340-be6161a56a0c'
+    if template.name == 'index'
+      assign og = '1613490493576-7fde63acd811'
+    endif
     case template.suffix
       when 'pac'
         assign og = '1613490493576-7fde63acd811'
@@ -53,7 +56,7 @@
   -%}
   <title>{{ t | escape }}</title>
   <meta name="description" content="{{ desc | strip_html | escape }}">
-  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="canonical" href="{% if template.suffix == 'pac' %}{{ shop.url }}{{ routes.root_url }}{% else %}{{ canonical_url }}{% endif %}">
   {%- if noindex %}<meta name="robots" content="noindex, follow">{% endif %}
   <meta property="og:type" content="{% if template.name == 'article' %}article{% else %}website{% endif %}">
   <meta property="og:locale" content="fr_FR">
@@ -73,9 +76,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-  {%- if template.name == 'index' -%}
-    <link rel="preload" as="image" href="{{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=1400" imagesrcset="{{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=800 800w, {{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=1400 1400w, {{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=2200 2200w" imagesizes="100vw" fetchpriority="high">
-  {%- elsif template.suffix == 'pac' -%}
+  {%- if template.name == 'index' or template.suffix == 'pac' -%}
     <link rel="preload" as="image" href="{{ img }}1613490493576-7fde63acd811?auto=format&fit=crop&q=72&w=1800" imagesrcset="{{ img }}1613490493576-7fde63acd811?auto=format&fit=crop&q=72&w=900 900w, {{ img }}1613490493576-7fde63acd811?auto=format&fit=crop&q=72&w=1800 1800w" imagesizes="100vw" fetchpriority="high">
   {%- endif %}
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -128,7 +129,15 @@
   {% render 'footer' %}
   {% render 'whatsapp' %}
   {% render 'callback' %}
-  {%- unless template.suffix == 'pac' -%}{% render 'welcome' %}{%- endunless -%}
+  <div class="zoom" data-zoom>
+    <button class="zoom__tab" type="button" data-zoom-tab aria-expanded="false" aria-label="Taille du texte">A<span>±</span></button>
+    <div class="zoom__box" role="group" aria-label="Taille du texte">
+      <button type="button" data-a11y-size="1" aria-label="Agrandir le texte">A+</button>
+      <output data-a11y-val>100 %</output>
+      <button type="button" data-a11y-size="-1" aria-label="Réduire le texte">A−</button>
+    </div>
+  </div>
+  {%- unless template.suffix == 'pac' or template.name == 'index' -%}{% render 'welcome' %}{%- endunless -%}
   <button class="cb-fab" type="button" data-cb-open aria-label="Être rappelé gratuitement">{% render 'icon', name: 'phone' %}<span>Être rappelé</span></button>
 </body>
 </html>
