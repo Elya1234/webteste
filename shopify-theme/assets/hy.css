@@ -787,3 +787,27 @@ body.no-scroll{overflow:hidden}
 .cmp{grid-template-columns:minmax(0,1fr)}
 @media (min-width:900px){.cmp{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}}
 @media (max-width:899px){.cmp__col--new .btn{white-space:normal;height:auto;min-height:54px;padding-block:7px;text-align:left;line-height:1.25}}
+
+/* ---------------- SEO : bloc essentiel + lien PAC accueil ---------------- */
+.ess{display:grid;gap:28px}
+@media (min-width:1000px){.ess{grid-template-columns:1fr 2fr;gap:56px}}
+.ess__grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:700px){.ess__grid{grid-template-columns:1fr 1fr}}
+.ess__i{padding:22px;border-radius:var(--r-md);border:1px solid var(--line-d);background:rgba(255,255,255,.02)}
+.ess__i h3{font-size:1.15rem;margin-bottom:8px}
+.ess__i p{color:var(--mist);font-size:.95rem}
+.ess__i b{color:var(--porcelain);font-weight:500}
+.ess a{color:var(--aurora)}
+.ess__more{grid-column:1/-1;font-size:.9rem;color:var(--mist)}
+.hero__pac{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:10px 16px;border-radius:var(--r-pill);background:rgba(17,19,23,.55);border:1px solid rgba(59,227,161,.35);font-size:.9rem;text-decoration:none;color:rgba(244,243,239,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:border-color .3s,background-color .3s}
+.hero__pac:hover{border-color:var(--aurora);background:rgba(59,227,161,.12)}
+.hero__pac b{color:var(--aurora);font-weight:600}
+.hero__pac svg{width:15px;height:15px;flex:none}
+.hero__pac-dot{width:8px;height:8px;border-radius:50%;background:var(--aurora);flex:none;animation:livedot 1.6s var(--ease) infinite}
+.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:900px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:400px){.stat{padding:18px 14px;min-height:150px}.stat .ph{white-space:normal}.stat__v{font-size:2rem}}
+.why>*,.faq>*,.study>*,.house>*,.article-grid>*,.sec-head>*,.aid-intro>*,.lp-aids>*,.ess>*,.pacx>*{min-width:0}
+h1,h2,h3{overflow-wrap:break-word}
+.why__item{grid-template-columns:auto minmax(0,1fr)}
+.why__item .ph,.ph{white-space:normal}

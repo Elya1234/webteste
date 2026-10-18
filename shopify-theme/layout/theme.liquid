@@ -11,42 +11,110 @@
       assign t = settings.seo_title | default: brand
       assign desc = settings.seo_description
     else
-      assign t = page_title | append: ' — ' | append: brand
+      assign t = page_title
+      unless page_title contains 'Hachem Yazour'
+        assign t = page_title | append: ' | ' | append: brand
+      endunless
+      if current_page > 1
+        assign t = t | append: ' — page ' | append: current_page
+      endif
       assign desc = page_description | default: settings.seo_description
+    endif
+    assign img = 'https://images.unsplash.com/photo-'
+    assign og = '1600585154340-be6161a56a0c'
+    case template.suffix
+      when 'pac'
+        assign og = '1613490493576-7fde63acd811'
+      when 'solution'
+        case page.handle
+          when 'pompe-a-chaleur'
+            assign og = '1600047509807-ba8f99d2cdde'
+          when 'panneaux-solaires-photovoltaiques'
+            assign og = '1509391366360-2e959784a276'
+          when 'isolation-thermique'
+            assign og = '1607400201889-565b1ee75f8e'
+          when 'renovation-energetique-globale'
+            assign og = '1600566753086-00f18fb6b3ea'
+        endcase
+    endcase
+    assign og_url = img | append: og | append: '?auto=format&fit=crop&w=1200&h=630&q=75'
+    if template.name == 'article' and article.image
+      assign og_url = article.image | image_url: width: 1200 | prepend: 'https:'
+    endif
+    assign tel = settings.phone | default: settings.whatsapp_number | remove: ' ' | remove: '.' | remove: '-'
+    assign t0 = tel | slice: 0
+    if t0 == '0'
+      assign tel = tel | remove_first: '0' | prepend: '+33'
+    endif
+    assign noindex = false
+    if template.name == 'product' or template.name == 'collection' or template.name == 'list-collections' or template.name == 'cart' or template.name == 'search' or template.name == 'customers' or template.name == 'gift_card'
+      assign noindex = true
     endif
   -%}
   <title>{{ t | escape }}</title>
   <meta name="description" content="{{ desc | strip_html | escape }}">
   <link rel="canonical" href="{{ canonical_url }}">
-  <meta property="og:type" content="website">
+  {%- if noindex %}<meta name="robots" content="noindex, follow">{% endif %}
+  <meta property="og:type" content="{% if template.name == 'article' %}article{% else %}website{% endif %}">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:site_name" content="{{ brand | escape }}">
   <meta property="og:title" content="{{ t | escape }}">
   <meta property="og:description" content="{{ desc | strip_html | escape }}">
   <meta property="og:url" content="{{ canonical_url }}">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&h=630&q=75">
+  <meta property="og:image" content="{{ og_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ t | escape }}">
+  <meta name="twitter:description" content="{{ desc | strip_html | escape }}">
+  <meta name="twitter:image" content="{{ og_url }}">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='13' fill='%230A0B0D'/%3E%3Cpath d='M15 13v22M33 13v22' stroke='%23F4F3EF' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M15 29.5 33 19' stroke='%233BE3A1' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+  {%- if template.name == 'index' -%}
+    <link rel="preload" as="image" href="{{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=1400" imagesrcset="{{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=800 800w, {{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=1400 1400w, {{ img }}1600585154340-be6161a56a0c?auto=format&fit=crop&q=72&w=2200 2200w" imagesizes="100vw" fetchpriority="high">
+  {%- elsif template.suffix == 'pac' -%}
+    <link rel="preload" as="image" href="{{ img }}1613490493576-7fde63acd811?auto=format&fit=crop&q=72&w=1800" imagesrcset="{{ img }}1613490493576-7fde63acd811?auto=format&fit=crop&q=72&w=900 900w, {{ img }}1613490493576-7fde63acd811?auto=format&fit=crop&q=72&w=1800 1800w" imagesizes="100vw" fetchpriority="high">
+  {%- endif %}
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap">
   {{ 'hy.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'hy.js' | asset_url }}" defer></script>
 
   <script type="application/ld+json">
-  {
+  [{
     "@context": "https://schema.org",
     "@type": "HomeAndConstructionBusiness",
+    "@id": {{ shop.url | append: '/#entreprise' | json }},
     "name": {{ brand | json }},
     "url": {{ shop.url | json }},
+    "image": {{ img | append: '1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&h=630&q=75' | json }},
     "description": {{ settings.seo_description | json }},
-    "areaServed": { "@type": "Country", "name": "France" }
-    {%- if settings.phone != blank -%}, "telephone": {{ settings.phone | json }}{%- endif -%}
+    "areaServed": { "@type": "Country", "name": "France" },
+    "knowsAbout": ["Pompe à chaleur", "Panneaux photovoltaïques", "Isolation thermique", "Chauffe-eau thermodynamique", "Rénovation énergétique", "MaPrimeRénov'"],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Solutions de rénovation énergétique",
+      "itemListElement": [
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"Installation de pompe à chaleur","url":{{ shop.url | append: '/pages/pompe-a-chaleur' | json }}}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"Installation de panneaux photovoltaïques","url":{{ shop.url | append: '/pages/panneaux-solaires-photovoltaiques' | json }}}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"Isolation thermique","url":{{ shop.url | append: '/pages/isolation-thermique' | json }}}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"Chauffe-eau thermodynamique","url":{{ shop.url | append: '/pages/chauffe-eau-thermodynamique' | json }}}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"Rénovation énergétique globale","url":{{ shop.url | append: '/pages/renovation-energetique-globale' | json }}}}
+      ]
+    }
+    {%- if tel != blank -%}, "telephone": {{ tel | json }}{%- endif -%}
     {%- if settings.email != blank -%}, "email": {{ settings.email | json }}{%- endif -%}
     {%- if settings.address != blank -%}, "address": {{ settings.address | json }}{%- endif %}
-  }
+  }{% if template.name == 'index' %},{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ brand | json }},
+    "url": {{ shop.url | json }},
+    "inLanguage": "fr-FR",
+    "publisher": {"@id": {{ shop.url | append: '/#entreprise' | json }}}
+  }{% endif %}]
   </script>
 
   {{ content_for_header }}

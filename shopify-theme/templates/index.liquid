@@ -28,6 +28,7 @@
       <a class="btn btn--primary" href="#etude">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
       <a class="btn btn--glass" href="#solutions">Découvrir nos solutions {% render 'icon', name: 'btn-arrow' %}</a>
     </div>
+    <a class="hero__pac fade-in d2" href="{{ h }}/pages/pompe-a-chaleur-aides"><span class="hero__pac-dot"></span><b>Pompe à chaleur</b> : vérifiez vos aides en 30 secondes {% render 'icon', name: 'arrow' %}</a>
     <div class="hero__foot fade-in d3">
       <div class="hero__pt">{% render 'icon', name: 'check' %}Étude personnalisée de votre logement</div>
       <div class="hero__pt">{% render 'icon', name: 'check' %}Un interlocuteur unique, de l'étude au suivi</div>
@@ -353,6 +354,29 @@ reno|Rénovation|Maison d'architecte|Bouquet de travaux|Classe DPE|avant → apr
     </div>
   </div>
 </section>
+
+{%- comment -%} ===================== GUIDES ===================== {%- endcomment -%}
+{%- assign gb = blogs['guides-energie'] -%}
+{%- if gb.articles_count > 0 -%}
+<section class="section" aria-labelledby="guides-title" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head sec-head--split">
+      <div><span class="eyebrow rv">Guides et conseils</span><h2 class="rv" id="guides-title" style="margin-top:20px">Bien préparer <span class="s">votre projet.</span></h2></div>
+      <a class="link rv" href="{{ gb.url }}" style="justify-self:start;color:var(--aurora)">Tous les guides {% render 'icon', name: 'arrow' %}</a>
+    </div>
+    <div class="posts">
+      {%- for article in gb.articles limit: 3 -%}
+        <a class="post rv" href="{{ article.url }}">
+          <span class="eyebrow">Guide</span>
+          <h3 style="font-size:1.4rem;line-height:1.2">{{ article.title }}</h3>
+          <p>{{ article.excerpt_or_content | strip_html | truncate: 140 }}</p>
+          <span class="link">Lire {% render 'icon', name: 'arrow' %}</span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
 
 {%- comment -%} ===================== FAQ ===================== {%- endcomment -%}
 {%- capture faq -%}
