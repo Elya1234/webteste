@@ -1,0 +1,5 @@
+<main class="sd-page">
+  <h1>Collections</h1>
+  <ul>{% for c in collections %}<li><a href="{{ c.url }}">{{ c.title }}</a></li>{% endfor %}</ul>
+  <a class="sd-btn" href="{{ routes.root_url }}">← Retour à l'écran</a>
+</main>

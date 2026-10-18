@@ -1,0 +1,585 @@
+{
+ "source": "Feuille des horaires du 26/09 au 23/10/2026",
+ "days": [
+  {
+   "date": "2026-09-26",
+   "title": "Chabbat Souccot · 1er jour de Yom Tov",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:20"
+    ],
+    "note": "Chiour du Rav 17h35 · Séoudat Chélichit : Mezonot à la synagogue et Motsi à la Souccah 19h00 · Chiour du Rav 19h40"
+   },
+   "arvit": {
+    "times": [
+     "20:22"
+    ],
+    "note": "Kidouch à la Soucca après Arvit (à partir de 20h27)"
+   },
+   "sortie": {
+    "times": [
+     "20:27"
+    ],
+    "note": "On ne peut rien préparer avant 20h27 (vaisselle, table, réchauffer ou cuire…)"
+   },
+   "sortieLabel": "Sortie Chabbat · Entrée 2e jour de Yom Tov"
+  },
+  {
+   "date": "2026-09-27",
+   "title": "Souccot · 2e jour de Yom Tov",
+   "event": "Sans Tahanoun",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Kidouch à la Soucca après Moussaf"
+   },
+   "minha": {
+    "times": [
+     "18:55"
+    ],
+    "note": "Chiour du Rav 18h10 · Chiour du Rav 19h40"
+   },
+   "arvit": {
+    "times": [
+     "20:20"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "20:25"
+    ]
+   },
+   "sortieLabel": "Sortie de Yom Tov"
+  },
+  {
+   "date": "2026-09-28",
+   "event": "Hol Hamoed",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:10"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:23"
+    ]
+   }
+  },
+  {
+   "date": "2026-09-29",
+   "event": "Hol Hamoed",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:10"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:21"
+    ]
+   }
+  },
+  {
+   "date": "2026-09-30",
+   "event": "Hol Hamoed",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:05"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:19"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-01",
+   "title": "Ce soir Hochana Rabba · Veillée à partir de 01h15 du matin",
+   "event": "Hol Hamoed",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:00"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "19:29"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-02",
+   "title": "Hochana Rabba · Veille de Chemini Atseret",
+   "chaharit": {
+    "times": [
+     "06:18"
+    ],
+    "note": "Aube / Ptiha · Braha sur le Talith à 6h50"
+   },
+   "minha": {
+    "times": [
+     "19:05"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "note": "Kidouch à la Souka",
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-10-03",
+   "title": "Chabbat · Yom Tov · Chemini Atseret · Tikoun Haguechem · Veille de Simha Thora",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Kidouch à la Souccah"
+   },
+   "minha": {
+    "times": [
+     "18:00"
+    ],
+    "note": "Chiour du Rav 17h00 · 1re Akafot 17h40 · 2e Akafot 18h35 · Séouda Chlichit : Mézonot à la synagogue et Motsi à la Souka 18h55 · Chiour du Rav après la Souka"
+   },
+   "arvit": {
+    "times": [
+     "20:07"
+    ],
+    "note": "Kidouch crackers · 3e Akafot"
+   },
+   "sortie": {
+    "times": [
+     "20:13"
+    ],
+    "note": "On ne peut rien préparer avant 20h13 (vaisselle, table, réchauffer ou cuire…)"
+   },
+   "sortieLabel": "Entrée 2e jour de Yom Tov"
+  },
+  {
+   "date": "2026-10-04",
+   "title": "Chemini Atseret · Simha Thora",
+   "event": "Sans Tahanoun jusqu'au 12/10 inclus",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Moussaf · 4e Akafot · Kidouch / Repas de Simha Thora"
+   },
+   "minha": {
+    "times": [
+     "18:50"
+    ],
+    "note": "5e Akafot 17h50 · 6e Akafot 18h10 · 7e Akafot 18h30 · Chiour du Rav 19h25"
+   },
+   "arvit": {
+    "times": [
+     "20:05"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "20:11"
+    ]
+   },
+   "sortieLabel": "Sortie de Yom Tov"
+  },
+  {
+   "date": "2026-10-05",
+   "title": "Isrou Hag",
+   "event": "Sans Tahanoun",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:55"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:11"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-06",
+   "event": "Sans Tahanoun",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:55"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:09"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-07",
+   "event": "Sans Tahanoun",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:55"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:07"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-08",
+   "event": "Sans Tahanoun",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:50"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:05"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-09",
+   "event": "Sans Tahanoun",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:55"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-10-10",
+   "title": "Parachat Berechit · Bénédiction du mois · Ce soir c'est Roch Hodech",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:15"
+    ],
+    "note": "Cours du Rav 17h30 · Séoudat Chélichit de 18h50 à 19h05 · Chiour mixte 19h10"
+   },
+   "arvit": {
+    "times": [
+     "19:53"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "19:58"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-10-11",
+   "event": "1er jour de Roch Hodech",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:45"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:00"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-12",
+   "event": "2e jour de Roch Hodech",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:45"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:59"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-13",
+   "event": "Reprise Tahanoun",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:40"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:57"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-14",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:40"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:56"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-15",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:40"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:54"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-16",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:40"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "title": "Parachat Noah",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:00"
+    ],
+    "note": "Cours du Rav 17h15 · Séoudat Chélichit de 18h35 à 18h50 · Chiour mixte 18h55"
+   },
+   "arvit": {
+    "times": [
+     "19:39"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "19:45"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-10-18",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:49"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-19",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "17:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:48"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-20",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:51"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-21",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:49"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-22",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "18:47"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-23",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ]
+   },
+   "minha": {
+    "times": [
+     "18:25"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  }
+ ]
+}
