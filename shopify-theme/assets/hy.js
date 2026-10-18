@@ -687,6 +687,36 @@
     }
   }
 
+
+  /* ---------- Lisibilité : taille du texte et contraste (mémorisés) ---------- */
+  const a11y = $('.a11y');
+  if (a11y) {
+    const SIZES = [100, 115, 130, 150];
+    const btn = $('[data-a11y-toggle]', a11y), panel = $('.a11y__panel', a11y), val = $('[data-a11y-val]', a11y), hc = $('[data-a11y-hc]', a11y);
+    let st = { s: 0, hc: false };
+    try { st = Object.assign(st, JSON.parse(localStorage.getItem('hy-a11y') || '{}')); } catch (e) {}
+    const apply = () => {
+      d.documentElement.style.fontSize = st.s ? SIZES[st.s] + '%' : '';
+      d.documentElement.classList.toggle('hc', !!st.hc);
+      val.textContent = SIZES[st.s] + ' %';
+      hc.checked = !!st.hc;
+      $$('.a11y__steps i', a11y).forEach((i, k) => i.classList.toggle('on', k <= st.s));
+      $('[data-a11y-size="-1"]', a11y).disabled = st.s === 0;
+      $('[data-a11y-size="1"]', a11y).disabled = st.s === SIZES.length - 1;
+      btn.classList.toggle('is-set', st.s > 0 || !!st.hc);
+      try { localStorage.setItem('hy-a11y', JSON.stringify(st)); } catch (e) {}
+      dispatchEvent(new Event('resize'));
+    };
+    const toggle = force => { const open = force ?? panel.hidden; panel.hidden = !open; btn.setAttribute('aria-expanded', open); if (open) $('[data-a11y-size="1"]', a11y)?.focus(); };
+    btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+    $$('[data-a11y-size]', a11y).forEach(b => b.addEventListener('click', () => { st.s = Math.min(SIZES.length - 1, Math.max(0, st.s + +b.dataset.a11ySize)); apply(); }));
+    hc.addEventListener('change', () => { st.hc = hc.checked; apply(); });
+    $('[data-a11y-reset]', a11y).addEventListener('click', () => { st = { s: 0, hc: false }; apply(); });
+    d.addEventListener('click', e => { if (!panel.hidden && !a11y.contains(e.target)) toggle(false); });
+    d.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) { toggle(false); btn.focus(); } });
+    apply();
+  }
+
   /* ---------- Année du pied de page ---------- */
   $$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
 })();

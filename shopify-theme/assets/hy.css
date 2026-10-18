@@ -1089,3 +1089,56 @@ body.wel-lock{overflow:hidden}
 .wel__links button{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--mist);padding:6px 2px}
 .wel__links button svg{width:15px;height:15px;color:var(--aurora)}
 .wel__links button:hover{color:var(--porcelain)}
+
+/* ---------------- Lisibilité (taille du texte, contraste) ---------------- */
+.a11y{position:relative}
+.a11y__btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid var(--line-d);color:var(--porcelain);font:600 1.05rem/1 var(--f-display);transition:background-color .2s,border-color .2s}
+.a11y__btn small{font-size:.72em}
+.a11y__btn:hover{background:rgba(255,255,255,.14)}
+.a11y__btn.is-set{border-color:var(--aurora);color:var(--aurora)}
+.a11y__panel{position:absolute;right:0;top:calc(100% + 10px);width:250px;padding:18px;border-radius:var(--r-md);background:var(--g800);border:1px solid var(--line-d);box-shadow:var(--sh-3);display:grid;gap:12px;z-index:5;animation:swap .35s var(--ease)}
+.a11y__panel[hidden]{display:none}
+.a11y__t{font:600 .95rem var(--f-display)}
+.a11y__size{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.a11y__size button{width:56px;height:48px;border-radius:12px;border:1px solid var(--line-d);background:rgba(255,255,255,.04);font:600 1.15rem var(--f-display);color:var(--porcelain)}
+.a11y__size button:hover:not(:disabled){border-color:var(--aurora);color:var(--aurora)}
+.a11y__size button:disabled{opacity:.35;cursor:default}
+.a11y__size output{font:600 1.1rem var(--f-display)}
+.a11y__steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.a11y__steps i{height:4px;border-radius:2px;background:var(--g600)}
+.a11y__steps i.on{background:var(--aurora)}
+.a11y__sw{display:flex;align-items:center;gap:10px;font-size:.92rem;cursor:pointer}
+.a11y__sw input{position:absolute;opacity:0;width:1px;height:1px}
+.a11y__track{width:42px;height:24px;border-radius:12px;background:var(--g600);position:relative;flex:none;transition:background-color .25s}
+.a11y__track span{position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s var(--ease)}
+.a11y__sw input:checked+.a11y__track{background:var(--aurora)}
+.a11y__sw input:checked+.a11y__track span{transform:translateX(18px)}
+.a11y__sw input:focus-visible+.a11y__track{outline:2px solid var(--aurora);outline-offset:2px}
+.a11y__reset{justify-self:start;font-size:.85rem;color:var(--mist);text-decoration:underline}
+@media (max-width:400px){.a11y__btn{width:40px;height:40px}.hdr__right{gap:6px}}
+/* Contraste renforcé */
+html.hc{--mist:#E3E6EA;--line-d:rgba(255,255,255,.28);--line-l:rgba(10,11,13,.35)}
+html.hc .lead,html.hc .muted,html.hc p{color:inherit}
+html.hc .light .lead,html.hc .sand .lead,html.hc .light .muted{color:#1A1D21}
+html.hc .rv,html.hc .fade-in{opacity:1!important}
+html.hc .hero::before,html.hc .lp-hero::before{background:rgba(10,11,13,.82)}
+html.hc .s{font-style:normal;font-family:var(--f-display);font-weight:600}
+html.hc a:not(.btn){text-decoration:underline}
+html.hc .manifesto .w{opacity:1}
+/* Texte agrandi : la barre du haut garde une taille fixe, les boutons et badges peuvent passer à la ligne */
+.hdr .logo__wm b{font-size:15px}
+.hdr .logo__wm small{font-size:9px}
+.hdr .nav a{font-size:14px}
+.hdr .btn--sm{font-size:14px}
+.hdr .hdr__tel{font-size:13px}
+.a11y__btn{font-size:17px}
+@media (max-width:400px){.hdr .logo__wm b{font-size:13px;letter-spacing:.1em}}
+html[style*="font-size"] .btn{white-space:normal;height:auto;min-height:var(--h);padding-block:6px;text-align:left;line-height:1.2}
+html[style*="font-size"] .lp-ticks{flex-wrap:wrap}
+html[style*="font-size"] .lp-ticks li{white-space:normal}
+html[style*="font-size"] .tiles--3{grid-template-columns:1fr 1fr}
+html[style*="font-size"] .stat__v{font-size:clamp(1.8rem,8vw,3rem)}
+html[style*="font-size"] .hdr__bar{padding-left:12px}
+.ptab__card{overflow-x:auto}
+html[style*="font-size"] .ptab .ptable{min-width:520px}
+@media (max-width:340px){.hdr__bar{padding:0 6px 0 12px;gap:8px}.hdr .logo svg{width:30px;height:30px}.hdr .logo{gap:8px}.hdr .logo__wm b{font-size:12px}}

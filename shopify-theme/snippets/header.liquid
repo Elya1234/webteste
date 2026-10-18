@@ -24,6 +24,20 @@
           <a class="hdr__tel" href="tel:{{ tel }}">{% render 'icon', name: 'phone' %}{{ settings.phone }}</a>
         {%- endif -%}
         <a class="btn btn--primary btn--sm hdr__cta" href="{{ etude }}">Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</a>
+        <div class="a11y">
+          <button class="a11y__btn" type="button" aria-expanded="false" aria-controls="a11y-panel" data-a11y-toggle aria-label="Taille du texte et lisibilité"><span aria-hidden="true">A<small>a</small></span></button>
+          <div class="a11y__panel" id="a11y-panel" role="dialog" aria-label="Lisibilité" hidden>
+            <p class="a11y__t">Taille du texte</p>
+            <div class="a11y__size">
+              <button type="button" data-a11y-size="-1" aria-label="Réduire le texte">A−</button>
+              <output data-a11y-val aria-live="polite">100 %</output>
+              <button type="button" data-a11y-size="1" aria-label="Agrandir le texte">A+</button>
+            </div>
+            <div class="a11y__steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <label class="a11y__sw"><input type="checkbox" data-a11y-hc><span class="a11y__track"><span></span></span>Contraste renforcé</label>
+            <button type="button" class="a11y__reset" data-a11y-reset>Réinitialiser</button>
+          </div>
+        </div>
         <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><span></span></button>
       </div>
     </div>
