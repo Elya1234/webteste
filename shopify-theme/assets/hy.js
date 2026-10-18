@@ -326,6 +326,32 @@
     update();
   }
 
+
+  /* ---------- Carrousels mobiles : points indicateurs ---------- */
+  const mqSnap = matchMedia('(max-width: 759px)');
+  $$('.solutions, .works, .aids, .reviews, .posts').forEach(track => {
+    const dots = d.createElement('div'); dots.className = 'snap-dots'; dots.setAttribute('aria-hidden', 'true');
+    track.after(dots);
+    const items = () => [...track.children].filter(c => !c.hidden);
+    const build = () => {
+      dots.innerHTML = '';
+      if (!mqSnap.matches) return;
+      items().forEach((it, k) => { const b = d.createElement('i'); b.addEventListener('click', () => track.scrollTo({ left: it.offsetLeft - track.offsetLeft - parseFloat(getComputedStyle(track).paddingLeft), behavior: reduce ? 'auto' : 'smooth' })); dots.append(b); });
+      sync();
+    };
+    const sync = () => {
+      const its = items(), x = track.scrollLeft, w = track.clientWidth;
+      let k = 0, best = 1e9;
+      its.forEach((it, i) => { const dd = Math.abs(it.offsetLeft - track.offsetLeft - x); if (dd < best) { best = dd; k = i; } });
+      if (x + w >= track.scrollWidth - 4) k = its.length - 1;
+      [...dots.children].forEach((b, i) => b.classList.toggle('on', i === k));
+    };
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    mqSnap.addEventListener('change', build);
+    new MutationObserver(build).observe(track, { attributes: true, subtree: true, attributeFilter: ['hidden'] });
+    build();
+  });
+
   /* ---------- Année du pied de page ---------- */
   $$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
 })();

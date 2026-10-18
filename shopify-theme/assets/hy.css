@@ -817,3 +817,29 @@ h1,h2,h3{overflow-wrap:break-word}
 .post__img{display:block;margin:-28px -28px 6px;aspect-ratio:16/9;overflow:hidden;border-radius:var(--r-lg) var(--r-lg) 0 0}
 .post__img img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
 .post:hover .post__img img{transform:scale(1.05)}
+
+/* ---------------- Téléphone : carrousels, rythme, haut de page ---------------- */
+@media (max-width:759px){
+  :root{--section:clamp(64px,16vw,96px)}
+  .solutions,.works,.aids,.reviews,.posts{display:flex!important;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-inline:calc(var(--gutter) * -1);padding:4px var(--gutter) 8px;scroll-padding-inline:var(--gutter)}
+  .solutions::-webkit-scrollbar,.works::-webkit-scrollbar,.aids::-webkit-scrollbar,.reviews::-webkit-scrollbar,.posts::-webkit-scrollbar{display:none}
+  .solutions>*,.works>*,.aids>*,.reviews>*,.posts>*{flex:0 0 86%;scroll-snap-align:start;min-width:0}
+  .sol,.sol:nth-child(n+3){min-height:460px}
+  .snap-dots{display:flex;justify-content:center;gap:8px;margin-top:16px}
+  .snap-dots i{width:8px;height:8px;border-radius:99px;background:rgba(128,128,128,.35);cursor:pointer;transition:width .35s var(--ease),background-color .35s}
+  .snap-dots i.on{width:26px;background:var(--aurora)}
+  .light .snap-dots i.on,.sand .snap-dots i.on{background:var(--aurora-deep)}
+  .hero__foot{display:none}
+  .hero{min-height:92svh;padding-bottom:28px}
+  .hero__pac{font-size:.82rem;padding:9px 14px}
+  .why__item{padding:22px 0}
+  .why__img{margin-top:28px;aspect-ratio:16/10}
+  .manifesto p{font-size:clamp(1.6rem,7.4vw,2.2rem)}
+  .sec-head{margin-bottom:32px}
+  .marquee{margin-top:36px}
+  .final{padding:96px 0}
+  .ftr__word{margin-top:48px}
+}
+@media (min-width:760px){.snap-dots{display:none}}
+.sim-more{margin-top:24px;text-align:center}
+.sim-more .link{color:var(--aurora)}

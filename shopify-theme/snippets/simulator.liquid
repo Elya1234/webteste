@@ -48,6 +48,9 @@
       </div>
     </div>
 
+    {%- if compact -%}
+      <p class="sim-more rv"><a class="link" href="{{ routes.root_url | remove_last: '/' }}/pages/pompe-a-chaleur-aides#profil">Voir le tableau complet des plafonds 2026 {% render 'icon', name: 'arrow' %}</a></p>
+    {%- else -%}
     <div class="ptab">
       <div class="ptab__head rv">
         <h3>Le tableau des plafonds 2026</h3>
@@ -98,6 +101,7 @@
       </div>
       <p class="sim__note rv" style="margin-top:16px">Montants en euros : revenu fiscal de référence <b>maximum</b> pour chaque couleur (indiqué sur votre avis d'imposition). « +1 pers. » : montant à ajouter par personne au-delà de 5. Source : barème 2026 de l'Anah, à vérifier sur <a href="https://france-renov.gouv.fr" target="_blank" rel="noopener">france-renov.gouv.fr</a>.</p>
     </div>
+    {%- endif -%}
   </div>
   <script type="application/json" id="sim-data">
     {
