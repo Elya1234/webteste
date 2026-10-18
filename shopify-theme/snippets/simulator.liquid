@@ -32,14 +32,15 @@
         <div class="sim__q">
           <label class="sim__l" for="sim-rfr">3. Revenu fiscal de référence</label>
           <div class="money"><input id="sim-rfr" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex. 28 000" data-rfr><span>€</span></div>
+          <div class="sim__mini" data-mini aria-hidden="true"></div>
           <small class="muted">Indiqué sur votre avis d'imposition. Il n'est pas enregistré.</small>
         </div>
       </div>
 
       <div class="sim__out" data-out data-p="none" aria-live="polite">
         <span class="eyebrow">Votre profil</span>
-        <div class="sim__badge"><i></i><b data-name>—</b></div>
-        <p class="sim__txt" data-txt>Renseignez votre revenu fiscal de référence.</p>
+        <div class="sim__badge"><i></i><b data-name>Votre couleur ?</b></div>
+        <p class="sim__txt" data-txt>Tapez votre revenu fiscal : votre couleur s'affiche aussitôt.</p>
         <div class="sim__bar" aria-hidden="true"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span><em data-cursor></em></div>
         <div class="sim__scale" aria-hidden="true"><span>Bleu</span><span>Jaune</span><span>Violet</span><span>Rose</span></div>
         <a class="btn btn--primary" href="#etude" data-sim-cta>Vérifier mes aides {% render 'icon', name: 'btn-arrow' %}</a>

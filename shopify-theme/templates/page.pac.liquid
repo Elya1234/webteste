@@ -12,13 +12,14 @@
       <span class="eyebrow fade-in">Pompe à chaleur</span>
       <h1><span class="ln"><span>Passez à la</span></span><span class="ln"><span>pompe à chaleur.</span></span><span class="ln"><span class="s">On vérifie vos aides.</span></span></h1>
       <ul class="lp-ticks fade-in d2">
-        <li>{% render 'icon', name: 'check' %}Réponse en 30 secondes</li>
-        <li>{% render 'icon', name: 'check' %}Aides vérifiées selon votre situation</li>
-        <li>{% render 'icon', name: 'check' %}Étude gratuite et sans engagement</li>
+        <li>{% render 'icon', name: 'clock' %}<span><b>30 secondes</b><em> pour répondre</em></span></li>
+        <li>{% render 'icon', name: 'shield' %}<span><b>Aides vérifiées</b><em> selon votre situation</em></span></li>
+        <li>{% render 'icon', name: 'check' %}<span><b>Gratuit</b><em> et sans engagement</em></span></li>
       </ul>
     </div>
 
     <div class="form lp-form fade-in d1" id="etude">
+      <span class="lp-badge" aria-hidden="true"><i></i>Gratuit · Sans engagement</span>
       {%- form 'contact', id: 'pac-form', novalidate: 'novalidate' -%}
         <input type="hidden" name="contact[Demande]" value="Pompe à chaleur — page aides">
         <input type="hidden" name="contact[Profil revenus estimé]" value="" data-profile>
@@ -178,6 +179,40 @@
           <header><span class="pc__n">5</span><h3>Thermostat</h3><span class="tag tag--g">Fourni selon modèle</span></header>
           <dl><dt>C'est quoi ?</dt><dd>Un petit boîtier au mur, ou une application sur votre téléphone.</dd><dt>Ça sert à quoi ?</dt><dd>Choisir la température. La pompe à chaleur s'adapte toute seule.</dd></dl>
         </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============ COMPARATIF ============ {%- endcomment -%}
+<section class="section cmp-sec" aria-labelledby="cmp-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow rv">Pourquoi changer ?</span>
+      <h2 class="rv" id="cmp-title">Chaudière ou pompe à chaleur ? <span class="s">Le match.</span></h2>
+    </div>
+    <div class="cmp rv">
+      <div class="cmp__col cmp__col--old">
+        <div class="cmp__h"><span class="cmp__ic">{% render 'icon', name: 'flame' %}</span><div><small>Aujourd'hui</small><b>Chaudière gaz ou fioul</b></div></div>
+        <ul>
+          <li><i>✕</i><span><b>Énergie fossile</b> au prix qui varie</span></li>
+          <li><i>✕</i><span><b>Combustion</b> dans la maison</span></li>
+          <li><i>✕</i><span><b>Cuve et livraisons</b> pour le fioul</span></li>
+          <li><i>✕</i><span><b>Fioul</b> : installation de chaudière neuve interdite depuis 2022</span></li>
+          <li><i>✕</i><span><b>Chauffage seul</b>, pas de fraîcheur l'été</span></li>
+        </ul>
+      </div>
+      <div class="cmp__vs" aria-hidden="true">VS</div>
+      <div class="cmp__col cmp__col--new">
+        <div class="cmp__h"><span class="cmp__ic">{% render 'icon', name: 'leaf' %}</span><div><small>Demain</small><b>Pompe à chaleur</b></div></div>
+        <ul>
+          <li><i>✓</i><span><b>Chaleur de l'air</b>, disponible gratuitement</span></li>
+          <li><i>✓</i><span><b>Aucune flamme</b> dans la maison</span></li>
+          <li><i>✓</i><span><b>Rien à stocker</b>, rien à faire livrer</span></li>
+          <li><i>✓</i><span><b>Aides publiques</b> possibles selon votre situation</span></li>
+          <li><i>✓</i><span><b>Fraîcheur l'été</b> avec certains modèles</span></li>
+        </ul>
+        <a class="btn btn--primary" href="#etude">Je passe à la pompe à chaleur {% render 'icon', name: 'btn-arrow' %}</a>
       </div>
     </div>
   </div>

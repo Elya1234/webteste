@@ -7,7 +7,7 @@
   const $$ = (s, c = d) => [...c.querySelectorAll(s)];
 
   /* ---------- En-tête : fond au défilement, masquage en descente ---------- */
-  const hdr = $('.hdr'), mbar = $('.mbar');
+  const hdr = $('.hdr'), mbar = $('.mbar'), wa = $('.wa');
   let lastY = scrollY, ticking = false;
   const onScroll = () => {
     const y = scrollY;
@@ -16,6 +16,7 @@
       if (!hdr.classList.contains('is-open')) hdr.classList.toggle('is-hidden', y > lastY && y > 300);
     }
     if (mbar) mbar.classList.toggle('on', y > innerHeight * .6);
+    if (wa) wa.classList.toggle('on', y > innerHeight * .6 || innerWidth >= 1080);
     lastY = y; ticking = false;
   };
   addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(onScroll); ticking = true; } }, { passive: true });
@@ -188,6 +189,7 @@
       steps.forEach((s, k) => s.classList.toggle('is-current', k === i));
       wrap.classList.toggle('is-last', i === steps.length - 1);
       wrap.classList.toggle('is-auto', steps[i].hasAttribute('data-auto'));
+      wrap.classList.toggle('is-first', i === 0);
       back.hidden = i === 0;
       if (bar) bar.style.width = ((i + 1) / steps.length * 100) + '%';
       if (lbl) lbl.textContent = `Étape ${i + 1} / ${steps.length}`;
@@ -279,7 +281,7 @@
     const labels = ['', 'très modeste', 'modeste', 'intermédiaire', 'aisé'];
     const colors = ['', '#3AB8F2', '#F5C542', '#9A86EE', '#F29BB8'];
     const txt = [
-      'Renseignez votre revenu fiscal de référence.',
+      'Tapez votre revenu fiscal : votre couleur s’affiche aussitôt.',
       'Revenus très modestes : c’est le profil qui peut ouvrir droit aux aides les plus importantes.',
       'Revenus modestes : des aides renforcées peuvent s’appliquer à votre projet.',
       'Revenus intermédiaires : des aides peuvent exister selon les travaux réalisés.',
@@ -297,7 +299,8 @@
       let p = 0;
       if (raw) { const v = +raw; p = v <= L[0] ? 1 : v <= L[1] ? 2 : v <= L[2] ? 3 : 4; }
       out.dataset.p = p || 'none';
-      $('[data-name]', out).textContent = p ? names[p] : '—';
+      $('[data-name]', out).textContent = p ? names[p] : 'Votre couleur ?';
+      const mini = $('[data-mini]', sim); if (mini) { mini.innerHTML = p ? `<i style="background:${colors[p]}"></i>${names[p]} · ${labels[p]}` : ''; mini.classList.toggle('on', !!p); }
       $('[data-txt]', out).textContent = txt[p];
       if (p) {
         const v = +raw, lo = [0, 0, L[0], L[1], L[2]][p], hi = [0, L[0], L[1], L[2], L[2] * 1.4][p];
