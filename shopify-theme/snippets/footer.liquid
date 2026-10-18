@@ -67,7 +67,7 @@
   {%- if settings.phone != blank -%}
     <a class="btn btn--glass" href="tel:{{ tel }}" aria-label="Appeler">{% render 'icon', name: 'phone' %}</a>
   {%- else -%}
-    <a class="btn btn--glass" href="{{ h }}/#faq" aria-label="Questions fréquentes">{% render 'icon', name: 'info' %}</a>
+    <button class="btn btn--glass" type="button" data-cb-open aria-label="Être rappelé">{% render 'icon', name: 'phone' %}</button>
   {%- endif -%}
   <a class="btn btn--primary" href="{{ etude }}">{% if template.suffix == 'pac' %}Vérifier mes aides{% else %}Obtenir mon étude{% endif %} {% render 'icon', name: 'btn-arrow' %}</a>
 </div>

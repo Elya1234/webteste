@@ -1,0 +1,47 @@
+{%- comment -%}
+  « Rappel en 1 clic » : petit formulaire volontaire (prénom, téléphone, email).
+  - S'ouvre au clic sur un bouton [data-cb-open], ou une seule fois par visite après un moment passé sur la page.
+  - Se ferme librement (croix, fond, touche Échap) ; si la personne ferme, il ne se rouvre pas tout seul pendant 3 jours.
+  - Les champs utilisent le remplissage automatique du navigateur (Chrome / compte Google, iPhone…) : la personne choisit ses informations et valide.
+  - Consentement obligatoire, case non cochée par défaut.
+{%- endcomment -%}
+{%- assign h = routes.root_url | remove_last: '/' -%}
+<div class="cb" data-cb hidden>
+  <div class="cb__bg" data-cb-close></div>
+  <div class="cb__card" role="dialog" aria-modal="true" aria-labelledby="cb-title">
+    <button class="cb__x" type="button" data-cb-close aria-label="Fermer">×</button>
+    {%- form 'contact', id: 'cb-form', class: 'cb__form', novalidate: 'novalidate' -%}
+      <input type="hidden" name="contact[Demande]" value="Rappel en 1 clic">
+      <input type="hidden" name="contact[Page]" value="{{ canonical_url }}">
+      <div class="cb__ok" data-cb-ok hidden>
+        <span class="badge">{% render 'icon', name: 'check' %}</span>
+        <h2>C'est noté !</h2>
+        <p>Un conseiller vous rappelle au créneau choisi.</p>
+      </div>
+      <div data-cb-body>
+        <div class="cb__head">
+          <span class="cb__ic">{% render 'icon', name: 'phone' %}</span>
+          <div>
+            <h2 id="cb-title">On vous rappelle</h2>
+            <p>Gratuit, sans engagement.</p>
+          </div>
+        </div>
+        <div class="cb__slots" role="radiogroup" aria-label="Quand vous rappeler ?">
+          <label><input type="radio" name="contact[Créneau de rappel]" value="Dès que possible" checked><span>Dès que possible</span></label>
+          <label><input type="radio" name="contact[Créneau de rappel]" value="Midi (12 h - 14 h)"><span>Midi</span></label>
+          <label><input type="radio" name="contact[Créneau de rappel]" value="Après 18 h"><span>Après 18 h</span></label>
+        </div>
+        <div class="field"><input id="cb-fn" name="contact[Prénom]" placeholder=" " autocomplete="section-cb given-name" data-cbrule="req"><label for="cb-fn">Prénom</label><span class="err-msg">Indiquez votre prénom.</span></div>
+        <div class="field"><input id="cb-tel" type="tel" name="contact[phone]" placeholder=" " autocomplete="section-cb tel" inputmode="tel" data-cbrule="tel"><label for="cb-tel">Téléphone</label><span class="err-msg">Numéro à 10 chiffres.</span></div>
+        <div class="field"><input id="cb-mail" type="email" name="contact[email]" placeholder=" " autocomplete="section-cb email" data-cbrule="email"><label for="cb-mail">Email</label><span class="err-msg">Email invalide.</span></div>
+        <div class="hp" aria-hidden="true"><label for="cb-web">Ne pas remplir</label><input id="cb-web" type="text" name="website" tabindex="-1" autocomplete="off"></div>
+        <div class="consent-wrap">
+          <label class="consent"><input type="checkbox" name="contact[Consentement RGPD]" value="Oui" data-cbconsent><span>J'accepte d'être rappelé à ce sujet. <a href="{{ h }}/pages/hachem-yazour-confidentialite">Confidentialité</a></span></label>
+          <span class="err-msg">Cochez la case pour être rappelé.</span>
+        </div>
+        <button type="submit" class="btn btn--primary cb__go">Être rappelé {% render 'icon', name: 'btn-arrow' %}</button>
+        <p class="cb__note">Astuce : touchez un champ, votre téléphone peut le remplir pour vous.</p>
+      </div>
+    {%- endform -%}
+  </div>
+</div>

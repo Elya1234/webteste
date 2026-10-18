@@ -401,6 +401,60 @@
     build();
   });
 
+
+  /* ---------- Rappel en 1 clic (volontaire, refermable) ---------- */
+  const cb = $('[data-cb]');
+  if (cb) {
+    const store = (k, v) => { try { v === undefined ? 0 : localStorage.setItem(k, v); return localStorage.getItem(k); } catch (e) { return null; } };
+    const sess = (k, v) => { try { if (v !== undefined) { v === null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } return sessionStorage.getItem(k); } catch (e) { return null; } };
+    const cbForm = $('form', cb), t0 = Date.now();
+    let lastFocus = null;
+    const open = () => {
+      if (!cb.hidden) return;
+      lastFocus = d.activeElement; cb.hidden = false;
+      requestAnimationFrame(() => cb.classList.add('is-open'));
+      d.body.classList.add('cb-lock');
+      setTimeout(() => { const f = $('#cb-fn', cb); if (f && innerWidth >= 760) f.focus(); }, 350);
+    };
+    const close = manual => {
+      cb.classList.remove('is-open'); d.body.classList.remove('cb-lock');
+      setTimeout(() => { cb.hidden = true; }, reduce ? 0 : 400);
+      if (manual) store('cb-dismiss', Date.now());
+      lastFocus?.focus?.();
+    };
+    $$('[data-cb-open]').forEach(b => b.addEventListener('click', open));
+    $$('[data-cb-close]', cb).forEach(b => b.addEventListener('click', () => close(true)));
+    d.addEventListener('keydown', e => { if (e.key === 'Escape' && !cb.hidden) close(true); });
+
+    // Retour après envoi : afficher la confirmation dans la fenêtre
+    if (/contact_posted=true/.test(location.search) && sess('cb-sent')) {
+      sess('cb-sent', null);
+      $('[data-cb-body]', cb).hidden = true; $('[data-cb-ok]', cb).hidden = false; open();
+    }
+
+    // Ouverture automatique : une seule fois par visite, jamais si la personne a fermé (3 jours) ou a déjà commencé un formulaire
+    const dismissed = +store('cb-dismiss') > Date.now() - 3 * 864e5;
+    const busy = () => !!d.querySelector('.form form :is(input,textarea):focus') || $$('.form form input[type=radio]:checked, .form form input[type=checkbox]:checked').length > 0;
+    if (!dismissed && !sess('cb-auto') && !/contact_posted=true/.test(location.search)) {
+      const auto = () => { if (sess('cb-auto') || busy()) return; sess('cb-auto', 1); open(); };
+      setTimeout(auto, 35000);
+      addEventListener('scroll', function onS() { if (scrollY > (d.documentElement.scrollHeight - innerHeight) * .6) { removeEventListener('scroll', onS); auto(); } }, { passive: true });
+      if (canHover) d.addEventListener('mouseout', function onOut(e) { if (!e.relatedTarget && e.clientY <= 0) { d.removeEventListener('mouseout', onOut); auto(); } });
+    }
+
+    // Validation et anti-spam
+    const R = { req: v => v.trim().length > 1, tel: v => /^(?:\+33\s?|0)[1-9](?:[\s.-]?\d{2}){4}$/.test(v.trim()), email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) };
+    cbForm.addEventListener('input', e => { const f = e.target.closest('.field.err'); if (f && R[e.target.dataset.cbrule]?.(e.target.value)) f.classList.remove('err'); if (e.target.dataset.cbconsent !== undefined && e.target.checked) e.target.closest('.consent-wrap').classList.remove('err'); });
+    cbForm.addEventListener('submit', e => {
+      if ($('.hp input', cbForm).value || Date.now() - t0 < 3000) { e.preventDefault(); return; }
+      let first = null;
+      $$('[data-cbrule]', cbForm).forEach(i => { const bad = !R[i.dataset.cbrule](i.value); i.closest('.field').classList.toggle('err', bad); i.setAttribute('aria-invalid', bad); if (bad && !first) first = i; });
+      const c = $('[data-cbconsent]', cbForm); const badC = !c.checked; c.closest('.consent-wrap').classList.toggle('err', badC); if (badC && !first) first = c;
+      if (first) { e.preventDefault(); first.focus(); return; }
+      sess('cb-sent', 1);
+    });
+  }
+
   /* ---------- Année du pied de page ---------- */
   $$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
 })();
