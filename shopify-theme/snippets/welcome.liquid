@@ -1,0 +1,42 @@
+{%- comment -%}
+  Accueil « comptoir » : salue le visiteur à son arrivée (une fois par visite) et l'oriente en un toucher.
+  Non affiché sur la page pompe à chaleur (formulaire prioritaire). Fermeture libre : croix, fond, Échap, « Je visite simplement ».
+{%- endcomment -%}
+{%- assign h = routes.root_url | remove_last: '/' -%}
+<div class="wel" data-wel hidden>
+  <div class="wel__bg" data-wel-close></div>
+  <section class="wel__desk" role="dialog" aria-modal="true" aria-labelledby="wel-msg">
+    <div class="wel__top">
+      <span class="wel__bell" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 24h22M7 24a9 9 0 0 1 18 0M16 15v-2M13 13h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 27h24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+      <div class="wel__who">
+        <b>Accueil</b>
+        <span><i></i>Énergie Hachem Yazour</span>
+      </div>
+      <button class="wel__x" type="button" data-wel-close aria-label="Fermer l'accueil">×</button>
+    </div>
+    <p class="wel__msg" id="wel-msg" data-wel-msg aria-live="polite"></p>
+    <div class="wel__resume" data-wel-resume hidden>
+      <a class="btn btn--primary" href="{{ h }}/pages/pompe-a-chaleur-aides#etude">Reprendre ma demande {% render 'icon', name: 'btn-arrow' %}</a>
+    </div>
+    <div class="wel__grid" data-wel-grid>
+      <a class="wel__opt" href="{{ h }}/pages/pompe-a-chaleur-aides" data-wel-go>
+        <span class="wel__ic">{% render 'icon', name: 'flame' %}</span>
+        <b>Remplacer ma chaudière</b><small>Pompe à chaleur</small>
+      </a>
+      <a class="wel__opt" href="{{ h }}/pages/pompe-a-chaleur-aides#profil" data-wel-go>
+        <span class="wel__ic">{% render 'icon', name: 'shield' %}</span>
+        <b>Connaître mes aides</b><small>En 10 secondes</small>
+      </a>
+      <button class="wel__opt" type="button" data-wel-ai>
+        <span class="wel__ic">{% render 'icon', name: 'info' %}</span>
+        <b>Poser une question</b><small>Réponse immédiate</small>
+      </button>
+      <button class="wel__opt" type="button" data-wel-cb>
+        <span class="wel__ic">{% render 'icon', name: 'phone' %}</span>
+        <b>Être rappelé</b><small>Gratuit</small>
+      </button>
+    </div>
+    <button class="wel__skip" type="button" data-wel-close>Je visite simplement {% render 'icon', name: 'arrow' %}</button>
+    <span class="wel__light" aria-hidden="true"></span>
+  </section>
+</div>

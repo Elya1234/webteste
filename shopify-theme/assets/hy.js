@@ -619,6 +619,47 @@
     else $('.ai__badge', ai)?.remove();
   }
 
+
+  /* ---------- Accueil « comptoir » (une fois par visite) ---------- */
+  const wel = $('[data-wel]');
+  if (wel) {
+    const ss = (k, v) => { try { if (v !== undefined) sessionStorage.setItem(k, v); return sessionStorage.getItem(k); } catch (e) { return '1'; } };
+    const lsg = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+    const lss = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+    const posted = /contact_posted=true/.test(location.search);
+    if (!ss('hy-welcomed') && !posted) {
+      ss('hy-welcomed', 1); ss('cb-auto', 1); // évite d'enchaîner deux fenêtres
+      const back = !!lsg('hy-visited'); lss('hy-visited', 1);
+      const hr = new Date().getHours(), hello = hr >= 18 || hr < 5 ? 'Bonsoir' : 'Bonjour';
+      let resume = false;
+      try { resume = Object.keys(localStorage).some(k => k.startsWith('hy-form:') && (JSON.parse(localStorage.getItem(k)) || {}).step > 0); } catch (e) {}
+      const text = back
+        ? `${hello} 👋 Bon retour parmi nous ! ${resume ? 'Votre demande vous attend.' : 'Que pouvons-nous faire pour vous ?'}`
+        : `${hello} 👋 Bienvenue chez Énergie Hachem Yazour. Qu'est-ce qui vous amène aujourd'hui ?`;
+      const msg = $('[data-wel-msg]', wel);
+      let last = d.activeElement;
+      const close = () => { wel.classList.remove('is-open'); setTimeout(() => { wel.hidden = true; }, reduce ? 0 : 450); d.body.classList.remove('wel-lock'); last?.focus?.(); };
+      const type = () => {
+        if (reduce) { msg.textContent = text; wel.classList.add('typed'); return; }
+        let i = 0; msg.textContent = '';
+        const step = () => { msg.textContent = text.slice(0, ++i); if (i < text.length) setTimeout(step, text[i - 1] === ' ' ? 18 : 24); else wel.classList.add('typed'); };
+        step();
+      };
+      setTimeout(() => {
+        wel.hidden = false; d.body.classList.add('wel-lock');
+        if (resume) $('[data-wel-resume]', wel).hidden = false;
+        requestAnimationFrame(() => wel.classList.add('is-open'));
+        setTimeout(type, reduce ? 0 : 550);
+        setTimeout(() => $('.wel__opt', wel)?.focus({ preventScroll: true }), 700);
+      }, reduce ? 0 : 900);
+      $$('[data-wel-close]', wel).forEach(b => b.addEventListener('click', close));
+      d.addEventListener('keydown', e => { if (e.key === 'Escape' && !wel.hidden) close(); });
+      $$('[data-wel-go]', wel).forEach(a => a.addEventListener('click', () => { wel.classList.remove('is-open'); }));
+      $('[data-wel-ai]', wel)?.addEventListener('click', () => { close(); setTimeout(() => $('.ai__fab')?.click(), 300); });
+      $('[data-wel-cb]', wel)?.addEventListener('click', () => { close(); setTimeout(() => $('[data-cb-open]')?.click(), 300); });
+    }
+  }
+
   /* ---------- Année du pied de page ---------- */
   $$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
 })();
