@@ -811,3 +811,9 @@ body.no-scroll{overflow:hidden}
 h1,h2,h3{overflow-wrap:break-word}
 .why__item{grid-template-columns:auto minmax(0,1fr)}
 .why__item .ph,.ph{white-space:normal}
+/* Images des guides */
+.post-cover{margin-top:36px;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:21/9;background:var(--g800)}
+.post-cover img{width:100%;height:100%;object-fit:cover}
+.post__img{display:block;margin:-28px -28px 6px;aspect-ratio:16/9;overflow:hidden;border-radius:var(--r-lg) var(--r-lg) 0 0}
+.post__img img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.post:hover .post__img img{transform:scale(1.05)}

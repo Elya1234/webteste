@@ -17,7 +17,7 @@
     <path d="M-20 790 C 360 720, 640 820, 940 720 S 1300 650, 1460 690" style="animation-duration:9s"/>
   </svg>
   <div class="wrap hero__inner">
-    <span class="eyebrow fade-in">Rénovation énergétique · Partout en France</span>
+    <span class="eyebrow fade-in">Pompe à chaleur · Solaire · Isolation · Partout en France</span>
     <h1>
       <span class="ln"><span>Transformez votre maison.</span></span>
       <span class="ln"><span>Réduisez votre <span class="s">consommation.</span></span></span>
@@ -118,7 +118,7 @@ reno|Rénovation globale|05|Un bouquet de travaux coordonné pour un vrai saut d
         {%- assign f = l | strip | split: '|' -%}
         {%- case f[0] -%}{%- when 'pac' -%}{%- assign url = '/pages/pompe-a-chaleur' -%}{%- when 'pv' -%}{%- assign url = '/pages/panneaux-solaires-photovoltaiques' -%}{%- when 'iso' -%}{%- assign url = '/pages/isolation-thermique' -%}{%- when 'cet' -%}{%- assign url = '/pages/chauffe-eau-thermodynamique' -%}{%- else -%}{%- assign url = '/pages/renovation-energetique-globale' -%}{%- endcase -%}
         <a class="sol rv" href="{{ h }}{{ url }}">
-          <div class="sol__img"><img src="{{ img }}{{ f[7] }}{{ q }}&w=1100" srcset="{{ img }}{{ f[7] }}{{ q }}&w=700 700w, {{ img }}{{ f[7] }}{{ q }}&w=1100 1100w" sizes="(min-width:1100px) 50vw, 100vw" alt="{{ f[8] }}" loading="lazy" decoding="async" data-parallax="6"></div>
+          <div class="sol__img"><img src="{{ img }}{{ f[7] }}{{ q }}&w=1100" srcset="{{ img }}{{ f[7] }}{{ q }}&w=700 700w, {{ img }}{{ f[7] }}{{ q }}&w=1100 1100w" sizes="(min-width:1100px) 50vw, 100vw" alt="{{ f[8] }}" width="1100" height="733" loading="lazy" decoding="async" data-parallax="6"></div>
           <span class="sol__tag">{% case f[0] %}{% when 'pac' %}Chauffage{% when 'pv' %}Solaire{% when 'iso' %}Isolation{% when 'cet' %}Eau chaude{% else %}Rénovation{% endcase %}</span>
           <span class="sol__n">{{ f[2] }}</span>
           <h3>{{ f[1] }}</h3>

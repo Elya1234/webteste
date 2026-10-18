@@ -1,2 +1,14 @@
-<section class="page-hero"><div class="wrap"><span class="eyebrow">Erreur 404</span><h1 style="margin-top:20px;font-size:var(--t-h2)">Cette page est introuvable.</h1></div></section>
-<section class="section" style="padding-top:56px"><div class="wrap rte"><p>La page demandée n’existe pas ou a été déplacée.</p><p><a class="btn btn--primary" href="{{ routes.root_url }}" style="color:var(--obsidian);text-decoration:none">Retour à l’accueil {% render "icon", name: "btn-arrow" %}</a></p></div></section>
+{%- assign h = routes.root_url | remove_last: '/' -%}
+<section class="page-hero"><div class="wrap">
+  <span class="eyebrow">Erreur 404</span>
+  <h1 style="margin-top:20px;font-size:var(--t-h2)">Cette page est introuvable.</h1>
+  <p class="lead" style="margin-top:18px">Elle a peut-être été déplacée. Voici les pages les plus utiles :</p>
+</div></section>
+<section class="section" style="padding-top:48px"><div class="wrap">
+  <div class="posts">
+    <a class="post" href="{{ h }}/pages/pompe-a-chaleur-aides"><span class="eyebrow">Pompe à chaleur</span><h2>Vérifier mes aides</h2><p>4 questions, 30 secondes, gratuit et sans engagement.</p><span class="link">Commencer {% render 'icon', name: 'arrow' %}</span></a>
+    <a class="post" href="{{ h }}/pages/aides-renovation-energetique"><span class="eyebrow">Aides</span><h2>Aides et financements</h2><p>MaPrimeRénov', primes CEE, éco-PTZ, TVA réduite.</p><span class="link">Découvrir {% render 'icon', name: 'arrow' %}</span></a>
+    <a class="post" href="{{ h }}/blogs/guides-energie"><span class="eyebrow">Guides</span><h2>Guides et conseils</h2><p>Bien préparer votre projet de rénovation.</p><span class="link">Lire {% render 'icon', name: 'arrow' %}</span></a>
+  </div>
+  <p style="margin-top:32px"><a class="btn btn--primary" href="{{ routes.root_url }}">Retour à l'accueil {% render 'icon', name: 'btn-arrow' %}</a></p>
+</div></section>

@@ -12,6 +12,7 @@
     <div class="posts">
       {%- for article in blog.articles -%}
         <a class="post rv" href="{{ article.url }}">
+          {%- if article.image -%}<span class="post__img"><img src="{{ article.image | image_url: width: 640 }}" alt="{{ article.image.alt | default: article.title | escape }}" loading="lazy" width="640" height="360"></span>{%- endif -%}
           <span class="eyebrow">{{ article.published_at | date: '%d/%m/%Y' }}</span>
           <h2>{{ article.title }}</h2>
           <p>{{ article.excerpt_or_content | strip_html | truncate: 170 }}</p>
@@ -23,3 +24,9 @@
     {%- endpaginate -%}
   </div>
 </section>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+  {"@type":"ListItem","position":1,"name":"Accueil","item":{{ shop.url | append: routes.root_url | json }}},
+  {"@type":"ListItem","position":2,"name":{{ blog.title | json }},"item":{{ canonical_url | json }}}
+]}
+</script>
