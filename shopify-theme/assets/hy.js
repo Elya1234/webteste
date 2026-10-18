@@ -249,7 +249,34 @@
       }
       $('[data-submit]', form).setAttribute('aria-busy', 'true');
     });
-    go(0);
+
+    // Reprise : les réponses restent dans ce navigateur uniquement, jusqu'à l'envoi
+    const KEY = 'hy-form:' + location.pathname;
+    const ls = { get: () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } },
+                 set: v => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} },
+                 del: () => { try { localStorage.removeItem(KEY); } catch (e) {} } };
+    const fields = () => $$('input, textarea', form).filter(i => i.name && i.type !== 'hidden' && !i.closest('.hp') && !i.hasAttribute('data-consent'));
+    const save = () => {
+      const v = {}; fields().forEach(i => { if (i.type === 'radio' || i.type === 'checkbox') { if (i.checked) v[i.name + '|' + i.value] = 1; } else if (i.value) v[i.name] = i.value; });
+      ls.set({ v, step: cur, t: Date.now() });
+    };
+    form.addEventListener('change', save); form.addEventListener('input', save);
+    form.addEventListener('click', e => { if (e.target.closest('[data-next],[data-back],[data-force]')) setTimeout(save, 50); });
+    if (/contact_posted=true/.test(location.search)) ls.del();
+    const saved = ls.get();
+    if (saved && Date.now() - saved.t < 14 * 864e5) {
+      fields().forEach(i => {
+        if (i.type === 'radio' || i.type === 'checkbox') i.checked = !!saved.v[i.name + '|' + i.value];
+        else if (saved.v[i.name]) { i.value = saved.v[i.name]; i.dispatchEvent(new Event('input', { bubbles: true })); }
+      });
+      const st = Math.min(saved.step || 0, steps.length - 1);
+      go(st);
+      if (st > 0) {
+        const note = d.createElement('p'); note.className = 'resume'; note.innerHTML = 'Vos réponses ont été conservées. <button type="button">Recommencer</button>';
+        $('.progress', wrap)?.after(note);
+        $('button', note).addEventListener('click', () => { ls.del(); form.reset(); note.remove(); go(0); });
+      }
+    } else go(0);
   }
 
 
@@ -454,6 +481,50 @@
       sess('cb-sent', 1);
     });
   }
+
+
+  /* ---------- Confort de saisie : téléphone formaté, ville automatique, envoi WhatsApp ---------- */
+  d.addEventListener('input', e => {
+    const i = e.target;
+    if (i.type === 'tel') {
+      const raw = i.value;
+      if (/^\s*\+/.test(raw)) return;
+      const dg = raw.replace(/\D/g, '').slice(0, 10);
+      const f = dg.replace(/(\d{2})(?=\d)/g, '$1 ');
+      if (f !== raw && !(e.inputType || '').startsWith('delete')) i.value = f;
+    }
+  });
+  const cityCache = {};
+  $$('input[autocomplete="postal-code"]').forEach(cp => {
+    const form = cp.form, hid = form && $('[data-city]', form);
+    const box = d.createElement('div'); box.className = 'cp-city'; box.setAttribute('aria-live', 'polite');
+    cp.closest('.field').append(box);
+    const show = list => {
+      box.innerHTML = '';
+      if (!list || !list.length) { if (hid) hid.value = ''; return; }
+      if (list.length === 1) { box.innerHTML = `<span>${'📍'} ${list[0]}</span>`; if (hid) hid.value = list[0]; return; }
+      const sel = d.createElement('select'); sel.setAttribute('aria-label', 'Commune');
+      list.forEach(n => { const o = d.createElement('option'); o.textContent = n; sel.append(o); });
+      sel.addEventListener('change', () => { if (hid) hid.value = sel.value; });
+      box.append('📍 ', sel); if (hid) hid.value = list[0];
+    };
+    cp.addEventListener('input', () => {
+      const v = cp.value.replace(/\D/g, '').slice(0, 5); if (v !== cp.value) cp.value = v;
+      if (v.length !== 5) { show(null); return; }
+      if (cityCache[v]) { show(cityCache[v]); return; }
+      fetch(`https://geo.api.gouv.fr/communes?codePostal=${v}&fields=nom`).then(r => r.ok ? r.json() : []).then(js => { cityCache[v] = js.map(c => c.nom).sort(); show(cityCache[v]); }).catch(() => show(null));
+    });
+    if (cp.value.length === 5) cp.dispatchEvent(new Event('input'));
+  });
+  $$('[data-wa-answers]').forEach(b => b.addEventListener('click', () => {
+    const f = b.closest('form') || b.closest('.form')?.querySelector('form');
+    const wa = $('.wa')?.getAttribute('href')?.split('?')[0]; if (!f || !wa) return;
+    const lines = ['Bonjour, je souhaite être rappelé pour une pompe à chaleur.'];
+    $$('input:checked', f).forEach(i => { if (i.type === 'radio' || (i.type === 'checkbox' && !i.hasAttribute('data-consent'))) { const k = (i.name.match(/\[(.+)\]/) || [])[1] || ''; lines.push(i.value === 'Oui' ? k : `${k} : ${i.value}`); } });
+    const val = n => (f.querySelector(`[name="contact[${n}]"]`) || {}).value || '';
+    [['Prénom', 'Prénom'], ['Code postal', 'Code postal'], ['Ville', 'Ville'], ['Profil revenus estimé', 'Profil']].forEach(([n, l]) => { const v = val(n); if (v) lines.push(`${l} : ${v}`); });
+    open(`${wa}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
+  }));
 
   /* ---------- Année du pied de page ---------- */
   $$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());

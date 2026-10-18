@@ -13,6 +13,7 @@
     {%- form 'contact', id: 'cb-form', class: 'cb__form', novalidate: 'novalidate' -%}
       <input type="hidden" name="contact[Demande]" value="Rappel en 1 clic">
       <input type="hidden" name="contact[Page]" value="{{ canonical_url }}">
+      <input type="hidden" name="contact[Profil revenus estimé]" value="" data-profile>
       <div class="cb__ok" data-cb-ok hidden>
         <span class="badge">{% render 'icon', name: 'check' %}</span>
         <h2>C'est noté !</h2>

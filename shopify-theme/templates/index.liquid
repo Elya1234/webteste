@@ -520,16 +520,17 @@ Est-il normal d'être démarché par téléphone pour des travaux de rénovation
           </fieldset>
 
           <fieldset class="step">
-            <legend>Comment vous recontacter ?</legend>
+            <legend><span class="last-tag">Dernière étape</span>Comment vous recontacter ?</legend>
             <div class="grid2">
               <div class="field"><input id="f-fn" name="contact[Prénom]" placeholder=" " autocomplete="given-name" data-rule="req" required><label for="f-fn">Prénom</label><span class="err-msg">Indiquez votre prénom.</span></div>
-              <div class="field"><input id="f-ln" name="contact[Nom]" placeholder=" " autocomplete="family-name" data-rule="req" required><label for="f-ln">Nom</label><span class="err-msg">Indiquez votre nom.</span></div>
+              <div class="field"><input id="f-ln" name="contact[Nom]" placeholder=" " autocomplete="family-name"><label for="f-ln">Nom (facultatif)</label></div>
               <div class="field"><input id="f-tel" type="tel" name="contact[phone]" placeholder=" " autocomplete="tel" inputmode="tel" data-rule="tel" required><label for="f-tel">Téléphone</label><span class="err-msg">Numéro français à 10 chiffres attendu.</span></div>
               <div class="field"><input id="f-mail" type="email" name="contact[email]" placeholder=" " autocomplete="email" data-rule="email" required><label for="f-mail">Email</label><span class="err-msg">Adresse email invalide.</span></div>
               <div class="field"><input id="f-cp" name="contact[Code postal]" placeholder=" " autocomplete="postal-code" inputmode="numeric" maxlength="5" data-rule="cp" required><label for="f-cp">Code postal du logement</label><span class="err-msg">Code postal à 5 chiffres attendu.</span></div>
             </div>
             <div class="field"><textarea id="f-msg" name="contact[body]" placeholder=" " rows="3"></textarea><label for="f-msg">Précisions (facultatif)</label></div>
             <input type="hidden" name="contact[Profil revenus estimé]" value="" data-profile>
+            <input type="hidden" name="contact[Ville]" value="" data-city>
             <div class="hp" aria-hidden="true"><label for="f-web">Ne pas remplir</label><input id="f-web" type="text" name="website" tabindex="-1" autocomplete="off"></div>
             <div class="consent-wrap">
               <label class="consent"><input type="checkbox" name="contact[Consentement RGPD]" value="Oui" data-consent required><span>J'accepte que mes données soient utilisées par {{ settings.brand_name | default: 'Énergie Hachem Yazour' }} pour traiter ma demande et me recontacter à ce sujet. Elles ne sont ni vendues ni cédées. <a href="{{ h }}/pages/hachem-yazour-confidentialite">En savoir plus</a>.</span></label>
@@ -541,6 +542,10 @@ Est-il normal d'être démarché par téléphone pour des travaux de rénovation
             <button type="button" class="back" data-back hidden>{% render 'icon', name: 'arrow' %}Retour</button>
             <button type="button" class="btn btn--primary" data-next>Continuer {% render 'icon', name: 'btn-arrow' %}</button>
             <button type="submit" class="btn btn--primary" data-submit>Obtenir mon étude {% render 'icon', name: 'btn-arrow' %}</button>
+          </div>
+          <div class="form__extra">
+            <p class="secure">{% render 'icon', name: 'shield' %}Vos informations servent uniquement à vous recontacter.</p>
+            {%- if settings.whatsapp_number != blank -%}<button type="button" class="alt-wa" data-wa-answers>Ou envoyer mes réponses sur <b>WhatsApp</b></button>{%- endif -%}
           </div>
           <p class="form__note">Demande gratuite et sans engagement. Vos réponses servent uniquement à préparer l'étude de votre projet.</p>
         {%- endif -%}

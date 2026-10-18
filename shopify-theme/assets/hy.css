@@ -946,3 +946,21 @@ body.cb-lock{overflow:hidden}
   .cb-fab svg{width:18px;height:18px;color:var(--aurora)}
   .cb-fab:hover{transform:translateY(-2px);border-color:var(--aurora);background:rgba(59,227,161,.12)}
 }
+
+/* ---------------- Formulaires : confort et confiance ---------------- */
+.last-tag{display:table;margin:0 0 10px;padding:4px 10px;border-radius:var(--r-pill);background:var(--aurora);color:var(--obsidian);font:600 .68rem/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;vertical-align:middle}
+.form__extra{display:grid;gap:10px;margin-top:16px}
+.secure{display:flex;gap:8px;align-items:center;font-size:.8rem;color:var(--mist)}
+.secure svg{width:16px;height:16px;color:var(--aurora);flex:none}
+.alt-wa{justify-self:start;display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--mist);text-decoration:underline;text-underline-offset:3px}
+.alt-wa b{color:#25D366;font-weight:600}
+.js .form:not(.is-last) .form__extra{display:none}
+.cp-city{margin-top:6px;font-size:.85rem;color:var(--aurora)}
+.cp-city:empty{display:none}
+.cp-city select{background:rgba(10,11,13,.5);color:var(--porcelain);border:1px solid var(--line-d);border-radius:8px;padding:6px 8px;font-size:.85rem;max-width:80%}
+.grid2 .cp-city{grid-column:auto}
+.resume{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-18px 0 20px;font-size:.82rem;color:var(--mist)}
+.resume button{color:var(--aurora);text-decoration:underline;font-size:.82rem}
+.sim__ctas{display:flex;flex-wrap:wrap;gap:10px}
+.sim__ctas .btn--glass svg{width:16px;height:16px}
+.sim__ctas .btn--glass{padding:0 18px}
