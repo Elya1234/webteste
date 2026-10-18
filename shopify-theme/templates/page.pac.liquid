@@ -7,6 +7,7 @@
 {%- comment -%} ============ HERO + FORMULAIRE EXPRESS ============ {%- endcomment -%}
 <section class="lp-hero" aria-label="Pompe à chaleur">
   <div class="lp-hero__bg" data-parallax="8"><img src="{{ img }}1613490493576-7fde63acd811{{ q }}&w=1800" srcset="{{ img }}1613490493576-7fde63acd811{{ q }}&w=900 900w, {{ img }}1613490493576-7fde63acd811{{ q }}&w=1800 1800w" sizes="100vw" alt="Maison contemporaine équipée d'une pompe à chaleur" fetchpriority="high"></div>
+  <canvas class="lp-air" data-air aria-hidden="true"></canvas>
   <div class="wrap lp-hero__grid">
     <div class="lp-hero__txt">
       <span class="eyebrow fade-in">Pompe à chaleur</span>
@@ -123,6 +124,8 @@
           <rect class="faint" x="200" y="200" width="70" height="56" rx="3"/>
           <text class="lbl" x="350" y="130" text-anchor="middle">Votre maison</text>
           <text class="lbl lbl--out" x="684" y="300" text-anchor="middle">Air extérieur</text>
+          <g class="sky sky--sun"><circle cx="720" cy="90" r="22" fill="none" stroke="#FFC77D" stroke-width="1.6"/><path d="M720 52v12M720 116v12M682 90h12M746 90h12M693 63l8 8M739 109l8 8M747 63l-8 8M701 109l-8 8" stroke="#FFC77D" stroke-width="1.6" stroke-linecap="round"/></g>
+          <g class="sky sky--snow"><path d="M720 62v56M696 76l48 28M744 76l-48 28" stroke="#9BD8FF" stroke-width="1.6" stroke-linecap="round"/><circle cx="720" cy="90" r="5" fill="#9BD8FF"/></g>
           <g class="part" data-k="rad"><rect x="380" y="244" width="72" height="40" rx="5" fill="rgba(255,179,107,.1)" stroke="#FFB36B" stroke-width="1.4"/><path d="M394 248v32M408 248v32M422 248v32M436 248v32" stroke="#FFB36B" stroke-width="1" opacity=".6"/></g>
           <g class="part" data-k="pla"><path d="M160 430 h40 v-8 h40 v8 h40 v-8 h40 v8 h40 v-8 h40 v8 h40" fill="none" stroke="#FFB36B" stroke-width="1.6"/></g>
           <g class="part" data-k="mod"><rect x="472" y="330" width="50" height="96" rx="12" fill="rgba(59,227,161,.08)" stroke="#3BE3A1" stroke-width="1.4"/><circle cx="497" cy="352" r="6" fill="none" stroke="#3BE3A1" stroke-width="1.2"/></g>
@@ -145,6 +148,11 @@
         <button class="hot hot--n" type="button" data-part="th" aria-pressed="false" aria-label="5 : thermostat" style="left:38.9%;top:76%"><span>5</span></button>
       </div></div>
 
+      <div class="season" role="group" aria-label="Saison">
+        <button type="button" data-season="winter" aria-pressed="true">{% render 'icon', name: 'flame' %}Hiver</button>
+        <button type="button" data-season="summer" aria-pressed="false">{% render 'icon', name: 'leaf' %}Été</button>
+        <span class="season__t" data-season-t aria-live="polite">La pompe à chaleur chauffe la maison.</span>
+      </div>
       <div class="pacx__legend">
         <span class="pacx__l"><i class="dot dot--g"></i>Fait partie de la pompe à chaleur</span>
         <span class="pacx__l"><i class="dot dot--o"></i>Souvent déjà chez vous</span>
@@ -180,6 +188,19 @@
           <dl><dt>C'est quoi ?</dt><dd>Un petit boîtier au mur, ou une application sur votre téléphone.</dd><dt>Ça sert à quoi ?</dt><dd>Choisir la température. La pompe à chaleur s'adapte toute seule.</dd></dl>
         </article>
       </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============ GALERIE BÉNÉFICES ============ {%- endcomment -%}
+<section class="section gain-sec" aria-labelledby="gain-title">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow rv">Ce que vous gagnez</span><h2 class="rv" id="gain-title">Votre maison, <span class="s">en mieux.</span></h2></div>
+    <div class="gain" data-tilt-group>
+      <figure class="gain__c rv" data-tilt><img src="{{ img }}1617104678098-de229db51175{{ q }}&w=900" alt="Chambre chaleureuse chauffée par une pompe à chaleur" loading="lazy" width="900" height="1125"><figcaption><span class="gain__ic">{% render 'icon', name: 'home' %}</span><b>Confort</b><small>Chaleur douce partout</small></figcaption></figure>
+      <figure class="gain__c rv" data-tilt><img src="{{ img }}1584622650111-993a426fbf0a{{ q }}&w=900" alt="Salle de bain avec eau chaude produite par pompe à chaleur" loading="lazy" width="900" height="1125"><figcaption><span class="gain__ic">{% render 'icon', name: 'drop' %}</span><b>Eau chaude</b><small>Selon le modèle</small></figcaption></figure>
+      <figure class="gain__c rv" data-tilt><img src="{{ img }}1545259741-2ea3ebf61fa3{{ q }}&w=900" alt="Thermostat connecté pour piloter la pompe à chaleur" loading="lazy" width="900" height="1125"><figcaption><span class="gain__ic">{% render 'icon', name: 'spark' %}</span><b>Pilotage</b><small>Au mur ou sur téléphone</small></figcaption></figure>
+      <figure class="gain__c rv" data-tilt><img src="{{ img }}1558618666-fcd25c85cd64{{ q }}&w=900" alt="Installateur raccordant une pompe à chaleur" loading="lazy" width="900" height="1125"><figcaption><span class="gain__ic">{% render 'icon', name: 'shield' %}</span><b>Pose pro</b><small>Installation soignée</small></figcaption></figure>
     </div>
   </div>
 </section>
@@ -222,10 +243,10 @@
 <section class="section light" style="padding-block:clamp(72px,9vw,128px)">
   <div class="wrap">
     <div class="sec-head"><span class="eyebrow rv">C'est simple</span><h2 class="rv">3 étapes. <span class="s">C'est tout.</span></h2></div>
-    <div class="lp-steps">
-      <div class="lp-step rv"><span class="lp-step__n">1</span><h3>Vous répondez</h3><p>4 questions, 30 secondes.</p></div>
-      <div class="lp-step rv"><span class="lp-step__n">2</span><h3>On étudie</h3><p>Votre maison et vos aides possibles.</p></div>
-      <div class="lp-step rv"><span class="lp-step__n">3</span><h3>On installe</h3><p>Pose, mise en service, suivi.</p></div>
+    <div class="lp-steps" data-steps><span class="lp-steps__line" aria-hidden="true"></span>
+      <div class="lp-step rv"><span class="lp-step__n">{% render 'icon', name: 'clock' %}</span><h3>1 · Vous répondez</h3><p>4 questions, 30 secondes.</p></div>
+      <div class="lp-step rv"><span class="lp-step__n">{% render 'icon', name: 'home' %}</span><h3>2 · On étudie</h3><p>Votre maison et vos aides.</p></div>
+      <div class="lp-step rv"><span class="lp-step__n">{% render 'icon', name: 'check' %}</span><h3>3 · On installe</h3><p>Pose, mise en service, suivi.</p></div>
     </div>
   </div>
 </section>
@@ -239,9 +260,9 @@
     </div>
     <div>
       <div class="lp-chips rv">
-        <span>MaPrimeRénov'</span><span>Prime CEE « Coup de pouce »</span><span>TVA réduite</span><span>Éco-prêt à taux zéro</span><span>Aides locales</span>
+        <span>{% render 'icon', name: 'home' %}MaPrimeRénov'</span><span>{% render 'icon', name: 'flame' %}Prime CEE « Coup de pouce »</span><span>{% render 'icon', name: 'doc' %}TVA réduite</span><span>{% render 'icon', name: 'key' %}Éco-prêt à taux zéro</span><span>{% render 'icon', name: 'pin' %}Aides locales</span>
       </div>
-      <p class="muted rv" style="font-size:.88rem;margin-top:20px">Montant selon vos revenus, votre logement et les conditions du moment. Aucune aide n'est garantie avant étude. <a href="{{ h }}/pages/aides-renovation-energetique" style="color:var(--porcelain)">En savoir plus</a></p>
+      <p class="muted rv" style="font-size:.88rem;margin-top:20px">Selon vos revenus et votre logement. Non garanti avant étude. <a href="{{ h }}/pages/aides-renovation-energetique" style="color:var(--porcelain)">En savoir plus</a></p>
       <a class="btn btn--primary rv" href="#etude" style="margin-top:28px">Vérifier mes aides {% render 'icon', name: 'btn-arrow' %}</a>
     </div>
   </div>
@@ -254,11 +275,11 @@
       <span class="eyebrow rv">L'essentiel</span>
       <h2 class="rv" id="ess-title" style="margin-top:18px">La pompe à chaleur <span class="s">en 4 points.</span></h2>
     </div>
-    <div class="ess__grid">
-      <div class="ess__i rv"><h3>Pour quelles maisons ?</h3><p>Surtout les maisons chauffées au <b>gaz</b>, au <b>fioul</b> ou au <b>bois</b> avec des radiateurs à eau ou un plancher chauffant.</p></div>
-      <div class="ess__i rv"><h3>Quelles aides ?</h3><p>MaPrimeRénov', prime CEE « Coup de pouce », TVA réduite, éco-PTZ : selon votre <a href="#profil">profil de revenus</a> et les conditions du moment.</p></div>
-      <div class="ess__i rv"><h3>Combien ça coûte ?</h3><p>Le prix dépend de la puissance, du logement et des travaux. <a href="{{ h }}/blogs/guides-energie/prix-pompe-a-chaleur-ce-qui-fait-varier-le-devis">Ce qui fait varier le devis</a>.</p></div>
-      <div class="ess__i rv"><h3>Et le « 1 € » ?</h3><p>Personne ne peut le garantir sans étude. <a href="{{ h }}/blogs/guides-energie/pompe-a-chaleur-a-1-euro-vrai-ou-faux">Notre réponse honnête</a>.</p></div>
+    <div class="ess__grid ess__grid--ic">
+      <div class="ess__i rv"><span class="ess__ic">{% render 'icon', name: 'home' %}</span><h3>Pour qui ?</h3><p>Maisons au <b>gaz</b>, <b>fioul</b> ou <b>bois</b>.</p></div>
+      <div class="ess__i rv"><span class="ess__ic">{% render 'icon', name: 'shield' %}</span><h3>Quelles aides ?</h3><p>Selon votre <a href="#profil">profil de revenus</a>.</p></div>
+      <div class="ess__i rv"><span class="ess__ic">{% render 'icon', name: 'doc' %}</span><h3>Quel prix ?</h3><p>Selon votre maison. <a href="{{ h }}/blogs/guides-energie/prix-pompe-a-chaleur-ce-qui-fait-varier-le-devis">Le détail</a>.</p></div>
+      <div class="ess__i rv"><span class="ess__ic">{% render 'icon', name: 'info' %}</span><h3>Et le « 1 € » ?</h3><p>Jamais garanti sans étude. <a href="{{ h }}/blogs/guides-energie/pompe-a-chaleur-a-1-euro-vrai-ou-faux">Pourquoi</a>.</p></div>
     </div>
     <p class="ess__more rv">À lire aussi : <a href="{{ h }}/blogs/guides-energie/maprimerenov-2026-profils-bleu-jaune-violet-rose">les profils MaPrimeRénov' 2026</a> · <a href="{{ h }}/blogs/guides-energie/remplacer-chaudiere-fioul-par-pompe-a-chaleur">remplacer une chaudière fioul</a> · <a href="{{ h }}/blogs/guides-energie/pompe-a-chaleur-air-eau-ou-air-air-comment-choisir">air/eau ou air/air ?</a> · <a href="{{ h }}/pages/pompe-a-chaleur">notre page pompe à chaleur</a></p>
   </div>

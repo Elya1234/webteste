@@ -327,9 +327,58 @@
   }
 
 
+
+  /* ---------- PAC : air animé dans le haut de page ---------- */
+  const air = $('[data-air]');
+  if (air && !reduce) {
+    const ctx = air.getContext('2d'); let W = 0, H = 0, run = false, raf2 = 0;
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    const N = innerWidth < 760 ? 22 : 42;
+    const P = Array.from({ length: N }, () => ({ x: Math.random(), y: Math.random(), v: .0006 + Math.random() * .0012, r: .8 + Math.random() * 1.8, a: Math.random() * Math.PI * 2 }));
+    const size = () => { W = air.clientWidth; H = air.clientHeight; air.width = W * dpr; air.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      P.forEach(p => {
+        p.x -= p.v; p.a += .02; if (p.x < -.02) { p.x = 1.02; p.y = Math.random(); }
+        const y = p.y * H + Math.sin(p.a) * 6, x = p.x * W;
+        const alpha = Math.min(1, Math.min(p.x, 1 - p.x) * 6) * .55;
+        ctx.beginPath(); ctx.arc(x, y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(59,227,161,${alpha})`; ctx.fill();
+      });
+      if (run) raf2 = requestAnimationFrame(draw);
+    };
+    size(); addEventListener('resize', size);
+    new IntersectionObserver(([e]) => { run = e.isIntersecting; cancelAnimationFrame(raf2); if (run) draw(); }).observe(air);
+  }
+
+  /* ---------- PAC : saison Hiver / Été ---------- */
+  const pxs = $('[data-pacx]');
+  if (pxs) {
+    const txtS = { winter: 'La pompe à chaleur chauffe la maison.', summer: 'Certains modèles rafraîchissent la maison.' };
+    $$('[data-season]', pxs).forEach(b => b.addEventListener('click', () => {
+      const s = b.dataset.season;
+      pxs.classList.toggle('is-summer', s === 'summer');
+      $$('[data-season]', pxs).forEach(x => x.setAttribute('aria-pressed', x === b));
+      const t = $('[data-season-t]', pxs); t.textContent = txtS[s]; t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
+    }));
+  }
+
+  /* ---------- PAC : étapes, ligne animée ---------- */
+  const stp = $('[data-steps]');
+  if (stp) new IntersectionObserver(([e], o) => { if (e.isIntersecting) { stp.classList.add('in'); o.disconnect(); } }, { threshold: .4 }).observe(stp);
+
+  /* ---------- Galerie : léger effet 3D au survol ---------- */
+  if (canHover && !reduce) $$('[data-tilt]').forEach(c => {
+    c.addEventListener('pointermove', e => {
+      const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      c.style.transform = `perspective(900px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) translateY(-4px)`;
+    });
+    c.addEventListener('pointerleave', () => { c.style.transform = ''; });
+  });
+
   /* ---------- Carrousels mobiles : points indicateurs ---------- */
   const mqSnap = matchMedia('(max-width: 759px)');
-  $$('.solutions, .works, .aids, .reviews, .posts').forEach(track => {
+  $$('.solutions, .works, .aids, .reviews, .posts, .gain').forEach(track => {
     const dots = d.createElement('div'); dots.className = 'snap-dots'; dots.setAttribute('aria-hidden', 'true');
     track.after(dots);
     const items = () => [...track.children].filter(c => !c.hidden);
