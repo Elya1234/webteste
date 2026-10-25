@@ -4,10 +4,10 @@ Site d'achat et de vente d'or au cours en direct, réalisé d'après la maquette
 
 ## Ce que fait le site
 
-- **Design moderne** (noir, or, beaucoup d'air), pensé d'abord pour le téléphone (barre de navigation en bas, comme une application).
+- **Le style de la maquette Canva** : en-tête en marbre noir et or, logo doré, tableau du cours EUR/GBP/USD, points jaunes Pièces / Gramme / Lingots, tableaux à bordure jaune avec boutons verts « Ajouter », page « Son compte » (GRAMME / LINGOTS / TOTAL OR et boutons ACHETER UN GRAMME…).
 - **Cours de l'or automatique** : relevé toutes les 2 minutes (or, argent, platine). Tous les prix du site se recalculent tout seuls.
 - **Boutique** : pièces, lingots, argent & platine, en grille ou en liste ; fiche produit avec prix dégressifs, valeur du métal et marge affichées.
-- **Espace client « comme à la banque »** (`#/espace`) :
+- **Espace client** (`#/compte`) :
   - carte « Valeur totale de mon compte » (or au gramme, coffre, solde, montant réservé) ;
   - boutons rapides : Acheter, Vendre, Alimenter, Retirer, Me faire livrer, Conseiller WhatsApp ;
   - Acheter / Vendre (au gramme, en € ou en grammes, ou un lingot / une pièce), avec récapitulatif clair avant chaque opération ;
