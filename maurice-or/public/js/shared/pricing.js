@@ -20,6 +20,10 @@ export const DEFAULT_SETTINGS = {
   bankIban: 'FR76 0000 0000 0000 0000 0000 000',
   bankBic: 'XXXXFRPPXXX',
   fallbackSpot: null,     // cours de secours manuel {or, argent, platine} en €/once
+  whatsapp: '33612345678', // numéro WhatsApp de la boutique, format international sans + ni espaces
+  approvalBuy: true,      // chaque achat doit être confirmé par l'administrateur
+  approvalSell: false,    // idem pour les ventes (désactivé : le client revend tout de suite)
+  approvalWindowMin: 30,  // délai de validation ; passé ce délai, la demande expire et les fonds sont rendus
 };
 
 // Remise sur la prime selon la quantité commandée (fraction de la prime retirée).

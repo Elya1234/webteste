@@ -4,8 +4,9 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { createCore, emptyState } from '../public/js/shared/core.js';
 
-function setup(spotOverride) {
+function setup(spotOverride, settings = { approvalBuy: false }) {
   const state = emptyState();
+  state.settings = { ...settings };
   let now = Date.UTC(2026, 9, 25, 12);
   const spot = { eur: { or: 3110.35, argent: 31.1, platine: 1000 }, usd: { or: 3500 }, gbp: { or: 2600 }, updatedAt: now };
   const deps = {
@@ -26,7 +27,7 @@ function setup(spotOverride) {
     return out;
   }
   const reg = (who, email) => call(who, 'POST', '/api/auth/register', { email, password: 'motdepasse123', firstName: 'A', lastName: 'B', birthdate: '1980-01-01', phone: '0612345678', address: '1 rue', zip: '75001', city: 'Paris', accept: true });
-  return { state, core, call, reg, spot, advance: (ms) => { now += ms; spot.updatedAt = now; } };
+  return { state, core, call, reg, spot, advance: (ms) => { now += ms; spot.updatedAt = now; }, now: () => now };
 }
 
 test('inscription, connexion, verrouillage', async () => {
@@ -61,13 +62,13 @@ test('versement par virement validé par l\'admin, achat et vente au gramme', as
   // 100 €/g au cours, achat à +1,5 % = 101,50 €/g
   const buy = await t.call('c', 'POST', '/api/wallet/buy-gold', { grams: 2, expected: 10150 });
   assert.equal(buy.status, 200, JSON.stringify(buy.data));
-  assert.equal(buy.data.cost, 20300);
+  assert.equal(buy.data.amount, 20300);
   acc = (await t.call('c', 'GET', '/api/account')).data;
   assert.equal(acc.goldMg, 2000);
   assert.equal(acc.cash, 100000 - 20300);
   assert.equal((await t.call('c', 'POST', '/api/wallet/sell-gold', { grams: 3 })).status, 400);
   const sell = await t.call('c', 'POST', '/api/wallet/sell-gold', { grams: 1, expected: 9850 });
-  assert.equal(sell.data.proceeds, 9850);
+  assert.equal(sell.data.amount, 9850);
   assert.equal((await t.call('c', 'POST', '/api/wallet/buy-gold', { grams: 100 })).status, 400);
 });
 
@@ -153,4 +154,80 @@ test('double authentification', async () => {
   const l = await t.call('x', 'POST', '/api/auth/login', { email: 'c@x.fr', password: 'motdepasse123' });
   assert.equal(l.data.need2fa, true);
   assert.equal((await t.call('x', 'POST', '/api/auth/login', { email: 'c@x.fr', password: 'motdepasse123', code })).status, 200);
+});
+
+test('deuxième confirmation : achat au gramme validé par l\'admin', async () => {
+  const t = setup(undefined, {});
+  await t.reg('admin', 'admin@x.fr');
+  await t.reg('c', 'c@x.fr');
+  const u = t.state.users[2];
+  u.cash = 100000;
+  const r = await t.call('c', 'POST', '/api/wallet/buy-gold', { grams: 2 });
+  assert.equal(r.data.pending, true);
+  assert.equal(u.cash, 100000 - 20300);
+  assert.equal(u.held, 20300);
+  assert.equal(u.goldMg, 0);
+  // le client ne peut pas valider lui-même
+  assert.equal((await t.call('c', 'POST', `/api/admin/requests/${r.data.request.id}/approve`)).status, 403);
+  const ov = await t.call('admin', 'GET', '/api/admin/overview');
+  assert.equal(ov.data.stats.toApprove, 1);
+  assert.equal((await t.call('admin', 'POST', `/api/admin/requests/${r.data.request.id}/approve`)).status, 200);
+  assert.equal(u.goldMg, 2000);
+  assert.equal(u.held, 0);
+  assert.equal(u.notifs[0].text.includes('validée'), true);
+  assert.equal((await t.call('admin', 'POST', `/api/admin/requests/${r.data.request.id}/approve`)).status, 400);
+});
+
+test('demande refusée ou expirée : fonds rendus', async () => {
+  const t = setup(undefined, {});
+  await t.reg('admin', 'admin@x.fr');
+  await t.reg('c', 'c@x.fr');
+  const u = t.state.users[2];
+  u.cash = 100000;
+  const stock = t.core.product('lingot-or-10g').stock;
+  const a = await t.call('c', 'POST', '/api/wallet/buy-product', { productId: 'lingot-or-10g', qty: 1 });
+  assert.equal(t.core.product('lingot-or-10g').stock, stock - 1);
+  await t.call('admin', 'POST', `/api/admin/requests/${a.data.request.id}/refuse`, { note: 'stock' });
+  assert.equal(u.cash, 100000);
+  assert.equal(t.core.product('lingot-or-10g').stock, stock);
+  const b = await t.call('c', 'POST', '/api/wallet/buy-gold', { grams: 1 });
+  assert.equal(u.held, 10150);
+  t.advance(31 * 60000);
+  await t.call('c', 'GET', '/api/account');
+  assert.equal(t.state.requests.find((x) => x.id === b.data.request.id).status, 'expiree');
+  assert.equal(u.cash, 100000);
+  assert.equal(u.held, 0);
+});
+
+test('commande à valider par l\'admin puis payée par le solde', async () => {
+  const t = setup(undefined, {});
+  await t.reg('admin', 'admin@x.fr');
+  await t.reg('c', 'c@x.fr');
+  const u = t.state.users[2];
+  u.cash = 1000000;
+  const o = await t.call('c', 'POST', '/api/orders', { items: [{ id: '20-fr-coq', qty: 1 }], delivery: 'boutique', payment: 'solde' });
+  assert.equal(o.data.order.status, 'a_valider');
+  assert.equal(u.held, o.data.order.total);
+  await t.call('admin', 'POST', `/api/admin/orders/${o.data.order.ref}/status`, { status: 'valider' });
+  const order = t.state.orders[0];
+  assert.equal(order.status, 'preparation');
+  assert.equal(u.held, 0);
+  assert.equal(u.cash, 1000000 - order.total);
+});
+
+test('suivi d\'activité : abandons visibles par l\'admin', async () => {
+  const t = setup(undefined, {});
+  await t.reg('admin', 'admin@x.fr');
+  await t.call('v', 'POST', '/api/track', { type: 'cart_add', visitor: 'abc123', data: { id: 'krugerrand', qty: 2, cart: [{ id: 'krugerrand', qty: 2 }] } });
+  await t.reg('c', 'c@x.fr');
+  await t.call('c', 'POST', '/api/track', { type: 'trade_open', data: { what: 'achat de 5 g', amount: 50000 } });
+  assert.equal((await t.call('c', 'POST', '/api/track', { type: 'hack' })).status, 400);
+  t.advance(15 * 60000);
+  const ov = (await t.call('admin', 'GET', '/api/admin/overview')).data;
+  assert.equal(ov.intentions.length, 2);
+  assert.ok(ov.intentions.some((i) => i.label.includes('achat de 5 g')));
+  assert.ok(ov.events.some((e) => e.type === 'register'));
+  // le visiteur qui s'inscrit garde son historique
+  const det = (await t.call('admin', 'GET', '/api/admin/users/2')).data;
+  assert.ok(det.events.length >= 2);
 });

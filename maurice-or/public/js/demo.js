@@ -61,7 +61,7 @@ export async function createDemoBackend() {
         updatedAt: Date.now(),
       };
       const s = prices.samples[prices.samples.length - 1];
-      if (!s || Date.now() - s.t > 600000) prices.samples.push({ t: Date.now(), or: e.price });
+      if (!s || Date.now() - s.t > 120000) prices.samples.push({ t: Date.now(), or: e.price });
       prices.samples = prices.samples.filter((x) => Date.now() - x.t < 48 * 3600000);
       store(PKEY, prices);
     } catch {
@@ -83,7 +83,8 @@ export async function createDemoBackend() {
   await refresh();
   setInterval(refresh, 120000);
 
-  const core = createCore({ state, save, deps, getSpot, instantPayments: true });
+  const getHistory = () => prices.samples.map((x) => [x.t, Math.round(x.or * 100) / 100]);
+  const core = createCore({ state, save, deps, getSpot, getHistory, instantPayments: true });
 
   // Comptes de démonstration créés au premier lancement.
   if (!state.seq.user) {

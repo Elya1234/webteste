@@ -4,18 +4,26 @@ Site d'achat et de vente d'or au cours en direct, réalisé d'après la maquette
 
 ## Ce que fait le site
 
-- **Cours de l'or automatique** : relevé toutes les 2 minutes (or, argent, platine — en €, £, $). Tous les prix du site se recalculent tout seuls.
-- **Accueil** comme la maquette : cours de l'or, cases Pièces / Gramme / Lingots, graphique, pièces d'or et d'argent, tableau des cours, lingots, nouveautés du mois, pied de page.
-- **Achat pièces**, **Achat lingots**, **Achat au gramme**, **Investir dans l'or** (« Triez vos produits »), **fiche produit** (QTÉ, ACHETER, prix dégressifs), **panier**.
-- **Compte sécurisé avec portefeuille or** (« Son compte ») : Gramme / Lingots / Total or / Solde, boutons Acheter un gramme, Vendre un gramme, Acheter un lingot.
-  - Alimenter son solde (carte ou virement), retirer vers son compte bancaire.
-  - Coffre : les lingots/pièces achetés restent stockés, revendables en 1 clic ou **livrés chez le client** / retirés en boutique.
-- **Commande** : livraison assurée à domicile, retrait en boutique ou garde au coffre ; paiement par solde, carte ou virement.
-- **Administration** (`#/admin`) : commandes (payée, expédiée…), versements à valider, retraits à faire, primes et stocks des produits, clients, messages, réglages (marges, frais de port, IBAN, adresse boutique).
+- **Design moderne** (noir, or, beaucoup d'air), pensé d'abord pour le téléphone (barre de navigation en bas, comme une application).
+- **Cours de l'or automatique** : relevé toutes les 2 minutes (or, argent, platine). Tous les prix du site se recalculent tout seuls.
+- **Boutique** : pièces, lingots, argent & platine, en grille ou en liste ; fiche produit avec prix dégressifs, valeur du métal et marge affichées.
+- **Espace client « comme à la banque »** (`#/espace`) :
+  - carte « Valeur totale de mon compte » (or au gramme, coffre, solde, montant réservé) ;
+  - boutons rapides : Acheter, Vendre, Alimenter, Retirer, Me faire livrer, Conseiller WhatsApp ;
+  - Acheter / Vendre (au gramme, en € ou en grammes, ou un lingot / une pièce), avec récapitulatif clair avant chaque opération ;
+  - Mon coffre, Opérations, Commandes, Sécurité (code sur téléphone), Profil, notifications.
+- **Deuxième confirmation par l'administrateur** : chaque achat (or au gramme, lingot, commande) devient une demande. Le prix est bloqué et l'argent du client mis de côté ; l'admin valide ou refuse. Sans réponse dans le délai (30 min par défaut), tout est rendu automatiquement au client. Réglable dans Administration → Réglages (aussi pour les ventes).
+- **WhatsApp partout** : bouton flottant, espace client, fiches produits, commandes, avec le numéro client déjà dans le message. Côté admin, un bouton WhatsApp pour écrire à chaque client.
+- **Administration** (`#/admin`) :
+  - Tableau de bord en direct ; **À valider** (prix bloqué comparé au cours actuel, compte à rebours) ;
+  - **Activité en direct** : tout ce que font les clients (produits regardés, panier, achats commencés, abandonnés, connexions, erreurs de mot de passe…) ;
+  - **Abandons & intentions** : qui s'est arrêté à quoi, son panier, avec un message WhatsApp de relance prêt ;
+  - **Fiche client** : coordonnées, soldes, coffre, panier en cours, historique complet ;
+  - Commandes, versements, retraits, produits & prix, messages, réglages.
 
 ## Sécurité
 
-Mots de passe chiffrés (scrypt), verrouillage après 5 erreurs, double authentification (code à 6 chiffres) optionnelle, cookies de session protégés, protection CSRF, en-têtes de sécurité, déconnexion après 4 h d'inactivité, prix toujours recalculés côté serveur (impossible de tricher sur le prix), achats bloqués si le cours n'est plus à jour, retraits confirmés par mot de passe et vérification de l'IBAN.
+Mots de passe chiffrés (scrypt), verrouillage après 5 erreurs, double authentification (code à 6 chiffres) optionnelle, cookies de session protégés, protection CSRF, en-têtes de sécurité, déconnexion après 4 h d'inactivité, prix toujours recalculés côté serveur (impossible de tricher sur le prix), achats validés par l'administrateur, achats bloqués si le cours n'est plus à jour, retraits confirmés par mot de passe et vérification de l'IBAN, journal de toutes les actions.
 
 ## Lancer le site
 
@@ -29,7 +37,7 @@ npm test                 # tests automatiques
 
 1. Mettez votre e-mail dans `ADMIN_EMAILS`, puis inscrivez-vous sur le site : vous êtes administrateur.
    (Ou pour un compte existant : `node server/index.js admin moi@exemple.fr`.)
-2. Dans **Administration → Réglages**, renseignez l'adresse de la boutique, le téléphone et **votre IBAN**.
+2. Dans **Administration → Réglages**, renseignez **votre numéro WhatsApp**, l'adresse de la boutique, le téléphone et **votre IBAN**.
 3. Ajustez les primes et stocks dans **Produits & prix**.
 
 **Paiement par carte** : créez un compte Stripe, mettez `STRIPE_SECRET_KEY`, et ajoutez un webhook vers `https://votre-site/api/stripe/webhook` (événement `checkout.session.completed`) avec son secret dans `STRIPE_WEBHOOK_SECRET`. Sans Stripe, le virement et le solde fonctionnent.

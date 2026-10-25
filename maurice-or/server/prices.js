@@ -66,7 +66,13 @@ export function startPrices(dataDir, getSettings) {
   refresh();
   setInterval(refresh, INTERVAL).unref();
 
-  return function getSpot() {
+  function getHistory() {
+    return store.samples.map((x) => [x.t, Math.round(x.or * 100) / 100]);
+  }
+
+  return { getSpot, getHistory };
+
+  function getSpot() {
     const fb = getSettings().fallbackSpot;
     if (fb && (!store.last || Date.now() - store.last.updatedAt > getSettings().staleAfterMin * 60000)) {
       // cours de secours saisi par l'administrateur

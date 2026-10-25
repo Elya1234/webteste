@@ -100,8 +100,8 @@ const deps = {
 };
 
 const settings = () => ({ ...DEFAULT_SETTINGS, ...state.settings });
-const getSpot = startPrices(DATA_DIR, settings);
-const core = createCore({ state, save, deps, getSpot });
+const { getSpot, getHistory } = startPrices(DATA_DIR, settings);
+const core = createCore({ state, save, deps, getSpot, getHistory });
 
 const CSP = [
   "default-src 'self'",

@@ -1,6 +1,7 @@
 // État partagé côté navigateur : cours, produits, utilisateur connecté, panier.
 import { get } from './api.js';
 import { unitPriceCents } from './shared/pricing.js';
+import { track } from './track.js';
 
 export const S = {
   prices: null,
@@ -62,12 +63,14 @@ export function addToCart(id, qty = 1) {
   if (line) line.qty = Math.min(999, line.qty + qty);
   else c.push({ id, qty: Math.min(999, qty) });
   saveCart(c);
+  track('cart_add', { id, qty, cart: c });
 }
 export function setCartQty(id, qty) {
   let c = getCart();
   if (qty <= 0) c = c.filter((x) => x.id !== id);
   else { const l = c.find((x) => x.id === id); if (l) l.qty = Math.min(999, qty); }
   saveCart(c);
+  if (qty <= 0) track('cart_remove', { id, cart: c });
 }
 export function clearCart() { saveCart([]); }
 export function cartCount() { return getCart().reduce((a, x) => a + x.qty, 0); }

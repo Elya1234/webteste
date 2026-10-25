@@ -1,7 +1,8 @@
 // Contact et pages d'information (FAQ, livraison, paiement, guide, vendre son or…).
 import { S } from './store.js';
 import { post } from './api.js';
-import { $, esc, eur, num2, toast, busy, formData, gramsNum } from './ui.js';
+import { $, esc, eur, num2, toast, busy, formData, gramsNum, ICON } from './ui.js';
+import { shopWa } from './app.js';
 import { METAL_LABEL } from './shared/catalog.js';
 import { DEFAULT_SETTINGS } from './shared/pricing.js';
 
@@ -9,25 +10,31 @@ export async function contact(view, _p, query) {
   const c = S.config || DEFAULT_SETTINGS;
   const rdv = query.sujet === 'rdv';
   view.innerHTML = `<div class="page">
-    <h1 class="title">${rdv ? 'Prendre rendez-vous' : 'Contact'}</h1>
+    <div class="page-head"><p class="eyebrow">Nous joindre</p><h1 class="h1">${rdv ? 'Prendre rendez-vous' : 'Contact'}</h1>
+      <p class="lead">Le plus rapide : WhatsApp. Un conseiller vous répond directement.</p></div>
+    <div class="wa-band" style="margin-bottom:22px"><div><span class="wa-ico">${ICON.whatsapp}</span><div><h2>Écrire sur WhatsApp</h2><p>Questions, rendez-vous, vente de votre or, suivi de commande.</p></div></div>
+      <a class="btn btn-wa btn-lg" href="${shopWa(rdv ? 'je souhaite prendre rendez-vous en boutique.' : '')}" target="_blank" rel="noopener">${ICON.whatsapp}Ouvrir WhatsApp</a></div>
     <div class="two-cols">
-      <form class="form card" id="contact">
+      <form class="panel form" id="contact">
+        <h2 class="h3">Ou laissez-nous un message</h2>
         <label>Nom<input name="name" required autocomplete="name" value="${esc(S.me ? `${S.me.firstName} ${S.me.lastName}` : '')}"></label>
         <label>E-mail<input type="email" name="email" required autocomplete="email" value="${esc(S.me?.email || '')}"></label>
         <label>Téléphone<input type="tel" name="phone" autocomplete="tel" value="${esc(S.me?.phone || '')}"></label>
         <label>Sujet<select name="subject">
-          ${['Question sur un produit', 'Rendez-vous en boutique', 'Vendre mon or', 'Suivi de commande', 'Mon compte', 'Autre'].map((s) => `<option${(rdv && s.startsWith('Rendez')) ? ' selected' : ''}>${s}</option>`).join('')}
+          ${['Question sur un produit', 'Rendez-vous en boutique', 'Vendre mon or', 'Suivi de commande', 'Mon compte', 'Autre'].map((x) => `<option${(rdv && x.startsWith('Rendez')) ? ' selected' : ''}>${x}</option>`).join('')}
         </select></label>
-        <label>Message<textarea name="message" rows="6" required placeholder="${rdv ? 'Indiquez vos disponibilités et ce que vous souhaitez faire (achat, vente, retrait de commande)…' : 'Votre message…'}"></textarea></label>
-        <button class="btn-buy" type="submit">Envoyer</button>
+        <label>Message<textarea name="message" rows="5" required placeholder="${rdv ? 'Vos disponibilités et ce que vous souhaitez faire…' : 'Votre message…'}"></textarea></label>
+        <button class="btn btn-ink btn-lg" type="submit">Envoyer</button>
       </form>
-      <div class="card">
-        <h2>${esc(c.shopName)}</h2>
-        <p><b>Boutique :</b><br>${esc(c.shopAddress)}</p>
-        <p><b>Horaires :</b><br>${esc(c.shopHours)}</p>
-        <p><b>Téléphone :</b><br><a href="tel:${esc(c.shopPhone.replace(/\s/g, ''))}">${esc(c.shopPhone)}</a></p>
-        <p><b>E-mail :</b><br><a href="mailto:${esc(c.shopEmail)}">${esc(c.shopEmail)}</a></p>
-        <p class="tiny">Pour un retrait de commande ou une vente d'or en boutique, munissez-vous d'une pièce d'identité en cours de validité.</p>
+      <div class="panel">
+        <h2 class="h3">${esc(c.shopName)}</h2>
+        <ul class="ops">
+          <li class="op"><span class="op-ico gold">${ICON.shop}</span><span class="op-label">Boutique<small>${esc(c.shopAddress)}</small></span><span></span></li>
+          <li class="op"><span class="op-ico gold">${ICON.clock}</span><span class="op-label">Horaires<small>${esc(c.shopHours)}</small></span><span></span></li>
+          <li class="op"><span class="op-ico gold">${ICON.phone}</span><span class="op-label">Téléphone<small><a href="tel:${esc(c.shopPhone.replace(/\s/g, ''))}">${esc(c.shopPhone)}</a></small></span><span></span></li>
+          <li class="op"><span class="op-ico gold">${ICON.mail}</span><span class="op-label">E-mail<small><a href="mailto:${esc(c.shopEmail)}">${esc(c.shopEmail)}</a></small></span><span></span></li>
+        </ul>
+        <p class="tiny">Pour retirer une commande ou vendre votre or en boutique, munissez-vous d'une pièce d'identité.</p>
       </div>
     </div>
   </div>`;
@@ -53,13 +60,14 @@ const PAGES = {
   boutique: () => ['Notre boutique', `
     <p><b>Adresse :</b> ${esc(cfg().shopAddress)}</p><p><b>Horaires :</b> ${esc(cfg().shopHours)}</p><p><b>Téléphone :</b> ${esc(cfg().shopPhone)}</p>
     <p>En boutique vous pouvez : retirer une commande passée en ligne, acheter des pièces et lingots, faire estimer et vendre votre or.</p>
-    <p><a class="btn-dark" href="#/contact?sujet=rdv">Prendre rendez-vous</a></p>`],
+    <p><a class="btn btn-ink" href="#/contact?sujet=rdv">Prendre rendez-vous</a></p>`],
   securite: () => ['La sécurité de votre compte', `
     <ul class="list">
       <li>Mots de passe chiffrés de façon irréversible (personne, même nous, ne peut les lire).</li>
       <li>Connexion protégée contre les tentatives répétées : le compte se verrouille 15 minutes après 5 erreurs.</li>
       <li>Double authentification (code à 6 chiffres sur votre téléphone) disponible pour la connexion et les retraits.</li>
       <li>Session fermée automatiquement après 4 h d'inactivité ; échanges chiffrés (HTTPS).</li>
+      <li>Chaque achat est vérifié et confirmé par un conseiller avant d'être exécuté (deuxième confirmation).</li>
       <li>Chaque achat ou vente reprend le cours au moment exact de la validation : impossible d'acheter à un prix périmé.</li>
       <li>Les retraits ne partent que vers un compte bancaire, après confirmation par mot de passe.</li>
     </ul>`],
@@ -82,7 +90,7 @@ const PAGES = {
   retour: () => ['Politique de retour', `
     <p>Le prix des métaux précieux dépend des fluctuations du marché financier. Conformément à l'article L221-28 du Code de la consommation, <b>le droit de rétractation ne s'applique pas</b> à ces produits.</p>
     <p>En revanche, vous pouvez à tout moment nous revendre vos produits au prix de rachat du jour, depuis votre compte ou en boutique. Tout colis endommagé doit être refusé et signalé sous 48 h.</p>`],
-  'comment-acheter': () => ['Comment acheter', `<ol class="steps">
+  'comment-acheter': () => ['Comment acheter', `<ol class="list">
     <li><b>Choisissez</b> vos pièces ou lingots : le prix suit le cours en direct.</li>
     <li><b>Ajoutez au panier</b> et choisissez : livraison à domicile, retrait en boutique ou garde au coffre.</li>
     <li><b>Payez</b> avec votre solde, par carte ou par virement.</li>
@@ -94,10 +102,10 @@ const PAGES = {
   vendre: () => ['Vendre de l\'or et de l\'argent', `
     <p><b>Votre or est sur votre compte ?</b> Vendez-le en un clic depuis <a href="#/compte">Mon compte</a> : l'argent est crédité immédiatement.</p>
     <p><b>Vous avez des bijoux, pièces ou lingots chez vous ?</b> Venez en boutique pour une estimation gratuite. Estimation indicative ci-dessous :</p>
-    <form class="form card grid2" id="estim"><label>Poids (grammes)<input type="number" step="0.01" min="0" name="w" value="10"></label>
+    <form class="panel form grid2" id="estim"><label>Poids (grammes)<input type="number" step="0.01" min="0" name="w" value="10"></label>
       <label>Titre<select name="t"><option value="999.9">Or 24 carats / lingot (999,9)</option><option value="916.7">Or 22 carats (916)</option><option value="900">Pièce d'or (900)</option><option value="750" selected>Or 18 carats (750)</option><option value="585">Or 14 carats (585)</option><option value="375">Or 9 carats (375)</option></select></label>
       <p class="span2">Estimation : <b id="estim-out" class="big">…</b></p><p class="span2 tiny">Valeur du métal fin au cours actuel, moins ${num2(cfg().buybackSpread * 100)} %. Le prix définitif est confirmé après contrôle en boutique.</p></form>
-    <p><a class="btn-dark" href="#/contact?sujet=rdv">Prendre rendez-vous pour vendre</a></p>`, (root) => {
+    <p><a class="btn btn-ink" href="#/contact?sujet=rdv">Prendre rendez-vous pour vendre</a></p>`, (root) => {
       const f = $('#estim', root);
       const calc = () => {
         const g = S.prices?.gram?.eur?.or;
@@ -106,7 +114,7 @@ const PAGES = {
       f.addEventListener('input', calc); calc();
     }],
   calculateur: () => ['Calculateur d\'investissement', `
-    <form class="form card" id="calc"><label>Mon budget (€)<input type="number" name="b" min="0" step="50" value="2000"></label></form>
+    <form class="panel form" id="calc"><label>Mon budget (€)<input type="number" name="b" min="0" step="50" value="2000"></label></form>
     <div id="calc-out"></div>`, (root) => {
       const f = $('#calc', root);
       const calc = () => {
@@ -115,14 +123,14 @@ const PAGES = {
         const gramLine = p?.available ? `<tr><td>Or au gramme (compte poids or)</td><td>${eur(p.gramBuy)}/g</td><td><b>${gramsNum(Math.floor(b * 1000 / p.gramBuy) / 1000)} g</b></td></tr>` : '';
         const rows = S.products.filter((x) => x.metal === 'or' && x.price && x.price <= b).sort((a, c) => a.price / a.fine - c.price / c.fine).slice(0, 10)
           .map((x) => `<tr><td><a href="#/produit/${x.id}">${esc(x.name)}</a></td><td>${eur(x.price)}</td><td><b>${Math.floor(b / x.price)}</b> (${gramsNum(Math.floor(b / x.price) * x.fine)} g d'or)</td></tr>`).join('');
-        $('#calc-out', root).innerHTML = `<table class="ptable"><thead><tr><th>Produit</th><th>Prix</th><th>Avec ce budget</th></tr></thead><tbody>${gramLine}${rows || '<tr><td colspan="3">Augmentez le budget pour voir les produits.</td></tr>'}</tbody></table>
+        $('#calc-out', root).innerHTML = `<div class="panel"><table class="table"><thead><tr><th>Produit</th><th>Prix</th><th>Avec ce budget</th></tr></thead><tbody>${gramLine}${rows || '<tr><td colspan="3">Augmentez le budget pour voir les produits.</td></tr>'}</tbody></table></div>
           <p class="tiny">Classés du moins cher au gramme d'or au plus cher.</p>`;
       };
       f.addEventListener('input', calc); calc();
     }],
   index: () => {
     const p = S.prices;
-    return ['Index des métaux précieux', p?.available ? `<table class="rates rates-wide"><thead><tr><th>Métal</th><th>1 gramme</th><th>1 once (31,1 g)</th><th>1 kilo</th></tr></thead><tbody>
+    return ['Index des métaux précieux', p?.available ? `<table class="table panel"><thead><tr><th>Métal</th><th>1 gramme</th><th>1 once (31,1 g)</th><th>1 kilo</th></tr></thead><tbody>
       ${['or', 'argent', 'platine'].map((m) => `<tr><th>${METAL_LABEL[m]}</th><td>${num2(p.gram.eur[m])} €</td><td>${num2(p.oz[m])} €</td><td>${num2(p.gram.eur[m] * 1000)} €</td></tr>`).join('')}</tbody></table>
       <p class="tiny">Cours de référence, mis à jour automatiquement. <a href="#/cours">Voir le graphique</a></p>` : '<p>Cours en attente…</p>'];
   },
@@ -131,7 +139,7 @@ const PAGES = {
     <p><b>Adresse :</b> ${esc(cfg().shopAddress)} · <b>Contact :</b> ${esc(cfg().shopEmail)}</p>
     <p><b>Directeur de la publication :</b> [à compléter]</p><p><b>Hébergeur :</b> [à compléter]</p>`],
   cgv: () => ['Conditions générales de vente', `
-    <p class="info-box">Modèle à faire valider par un professionnel du droit avant la mise en ligne.</p>
+    <p class="notice">Modèle à faire valider par un professionnel du droit avant la mise en ligne.</p>
     <h3>1. Prix</h3><p>Les prix sont indiqués en euros et suivent le cours des métaux précieux en temps réel. Le prix applicable est celui affiché au moment de la validation de la commande.</p>
     <h3>2. Commande et paiement</h3><p>La commande est ferme dès sa validation. Pour un paiement par virement, le prix est bloqué ; à défaut de réception des fonds sous 3 jours ouvrés, la commande peut être annulée.</p>
     <h3>3. Livraison</h3><p>Les envois sont assurés et remis contre signature. Les produits peuvent aussi être retirés en boutique ou gardés au coffre.</p>
@@ -141,7 +149,8 @@ const PAGES = {
   confidentialite: () => ['Politique de confidentialité', `
     <p>Nous collectons uniquement les données nécessaires à la gestion de votre compte, de vos commandes et à nos obligations légales (identité, coordonnées, opérations).</p>
     <p>Vos données ne sont jamais vendues. Elles sont conservées pendant la durée légale. Vous pouvez demander leur consultation, rectification ou suppression à ${esc(cfg().shopEmail)}.</p>
-    <p>Le site n'utilise qu'un cookie technique de session (connexion) et le stockage local du navigateur pour votre panier.</p>`],
+    <p>Le site n'utilise qu'un cookie technique de session (connexion) et le stockage local du navigateur pour votre panier.</p>
+    <p>Pour vous accompagner et sécuriser votre compte, nous enregistrons votre activité sur le site (produits consultés, panier, opérations commencées ou effectuées, connexions). Ces informations ne sont visibles que par nos conseillers et ne sont jamais transmises à des tiers.</p>`],
 };
 
 function faq(items) {
@@ -150,8 +159,8 @@ function faq(items) {
 
 export async function infoPage(view, { slug }) {
   const page = PAGES[slug];
-  if (!page) { view.innerHTML = '<div class="page"><h1 class="title">Page introuvable</h1></div>'; return; }
+  if (!page) { view.innerHTML = '<div class="page"><h1 class="h1">Page introuvable</h1></div>'; return; }
   const [title, html, after] = page();
-  view.innerHTML = `<div class="page prose"><h1 class="title">${title}</h1>${html}</div>`;
+  view.innerHTML = `<div class="page prose"><h1 class="h1">${title}</h1>${html}</div>`;
   if (after) after(view);
 }
