@@ -1,0 +1,15 @@
+{
+  "name": "maurice-or",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Maurice Or : achat et vente d'or (pièces, lingots, or au gramme) au cours en direct.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test test/*.test.js"
+  }
+}

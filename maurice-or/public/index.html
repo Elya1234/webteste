@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maurice Or – Achat et vente d'or au cours du jour</title>
+  <meta name="description" content="Achetez et vendez de l'or au cours en direct : pièces, lingots et or au gramme. Compte poids or sécurisé, livraison assurée ou retrait en boutique.">
+  <meta name="theme-color" content="#1d1b18">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#view">Aller au contenu</a>
+  <div id="demo-ribbon" hidden></div>
+
+  <header class="site-header">
+    <div class="hdr">
+      <a href="#/" class="logo" aria-label="Maurice Or, accueil">
+        <span class="logo-main">MAURICE</span><span class="logo-or">OR</span>
+      </a>
+
+      <button class="burger" aria-label="Menu" aria-expanded="false" data-action="menu"></button>
+
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#/pieces" class="nav-link">Achat&nbsp;&nbsp;pièces</a>
+        <div class="nav-gram">
+          <a href="#/gramme" class="nav-link">Achat au gramme</a>
+          <div class="ticker" aria-label="Cours de l'or au gramme">
+            <table>
+              <thead><tr><th></th><th>EUR</th><th>GBP</th><th>USD</th></tr></thead>
+              <tbody><tr><td>Or</td><td data-live="g-eur">…</td><td data-live="g-gbp">…</td><td data-live="g-usd">…</td></tr></tbody>
+            </table>
+            <a href="#/compte" class="ticker-cta" data-cta-account>Créez votre compte<br>poids or</a>
+          </div>
+        </div>
+        <a href="#/lingots" class="nav-link">Achat&nbsp;&nbsp;lingots</a>
+        <a href="#/investir" class="nav-link nav-mobile-only">Investir dans l'or</a>
+        <a href="#/contact" class="nav-link nav-mobile-only">Contact</a>
+      </nav>
+
+      <div class="hdr-icons">
+        <a href="#/panier" class="icon-btn" aria-label="Panier"><span class="ico" data-icon="cart"></span><span class="badge-count" id="cart-count" hidden>0</span></a>
+        <a href="#/compte" class="icon-btn" aria-label="Mon compte et portefeuille"><span class="ico" data-icon="wallet"></span></a>
+      </div>
+
+      <a href="#/investir" class="hdr-invest">Investir dans l'or</a>
+      <a href="#/contact" class="hdr-contact">Contact</a>
+    </div>
+  </header>
+
+  <main id="view" tabindex="-1"></main>
+
+  <section class="trust" aria-label="Nos engagements">
+    <div class="trust-item"><span class="seal" data-icon="truck"></span><span class="seal-label">Livraison assurée</span></div>
+    <div class="trust-item"><span class="seal" data-icon="card"></span><span class="seal-label">Paiement sécurisé</span></div>
+    <div class="trust-item"><span class="seal" data-icon="euro"></span><span class="seal-label">Transparence des prix</span></div>
+  </section>
+
+  <section class="news" aria-labelledby="news-title">
+    <div class="news-box">
+      <h2 id="news-title">Nouveautés du mois</h2>
+      <div class="news-track" id="news-track"></div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="foot-cols">
+      <div>
+        <h3>L'entreprise</h3>
+        <a href="#/info/qui-sommes-nous">Qui sommes-nous ?</a>
+        <a href="#/info/boutique">Notre boutique</a>
+        <a href="#/info/securite">Sécurité de votre compte</a>
+        <a href="#/info/mentions">Mentions légales</a>
+      </div>
+      <div>
+        <h3>Suivi de la clientèle</h3>
+        <a href="#/contact">Nous contacter</a>
+        <a href="#/info/faq">Foire aux questions</a>
+        <a href="#/info/paiement">Méthodes de paiement</a>
+        <a href="#/info/livraison">Livraison</a>
+        <a href="#/info/retour">Politique de retour</a>
+      </div>
+      <div>
+        <h3>Acheter &amp; Vendre</h3>
+        <a href="#/info/comment-acheter">Comment acheter</a>
+        <a href="#/info/guide">Investir dans l'or : le guide</a>
+        <a href="#/info/vendre">Vendre de l'or et de l'argent</a>
+        <a href="#/info/cgv">Conditions générales de vente</a>
+      </div>
+      <div>
+        <h3>Informations</h3>
+        <a href="#/info/calculateur">Calculateur d'investissement</a>
+        <a href="#/cours">Graphiques des cours</a>
+        <a href="#/info/index">Index des métaux précieux</a>
+        <a href="#/info/confidentialite">Confidentialité</a>
+      </div>
+    </div>
+    <div class="foot-modes">
+      <div>
+        <h3>Des modes de paiement sécurisés</h3>
+        <div class="chips"><span class="chip">Carte bancaire</span><span class="chip">Visa</span><span class="chip">Mastercard</span><span class="chip">Apple Pay</span><span class="chip">Virement</span><span class="chip">Solde du compte</span></div>
+      </div>
+      <div>
+        <h3>Des modes de livraison adaptés</h3>
+        <div class="chips"><span class="chip">Livraison assurée à domicile</span><span class="chip">Retrait en boutique</span><span class="chip">Garde au coffre</span></div>
+      </div>
+    </div>
+    <p class="foot-legal">© <span id="year"></span> Maurice Or · Les cours affichés sont mis à jour automatiquement. L'or physique est un placement qui peut varier à la hausse comme à la baisse.</p>
+  </footer>
+
+  <div class="floaters">
+    <a href="#/contact?sujet=rdv" class="floater floater-rdv" aria-label="Prendre rendez-vous" data-icon="calendar"></a>
+    <a href="tel:" class="floater floater-tel" aria-label="Nous appeler" data-icon="phone" id="call-btn"></a>
+  </div>
+
+  <div id="toasts" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
