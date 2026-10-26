@@ -723,3 +723,12 @@ body[data-page=admin] .trust, body[data-page=admin] .news, body[data-page=admin]
 }
 .hcard-img .hcard-photo { height: 190px; width: auto; max-width: 100%; object-fit: cover; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); animation: float 5s ease-in-out infinite; }
 .hcard:nth-child(2) .hcard-photo { animation-delay: -2.5s; }
+@media (max-width: 640px) {
+  .cards { grid-template-columns: 1fr 1fr; gap: 18px 12px; }
+  .pcard h3 { font-size: 14px; }
+  .pcard-price { font-size: 17px; }
+  .pcard .btn-outline { width: 100%; padding: 9px; font-size: 14px; }
+  .bar-grid { grid-template-columns: 1fr 1fr; gap: 24px 12px; }
+  .bcard-title { font-size: 16px; }
+  .btn-green-lg { font-size: 14px; padding: 10px 12px; }
+}
