@@ -64,7 +64,7 @@ export async function createDemoBackend() {
       };
       const s = prices.samples[prices.samples.length - 1];
       if (!s || Date.now() - s.t > 120000) prices.samples.push({ t: Date.now(), or: e.price });
-      prices.samples = prices.samples.filter((x) => Date.now() - x.t < 48 * 3600000);
+      prices.samples = prices.samples.filter((x) => !x.sim && Date.now() - x.t < 7 * 86400000);
       store(PKEY, prices);
       offlinePrices = false;
     } catch {
@@ -75,8 +75,17 @@ export async function createDemoBackend() {
       const k = 1 + (Math.random() - 0.5) * 0.002;
       const or = base.or * k;
       prices.last = { eur: { or, argent: base.argent * k, platine: base.platine * k }, usd: { or: or * 1.12 }, gbp: { or: or * 0.838 }, updatedAt: Date.now(), offline: true };
-      prices.samples.push({ t: Date.now() - 86400000, or: 3570 });
-      prices.samples = prices.samples.slice(-50);
+      // historique simulé sur 7 jours pour que le graphique de la démo soit rempli
+      if (!prices.samples.some((x) => x.sim)) {
+        prices.samples = [];
+        let v = or;
+        for (let t = Date.now() - 7 * 86400000; t < Date.now(); t += 30 * 60000) {
+          v *= 1 + (Math.random() - 0.5) * 0.004;
+          prices.samples.push({ t, or: v, sim: true });
+        }
+      }
+      prices.samples.push({ t: Date.now(), or, sim: true });
+      prices.samples = prices.samples.filter((x) => Date.now() - x.t < 7 * 86400000);
     }
   }
 

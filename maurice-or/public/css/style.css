@@ -739,3 +739,180 @@ body[data-page=admin] .trust, body[data-page=admin] .news, body[data-page=admin]
 .demo-switch { display: inline-flex; gap: 6px; margin-left: 10px; vertical-align: middle; }
 .demo-switch button { border: 1px solid #c9a032; background: #1d1b18; color: #f3d77a; border-radius: 20px; padding: 3px 12px; font-weight: 700; font-size: 12.5px; cursor: pointer; }
 .demo-switch button:hover { background: #c9a032; color: #1d1b18; }
+
+/* ================= Graphique du site ================= */
+.chart-box { height: auto; }
+.gchart { background: #fff; border: 1px solid #ece6d6; border-radius: 6px; padding: 10px 12px 6px; }
+.gchart-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.gchart-now b { font-size: 20px; margin-right: 8px; }
+.gchart-now span { font-size: 13px; font-weight: 700; }
+.gchart-ranges { display: inline-flex; background: #f1ede2; border-radius: 20px; padding: 2px; }
+.gchart-ranges button { border: 0; background: none; padding: 4px 12px; border-radius: 20px; font-size: 12.5px; font-weight: 700; color: #6b6760; cursor: pointer; }
+.gchart-ranges [aria-pressed=true] { background: var(--ink); color: var(--gold-2); }
+.gchart-plot { position: relative; height: 300px; touch-action: pan-y; }
+.gchart-plot svg { width: 100%; height: 100%; display: block; }
+.gc-line { fill: none; stroke: #c9a032; stroke-width: 2; stroke-linejoin: round; }
+.gc-grid { stroke: rgba(0, 0, 0, .07); }
+.gc-lbl { font: 11px var(--sans); fill: #8a857b; }
+.gc-dot { fill: #c9a032; stroke: #fff; stroke-width: 2; }
+.gc-pulse { fill: rgba(201, 160, 50, .35); transform-box: fill-box; transform-origin: center; animation: gc-pulse 1.8s ease-out infinite; }
+@keyframes gc-pulse { from { transform: scale(.5); opacity: 1; } to { transform: scale(2.2); opacity: 0; } }
+.gc-cursor { stroke: rgba(29, 27, 24, .35); stroke-dasharray: 3 3; }
+.gc-hover { fill: var(--ink); stroke: #fff; stroke-width: 2; }
+.gchart-tip { position: absolute; top: 4px; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; pointer-events: none; display: flex; flex-direction: column; align-items: center; white-space: nowrap; }
+.gchart-tip b { color: var(--gold-2); }
+.gchart-empty { text-align: center; color: var(--muted); font-size: 13px; }
+.chart-more { text-align: right; margin: 6px 0 0; }
+.tv-slot { height: 380px; margin-top: 8px; }
+
+/* ================= Téléphone : tout tient dans l'écran, plus fin, plus léger ================= */
+body { overflow-x: clip; }
+.wallet > *, .wact > *, .wrow > *, .hcard, .home-main, .product > *, .cart > *, .order-grid > * { min-width: 0; }
+@media (max-width: 640px) {
+  body { font-size: 14px; }
+  #demo-ribbon { font-size: 11px; padding: 5px 10px; line-height: 1.5; }
+  .demo-switch { display: flex; justify-content: center; margin: 4px 0 0; }
+  .ticker-band { font-size: 12px; }
+  .tb-item { padding: 0 16px; }
+  .hdr { padding: 10px 12px; gap: 8px; }
+  .logo-main { font-size: 18px; } .logo-or { font-size: 24px; }
+  .icon-btn, .icon-btn .ico svg { width: 36px; height: 36px; }
+  .burger { width: 38px; height: 38px; }
+  .nav-link { font-size: 15px; }
+
+  .page { padding: 14px 12px 32px; }
+  .title { font-size: 22px; margin: 6px 0 16px; letter-spacing: .03em; }
+  .subtitle { font-size: 17px; margin: 28px 0 12px; }
+  .lead { font-size: 14.5px; }
+  .tiny { font-size: 12px; }
+
+  /* boutons plus discrets */
+  .btn-buy { font-size: 17px; padding: 12px 16px; border-radius: 30px; }
+  .btn-dark, .btn-gold, .btn-gold-outline, .btn-wa { font-size: 13px; padding: 8px 14px; }
+  .btn-wa svg { width: 16px; height: 16px; }
+  .btn-outline { font-size: 12px; padding: 7px 12px; }
+  .btn-green { font-size: 12.5px; padding: 6px 10px; }
+  .btn-blue { font-size: 13px; padding: 9px 16px; }
+  .btn-green-lg { font-size: 13px; padding: 9px 10px; border-radius: 8px; }
+  .cc-add { padding: 7px 10px; font-size: 13px; }
+  .cc-minus { width: 28px; height: 30px; }
+  .cc-qty { width: 40px; height: 32px; }
+  .floaters { right: 10px; bottom: 12px; gap: 8px; }
+  .floater { width: 42px; height: 42px; }
+  .floater svg { width: 20px; height: 20px; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs [role=tab] { font-size: 13px; padding: 6px 12px; white-space: nowrap; }
+
+  /* accueil */
+  .home-top { padding: 12px; gap: 12px; }
+  .side-title { font-size: 19px; margin-bottom: 10px; }
+  .gcheck { font-size: 14px; gap: 8px; } .gcheck .dot { width: 28px; height: 28px; }
+  .gcheck input:checked + .dot::after { width: 12px; height: 6px; border-width: 3px; }
+  .side-hint { font-size: 11.5px; }
+  .spotbar { font-size: 13px; gap: 4px 14px; padding: 8px 10px; }
+  .spot-upd { margin-left: 0; font-size: 11.5px; }
+  .chart-title { font-size: 15px; }
+  .gchart-plot { height: 220px; }
+  .gchart-now b { font-size: 17px; }
+  .home-cards { margin-top: 20px; padding: 0 12px; gap: 20px; }
+  .hcard-img { height: 130px; }
+  .hcard-img .hcard-photo { height: 120px; }
+  .hcard h2 { font-size: 19px; margin: 6px 0 8px; }
+  .mini { font-size: 13px; }
+  .mini th, .mini td { padding: 5px 6px; }
+  .rates-head { padding: 10px; }
+  .rates-head h2 { font-size: 16px; }
+  .rates-refresh { font-size: 20px; }
+  .rates { font-size: 12.5px; border-spacing: 0 4px; table-layout: fixed; }
+  .rates th, .rates td.y { padding: 7px 5px; white-space: normal; }
+  .rates thead th { font-size: 13px; }
+  .rates td.q { font-size: 11px; padding-left: 4px; }
+  .rates td.q label { display: flex; align-items: center; gap: 3px; }
+  .rates td.q input { width: 38px; padding: 4px; margin: 0; }
+  .rates .btn-green { padding: 6px 7px; font-size: 11.5px; }
+  .home-bars { padding: 0 12px; }
+
+  /* produit */
+  .product { gap: 16px; }
+  .product-specs dl { font-size: 13.5px; gap: 6px; }
+  .perk b { font-size: 12px; } .perk small { font-size: 12px; }
+  .perk-ico { width: 36px; height: 36px; } .perk-ico svg { width: 20px; height: 20px; }
+  .buybox { padding: 14px; gap: 10px; }
+  .qty-line { font-size: 15px; }
+  .qty-line input { width: 70px; padding: 7px; font-size: 15px; }
+  .buy-total { font-size: 22px; }
+  .tiers { font-size: 13px; }
+  .tiers th, .tiers td { padding: 7px 5px; }
+
+  /* compte / porte-monnaie */
+  .acc-head { gap: 10px; }
+  .avatar, .avatar svg { width: 52px; height: 52px; }
+  .idcard { font-size: 15px; padding: 8px 12px; }
+  .idcard span { font-size: 12px; }
+  .acc-actions { width: 100%; }
+  .wallet { gap: 14px; margin: 6px 0 20px; }
+  .wallet-panel { padding: 14px; gap: 10px; }
+  .wallet-title { font-size: 15px; padding-bottom: 6px; }
+  .wrow { grid-template-columns: 82px minmax(0, 1fr); gap: 8px; }
+  .wlabel { font-size: 15px; }
+  .wrow-cash .wlabel { font-size: 15px; }
+  .wbox { grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; padding: 5px 7px; }
+  .wbox small { font-size: 11px; }
+  .wbox b { padding: 3px 6px; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .wbox em { font-size: 13px; }
+  .wdetail { margin: -6px 0 0; font-size: 11.5px; }
+  .held-line { margin: 0; font-size: 12px; }
+  .wallet-cash-btns { justify-content: stretch; }
+  .wallet-cash-btns > * { flex: 1; }
+  .wallet-actions { gap: 12px; padding-top: 0; }
+  .wact { grid-template-columns: 1fr; gap: 6px; }
+  .pill { font-size: 14px; padding: 11px 14px; letter-spacing: .03em; }
+  .wq { font-size: 12.5px; padding: 6px 8px; gap: 6px; }
+  .wq input { width: 52px; padding: 5px; }
+  .wq b { font-size: 14px; }
+  .wq-bar select { flex-basis: 100%; padding: 6px; font-size: 13px; }
+  .approval-note { font-size: 12px; padding: 8px 10px; }
+  .pending-box { padding: 10px 12px; }
+  .pending-row { flex-direction: column; gap: 4px; }
+  .pending-row span:last-child { text-align: left; }
+  .notif-box { font-size: 12.5px; }
+
+  /* pied de page et bandeaux */
+  .trust { padding: 14px 12px 70px; margin-top: 36px; gap: 10px; }
+  .seal { width: 64px; height: 44px; border-width: 3px; } .seal svg { width: 26px; height: 26px; }
+  .seal-label { font-size: 10px; padding: 6px 8px; }
+  .news { margin-top: -56px; padding: 0 10px; }
+  .news-box { padding: 12px; }
+  .news-box h2 { font-size: 16px; }
+  .news-track { grid-auto-columns: 140px; gap: 12px; }
+  .news-item .pimg { width: 110px; }
+  .news-name { font-size: 12px; }
+  .site-footer { margin: 0 10px; padding: 28px 16px 0; }
+  .site-footer h3 { font-size: 17px; margin-bottom: 10px; }
+  .foot-cols a { font-size: 14.5px; margin-bottom: 8px; }
+  .foot-modes { margin: 20px -16px 0; padding: 18px 16px; }
+  .foot-modes h3 { font-size: 14px; }
+  .chip { font-size: 11.5px; padding: 6px 10px; }
+  .foot-legal { margin: 0 -16px; font-size: 11px; }
+  .modal { padding: 20px 16px; }
+  .modal h2 { font-size: 19px; }
+
+  /* administration */
+  .app-main { padding: 16px 12px 40px; }
+  .app-top h1 { font-size: 21px; }
+  .app .kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .app .kpi { padding: 12px; }
+  .app .kpi b { font-size: 18px; }
+  .app .approve { padding: 12px; }
+  .app .approve h3 { font-size: 15px; }
+  .app .btn { font-size: 13px; padding: 8px 12px; }
+  .app .feed li { grid-template-columns: 42px 10px 1fr; font-size: 13px; }
+  .app .table { font-size: 12.5px; }
+}
+@media (max-width: 640px) { .cards-band { margin: 0 -12px; } }
+@media (max-width: 640px) {
+  .wbox { grid-template-columns: minmax(0, 1fr) auto; }
+  .wbox small { display: none; }
+  .wrow { grid-template-columns: 74px minmax(0, 1fr); }
+}

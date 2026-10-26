@@ -4,6 +4,7 @@ import { post, get } from './api.js';
 import { $, $$, esc, eur, num2, gramsNum, toast, modal, busy, FLAG, ICON, date, time, countdown, ask } from './ui.js';
 import { productImage, go, live, shopWa } from './app.js';
 import { track } from './track.js';
+import { goldChart } from './chart.js';
 import { PHOTOS, CREDITS } from './photos.js';
 import { coinSvg, gramArt } from './art.js';
 import { COUNTRIES, METAL_LABEL } from './shared/catalog.js';
@@ -108,28 +109,35 @@ function spotBar() {
 }
 
 let tvSeq = 0;
-function chart(el, height = 420) {
+// Graphique du site (toujours visible) + historique long TradingView à la demande.
+function chart(el) {
   const id = `tv${++tvSeq}`;
-  el.innerHTML = `<div class="chart-box" style="height:${height}px">
+  el.innerHTML = `<div class="chart-box">
     <div class="chart-title">Évolution graphique du cours de l'or</div>
-    <div class="tradingview-widget-container" id="${id}"><div class="tradingview-widget-container__widget"></div></div>
-    <p class="chart-fallback" hidden>Le graphique n'a pas pu se charger. Le cours affiché ci-dessus reste à jour automatiquement.</p>
+    <div class="chart-own"></div>
+    <p class="chart-more"><button type="button" class="link-small" data-tv>Voir l'historique sur plusieurs mois</button></p>
+    <div class="tv-slot" id="${id}" hidden><div class="tradingview-widget-container__widget"></div></div>
   </div>`;
-  const s = document.createElement('script');
-  s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
-  s.async = true;
-  s.textContent = JSON.stringify({
-    symbols: [["Or (€ par once)", 'OANDA:XAUEUR|1M']],
-    chartOnly: false, width: '100%', height: '100%', locale: 'fr', colorTheme: 'light', autosize: true,
-    showVolume: false, showMA: false, hideDateRanges: false, hideMarketStatus: true, hideSymbolLogo: true,
-    scalePosition: 'right', scaleMode: 'Normal', fontFamily: 'Open Sans, sans-serif', fontSize: '11',
-    noTimeScale: false, valuesTracking: '1', changeMode: 'price-and-percent', chartType: 'area',
-    lineWidth: 2, lineType: 0, dateRanges: ['1d|5', '1m|60', '3m|1D', '12m|1D', '60m|1W', 'all|1M'],
-    lineColor: 'rgba(201, 160, 50, 1)', topColor: 'rgba(201, 160, 50, 0.28)', bottomColor: 'rgba(201, 160, 50, 0)',
-    backgroundColor: 'rgba(247, 248, 250, 1)', gridLineColor: 'rgba(0, 0, 0, 0.06)',
+  const stop = goldChart($('.chart-own', el));
+  el.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-tv]');
+    if (!b) return;
+    const slot = $(`#${id}`, el);
+    slot.hidden = false;
+    b.parentElement.hidden = true;
+    const s = document.createElement('script');
+    s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+    s.async = true;
+    s.textContent = JSON.stringify({
+      symbols: [["Or (€ par once)", 'OANDA:XAUEUR|1M']], chartOnly: false, width: '100%', height: '100%', locale: 'fr', colorTheme: 'light', autosize: true,
+      hideMarketStatus: true, hideSymbolLogo: true, scalePosition: 'right', fontFamily: 'Open Sans, sans-serif', fontSize: '11',
+      chartType: 'area', lineWidth: 2, dateRanges: ['1m|60', '3m|1D', '12m|1D', '60m|1W'],
+      lineColor: 'rgba(201, 160, 50, 1)', topColor: 'rgba(201, 160, 50, 0.28)', bottomColor: 'rgba(201, 160, 50, 0)',
+    });
+    s.onerror = () => { slot.innerHTML = '<p class="chart-fallback">L\'historique long n\'est pas disponible ici. Le graphique ci-dessus suit le cours en direct.</p>'; };
+    slot.appendChild(s);
   });
-  s.onerror = () => { $('.chart-fallback', el).hidden = false; };
-  $(`#${id}`, el).appendChild(s);
+  return stop;
 }
 
 // ================= ACCUEIL =================
@@ -197,8 +205,10 @@ export async function home(view) {
   </section>`;
 
   const zone = $('#home-zone', view);
+  let stopChart = null;
   const paint = () => {
-    if (!filters.length) { chart(zone); return; }
+    if (stopChart) { stopChart(); stopChart = null; }
+    if (!filters.length) { stopChart = chart(zone); return; }
     let html = '';
     if (filters.includes('pieces')) html += `<h2 class="zone-title">Pièces d'or</h2>${productTable(S.products.filter((p) => p.category === 'piece' && p.metal === 'or'))}`;
     if (filters.includes('gramme')) html += `<h2 class="zone-title">Or au gramme</h2>${gramPanel()}`;
@@ -238,7 +248,7 @@ export async function home(view) {
   });
   const offProducts = on('products', () => live(view));
   const unbind = bindCartControls(view);
-  return () => { unbind(); offProducts(); };
+  return () => { unbind(); offProducts(); if (stopChart) stopChart(); };
 }
 
 function gramPanel() {
@@ -405,7 +415,7 @@ export async function cours(view) {
       <tbody>${p && p.available ? ['or', 'argent', 'platine'].map((m) => `<tr><th>${METAL_LABEL[m]}</th><td>${num2(p.gram.eur[m])} €</td><td>${num2(p.oz[m])} €</td><td>${num2(p.gram.eur[m] * 1000)} €</td></tr>`).join('') : '<tr><td colspan="4">Cours en attente…</td></tr>'}</tbody>
     </table>
   </div>`;
-  chart($('#big-chart', view), 520);
+  return chart($('#big-chart', view));
 }
 
 // ================= FICHE PRODUIT =================

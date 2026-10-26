@@ -6,8 +6,8 @@ import path from 'node:path';
 
 const API = 'https://api.gold-api.com/price';
 const INTERVAL = 60000;
-const SAMPLE_EVERY = 10 * 60000;
-const KEEP = 48 * 3600000;
+const SAMPLE_EVERY = 5 * 60000;
+const KEEP = 7 * 86400000;
 
 async function getJson(url) {
   const res = await fetch(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
