@@ -9,6 +9,7 @@ export const PHOTOS = {
   'lingot-or-1g': { file: 'lingot-or-1g.jpg', credit: 'lingot-or-1g' },
   'lingot-argent-1kg': { file: 'lingot-argent-1kg.jpg', credit: 'lingot-argent-1kg' },
   '20-fr-italie': { file: '20-fr-italie.jpg', credit: '20-fr-italie' },
+  '20-fr-genie': { file: '20-fr-genie.jpg', credit: '20-fr-genie' },
   'lingot-or-50g': { file: 'bars-small.jpg', credit: 'bars-small' },
   'lingot-or-once': { file: 'bars-small.jpg', credit: 'bars-small' },
   'lingot-or-20g': { file: 'bars-small.jpg', credit: 'bars-small' },
@@ -17,6 +18,7 @@ export const PHOTOS = {
 };
 
 export const CREDITS = {
+  '20-fr-genie': { title: '20 Francs 1896A Gold', author: 'Ude', license: 'CC BY-SA 3.0', url: 'https://commons.wikimedia.org/wiki/File:20_Francs_1896A_Gold.jpg' },
   'souverain': { title: '1888 Australian Gold Sovereign', author: 'Mustang Joe', license: 'CC0', url: 'https://www.flickr.com/photos/63234672@N04/54506371089' },
   'krugerrand': { title: 'Krugerrand', author: 'austinevan', license: 'CC BY 2.0', url: 'https://www.flickr.com/photos/19762676@N00/8437358973' },
   'philharmonique-argent': { title: 'Silver Phil (5)', author: 'sirqitous', license: 'CC BY 2.0', url: 'https://www.flickr.com/photos/39792968@N00/5797977581' },
