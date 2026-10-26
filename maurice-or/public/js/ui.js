@@ -179,3 +179,23 @@ const ICON_ORIGINAL = {
 };
 
 export const ICON = { ...ICON_LINE, ...ICON_ORIGINAL };
+
+// Confirmation dans une fenêtre du site (les boîtes confirm()/prompt() du navigateur
+// sont bloquées dans certains affichages). Renvoie true/false, ou le texte saisi (null si annulé).
+export function ask(message, { input = false, placeholder = '', ok = 'Confirmer', cancel = 'Annuler' } = {}) {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (v) => { if (done) return; done = true; m.close(true); resolve(v); };
+    const m = modal(`<p class="ask-msg">${esc(message)}</p>
+      ${input ? `<input class="ask-input" type="text" placeholder="${esc(placeholder)}" maxlength="200">` : ''}
+      <div class="modal-btns"><button class="btn-outline" data-ask="no">${esc(cancel)}</button><button class="btn-buy" data-ask="yes">${esc(ok)}</button></div>`,
+    { onClose: () => { if (!done) { done = true; resolve(input ? null : false); } } });
+    m.el.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-ask]');
+      if (!b) return;
+      if (b.dataset.ask === 'no') finish(input ? null : false);
+      else finish(input ? m.el.querySelector('.ask-input').value.trim() : true);
+    });
+    m.el.addEventListener('keydown', (e) => { if (e.key === 'Enter' && input) finish(m.el.querySelector('.ask-input').value.trim()); });
+  });
+}

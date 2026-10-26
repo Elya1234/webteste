@@ -226,7 +226,8 @@ async function boot() {
   if (demo) {
     const r = $('#demo-ribbon');
     r.hidden = false;
-    r.innerHTML = 'Mode démonstration : cours de l\'or réel, mais aucun paiement réel. Comptes d\'essai : <b>client@maurice-or.fr</b> / Client-demo-2026 · <b>admin@maurice-or.fr</b> / Admin-demo-2026';
+    const { offlinePrices } = await import('./demo.js');
+    r.innerHTML = `Démonstration : ${offlinePrices ? 'cours <b>simulé</b> dans cet aperçu (le vrai site suit le cours réel chaque minute)' : 'cours de l\'or réel'}, aucun paiement réel. Comptes d'essai : <b>client@maurice-or.fr</b> / Client-demo-2026 · <b>admin@maurice-or.fr</b> / Admin-demo-2026`;
   }
   await Promise.all([loadConfig(), loadPrices(), loadMe()]);
   await loadProducts().catch(() => toast('Catalogue indisponible pour le moment.', 'err'));

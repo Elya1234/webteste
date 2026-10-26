@@ -44,6 +44,8 @@ function store(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* stockage indisponible */ }
 }
 
+export let offlinePrices = false;
+
 export async function createDemoBackend() {
   const state = load(KEY, null) || emptyState();
   const prices = load(PKEY, { last: null, samples: [] });
@@ -64,9 +66,17 @@ export async function createDemoBackend() {
       if (!s || Date.now() - s.t > 120000) prices.samples.push({ t: Date.now(), or: e.price });
       prices.samples = prices.samples.filter((x) => Date.now() - x.t < 48 * 3600000);
       store(PKEY, prices);
+      offlinePrices = false;
     } catch {
+      offlinePrices = true;
       // Sans réseau : cours indicatif pour que la démo reste utilisable.
-      if (!prices.last) prices.last = { eur: { or: 3570, argent: 48.4, platine: 1400 }, usd: { or: 4000 }, gbp: { or: 2990 }, updatedAt: Date.now(), offline: true };
+      // Le cours bouge légèrement pour montrer l'affichage en direct ; il est signalé comme simulé.
+      const base = prices.last && prices.last.offline ? prices.last.eur : { or: 3562, argent: 48.2, platine: 1390 };
+      const k = 1 + (Math.random() - 0.5) * 0.002;
+      const or = base.or * k;
+      prices.last = { eur: { or, argent: base.argent * k, platine: base.platine * k }, usd: { or: or * 1.12 }, gbp: { or: or * 0.838 }, updatedAt: Date.now(), offline: true };
+      prices.samples.push({ t: Date.now() - 86400000, or: 3570 });
+      prices.samples = prices.samples.slice(-50);
     }
   }
 
@@ -82,6 +92,8 @@ export async function createDemoBackend() {
 
   await refresh();
   setInterval(refresh, 60000);
+  // hors ligne, le cours simulé bouge plus souvent pour la démonstration
+  setInterval(() => { if (offlinePrices) refresh(); }, 20000);
 
   const getHistory = () => prices.samples.map((x) => [x.t, Math.round(x.or * 100) / 100]);
   const core = createCore({ state, save, deps, getSpot, getHistory, instantPayments: true });

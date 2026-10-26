@@ -2,7 +2,7 @@
 // coffre, versements, retraits), historique, commandes, sécurité.
 import { S, on, loadMe, loadPrices, loadProducts } from './store.js';
 import { post, get, demo } from './api.js';
-import { $, $$, esc, eur, num2, gramsNum, toast, modal, busy, formData, date, ago, time, countdown, ICON } from './ui.js';
+import { $, $$, esc, eur, num2, gramsNum, toast, modal, busy, formData, date, ago, time, countdown, ICON, ask } from './ui.js';
 import { productImage, go, live, shopWa } from './app.js';
 import { ORDER_STATUS, REQUEST_STATUS, REQUEST_KIND } from './shared/core.js';
 import { track, visitorId } from './track.js';
@@ -461,7 +461,7 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
 
   view.addEventListener('click', async (e) => {
     const cr = e.target.closest('[data-cancel-req]');
-    if (!cr || !confirm('Annuler cette demande ? Le montant réservé vous est rendu.')) return;
+    if (!cr || !(await ask('Annuler cette demande ? Le montant réservé vous est rendu.', { ok: 'Annuler la demande', cancel: 'Garder' }))) return;
     await busy(cr, async () => { try { await post(`/api/requests/${encodeURIComponent(cr.dataset.cancelReq)}/cancel`); toast('Demande annulée.'); await loadProducts().catch(() => {}); refresh(); } catch (err) { toast(err.message, 'err'); } });
   });
 

@@ -1,7 +1,7 @@
 // Pages boutique : accueil, pièces, lingots, or au gramme, investir, fiche produit, panier, commande.
 import { S, on, price, getCart, addToCart, setCartQty, clearCart, loadProducts, loadPrices, loadMe } from './store.js';
 import { post, get } from './api.js';
-import { $, $$, esc, eur, num2, gramsNum, toast, modal, busy, FLAG, ICON, date, time, countdown } from './ui.js';
+import { $, $$, esc, eur, num2, gramsNum, toast, modal, busy, FLAG, ICON, date, time, countdown, ask } from './ui.js';
 import { productImage, go, live, shopWa } from './app.js';
 import { track } from './track.js';
 import { PHOTOS, CREDITS } from './photos.js';
@@ -652,7 +652,7 @@ export async function orderPage(view, { ref }, query) {
   paint();
   view.addEventListener('click', async (e) => {
     const b = e.target.closest('#cancel');
-    if (b && confirm('Annuler cette commande ?')) {
+    if (b && await ask('Annuler cette commande ?', { ok: 'Annuler la commande', cancel: 'Garder' })) {
       await busy(b, async () => {
         try { ({ order: o } = await post(`/api/orders/${encodeURIComponent(o.ref)}/cancel`)); toast('Commande annulée.'); await loadProducts(); paint(); }
         catch (err) { toast(err.message, 'err'); }

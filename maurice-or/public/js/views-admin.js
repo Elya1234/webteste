@@ -3,7 +3,7 @@
 // produits, messages et réglages.
 import { S, loadProducts, loadConfig, loadMe } from './store.js';
 import { get, post, put } from './api.js';
-import { $, $$, esc, eur, num2, toast, busy, formData, date, time, ago, gramsNum, ICON, waLink, countdown } from './ui.js';
+import { $, $$, esc, eur, num2, toast, busy, formData, date, time, ago, gramsNum, ICON, waLink, countdown, ask } from './ui.js';
 import { go, paintIcons } from './app.js';
 import { ORDER_STATUS, REQUEST_STATUS, REQUEST_KIND } from './shared/core.js';
 
@@ -292,26 +292,26 @@ async function handleAdminClick(e, reload) {
   const req = t.closest('[data-req]');
   if (req) {
     let note = '';
-    if (req.dataset.a === 'refuse') { note = prompt('Motif du refus (envoyé au client, facultatif) :'); if (note === null) return; }
+    if (req.dataset.a === 'refuse') { note = await ask('Motif du refus (envoyé au client, facultatif) :', { input: true, ok: 'Refuser' }); if (note === null) return; }
     return act(req, () => post(`/api/admin/requests/${req.dataset.req}/${req.dataset.a}`, { note }), req.dataset.a === 'approve' ? 'Demande validée : le client est prévenu.' : 'Demande refusée : les fonds sont rendus.');
   }
   const ord = t.closest('[data-ord]');
   if (ord) {
     const st = ord.dataset.st;
     let tracking, note;
-    if (st === 'refuser') { note = prompt('Motif du refus (envoyé au client, facultatif) :'); if (note === null) return; }
-    if (st === 'annulee' && !confirm('Annuler cette commande ? Le stock est remis et un paiement par solde ou carte est recrédité au client.')) return;
-    if (st === 'expediee') tracking = prompt('Numéro de suivi du colis (facultatif) :') || '';
+    if (st === 'refuser') { note = await ask('Motif du refus (envoyé au client, facultatif) :', { input: true, ok: 'Refuser' }); if (note === null) return; }
+    if (st === 'annulee' && !(await ask('Annuler cette commande ? Le stock est remis et un paiement par solde ou carte est recrédité au client.'))) return;
+    if (st === 'expediee') { tracking = await ask('Numéro de suivi du colis (facultatif) :', { input: true, ok: 'Marquer expédiée' }); if (tracking === null) return; }
     return act(ord, () => post(`/api/admin/orders/${encodeURIComponent(ord.dataset.ord)}/status`, { status: st, tracking, note }), 'Commande mise à jour : le client est prévenu.');
   }
   const dep = t.closest('[data-dep]');
   if (dep) {
-    if (dep.dataset.a === 'validate' && !confirm('Confirmez-vous avoir reçu ce virement sur le compte bancaire ?')) return;
+    if (dep.dataset.a === 'validate' && !(await ask('Confirmez-vous avoir reçu ce virement sur le compte bancaire ?', { ok: 'Oui, créditer' }))) return;
     return act(dep, () => post(`/api/admin/deposits/${dep.dataset.dep}/${dep.dataset.a}`), 'Versement traité.');
   }
   const wd = t.closest('[data-wd]');
   if (wd) {
-    if (wd.dataset.a === 'done' && !confirm('Confirmez-vous avoir envoyé le virement ?')) return;
+    if (wd.dataset.a === 'done' && !(await ask('Confirmez-vous avoir envoyé le virement ?', { ok: 'Oui, envoyé' }))) return;
     return act(wd, () => post(`/api/admin/withdrawals/${wd.dataset.wd}/${wd.dataset.a}`), 'Retrait traité.');
   }
   const msg = t.closest('[data-msg]');
