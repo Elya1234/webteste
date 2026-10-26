@@ -31,7 +31,7 @@
           <div class="ticker" aria-label="Cours de l'or au gramme">
             <table>
               <thead><tr><th></th><th>EUR</th><th>GBP</th><th>USD</th></tr></thead>
-              <tbody><tr><td>Or</td><td data-live="g-eur">…</td><td data-live="g-gbp">…</td><td data-live="g-usd">…</td></tr></tbody>
+              <tbody><tr class="live-row"><td>Or</td><td data-live="g-eur">…</td><td data-live="g-gbp">…</td><td data-live="g-usd">…</td></tr></tbody>
             </table>
             <a href="#/compte" class="ticker-cta" data-cta-account>Créez votre compte<br>poids or</a>
           </div>
@@ -50,6 +50,7 @@
       <a href="#/contact" class="hdr-contact">Contact</a>
     </div>
   </header>
+  <div class="ticker-band" aria-label="Cours des métaux en direct"><div class="tb-track" id="tb-track"></div></div>
 
   <main id="view" tabindex="-1"></main>
 
@@ -97,6 +98,7 @@
         <a href="#/cours">Graphiques des cours</a>
         <a href="#/info/index">Index des métaux précieux</a>
         <a href="#/info/confidentialite">Confidentialité</a>
+        <a href="#/info/credits">Crédits photos</a>
       </div>
     </div>
     <div class="foot-modes">

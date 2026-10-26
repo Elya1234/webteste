@@ -3,6 +3,7 @@ import { S } from './store.js';
 import { post } from './api.js';
 import { $, esc, eur, num2, toast, busy, formData, gramsNum, ICON } from './ui.js';
 import { shopWa } from './app.js';
+import { CREDITS } from './photos.js';
 import { METAL_LABEL } from './shared/catalog.js';
 import { DEFAULT_SETTINGS } from './shared/pricing.js';
 
@@ -48,6 +49,8 @@ export async function contact(view, _p, query) {
 const cfg = () => S.config || DEFAULT_SETTINGS;
 
 const PAGES = {
+  credits: () => ['Crédits photos', `<p>Les photos des produits sont des photos d'illustration sous licence libre. Merci à leurs auteurs.</p>
+    <ul class="list">${Object.values(CREDITS).map((c) => `<li><b>${esc(c.title)}</b> — ${esc(c.author)}, licence ${esc(c.license)} · <a href="${esc(c.url)}" target="_blank" rel="noopener">source</a></li>`).join('')}</ul>`],
   'qui-sommes-nous': () => ['Qui sommes-nous ?', `
     <p><b>${esc(cfg().shopName)}</b> vous permet d'acheter et de vendre de l'or physique simplement, au cours du jour, en ligne ou dans notre boutique.</p>
     <p>Nos prix suivent automatiquement le cours mondial de l'or, relevé en continu. Chaque prix est la valeur du métal contenu, plus une prime affichée en toute transparence sur chaque fiche produit.</p>

@@ -4,6 +4,7 @@ import { post, get } from './api.js';
 import { $, $$, esc, eur, num2, gramsNum, toast, modal, busy, FLAG, ICON, date, time, countdown } from './ui.js';
 import { productImage, go, live, shopWa } from './app.js';
 import { track } from './track.js';
+import { PHOTOS, CREDITS } from './photos.js';
 import { coinSvg, gramArt } from './art.js';
 import { COUNTRIES, METAL_LABEL } from './shared/catalog.js';
 import { shippingCents, badgeOf, DEFAULT_SETTINGS } from './shared/pricing.js';
@@ -102,7 +103,7 @@ function spotBar() {
     <span><b class="gold">Or :</b> once : <b data-live="oz">…</b></span>
     <span>kilo : <b data-live="kilo">…</b></span>
     <span class="hide-sm">24 h : <b data-live="change">—</b></span>
-    <span class="spot-upd">Mis à jour automatiquement · <span data-live="updated"></span></span>
+    <span class="spot-upd"><span class="live-dot"></span>En direct · cours de <span data-live="clock"></span></span>
   </div>`;
 }
 
@@ -160,14 +161,14 @@ export async function home(view) {
 
   <section class="home-cards">
     <div class="hcard">
-      <div class="hcard-img">${coinSvg({ name: '20 Fr', metal: 'or' })}</div>
+      <div class="hcard-img"><img class="hcard-photo" src="img/produits/krugerrand.jpg" alt="Pièces d'or"></div>
       <h2>Pièces d'or</h2>
       <table class="mini">${gold.map((p) => `<tr><th>${esc(p.short)}</th><td>à partir de <span>${p.tiers ? eur(from(p)) : '…'}</span></td><td><button class="btn-green" data-buy="${p.id}">Acheter</button></td></tr>`).join('')}</table>
       <a class="btn-blue" href="#/pieces?metal=or">Toutes nos pièces d'or</a>
       <p class="tiny">Prix basés sur la quantité commandée.</p>
     </div>
     <div class="hcard">
-      <div class="hcard-img">${coinSvg({ name: '1 oz', metal: 'argent' })}</div>
+      <div class="hcard-img"><img class="hcard-photo" src="img/produits/philharmonique-argent.jpg" alt="Pièces d'argent"></div>
       <h2>Pièces d'argent</h2>
       <table class="mini">${silver.map((p) => `<tr><th>${esc(p.short)}</th><td>à partir de <span>${p.tiers ? eur(from(p)) : '…'}</span></td><td><button class="btn-green" data-buy="${p.id}">Acheter</button></td></tr>`).join('')}</table>
       <a class="btn-blue" href="#/pieces?metal=argent">Toutes nos pièces d'argent</a>
@@ -421,6 +422,7 @@ export async function productPage(view, { id }) {
     <div class="product">
       <div class="product-media">
         ${productImage(p, 'pimg-big')}
+        ${PHOTOS[p.id] ? `<p class="photo-credit">Photo d'illustration : ${esc(CREDITS[PHOTOS[p.id].credit].author)} (${esc(CREDITS[PHOTOS[p.id].credit].license)}) · <a href="#/info/credits">crédits</a></p>` : ''}
         <button class="zoom" aria-label="Agrandir" data-zoom>${ICON.zoom}</button>
       </div>
       <div class="product-specs">

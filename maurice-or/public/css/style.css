@@ -660,3 +660,66 @@ body[data-page=admin] .trust, body[data-page=admin] .news, body[data-page=admin]
   .app .approve { grid-template-columns: 1fr; }
   .app .approve .acts { justify-content: flex-start; }
 }
+
+/* ================= Animations : le site vit avec le cours ================= */
+.ticker-band { background: var(--ink); color: #e9e3d2; overflow: hidden; border-top: 1px solid rgba(201, 160, 50, .35); border-bottom: 1px solid rgba(201, 160, 50, .35); font-size: 14px; white-space: nowrap; }
+.tb-track { display: inline-flex; animation: tb-scroll 45s linear infinite; padding: 8px 0; }
+.ticker-band:hover .tb-track { animation-play-state: paused; }
+.tb-item { padding: 0 28px; border-right: 1px solid rgba(255, 255, 255, .12); display: inline-flex; align-items: center; gap: 6px; }
+.tb-item b { color: var(--gold-2); font-weight: 700; letter-spacing: .04em; }
+.tb-item em { font-style: normal; font-weight: 700; }
+.tb-item .up { color: #5fd17a; }
+.tb-item .down { color: #ff7b72; }
+.tb-live { display: inline-flex; align-items: center; gap: 8px; color: #9fe3b0; font-weight: 700; }
+.tb-live i, .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #3fd17f; display: inline-block; animation: live-pulse 1.6s infinite; }
+@keyframes tb-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes live-pulse { 0% { box-shadow: 0 0 0 0 rgba(63, 209, 127, .7); } 70% { box-shadow: 0 0 0 9px rgba(63, 209, 127, 0); } 100% { box-shadow: 0 0 0 0 rgba(63, 209, 127, 0); } }
+
+/* prix qui clignote quand le cours bouge */
+.flash-up { animation: flash-up 1.6s ease; }
+.flash-down { animation: flash-down 1.6s ease; }
+@keyframes flash-up { 0%, 30% { background: rgba(47, 154, 58, .28); color: #1d7a2a; } 100% { background: transparent; } }
+@keyframes flash-down { 0%, 30% { background: rgba(192, 57, 43, .22); color: #a3261b; } 100% { background: transparent; } }
+
+/* logo doré qui brille */
+.logo-or { background: linear-gradient(100deg, #9b7418 0%, #f3d77a 25%, #c9a032 45%, #fff3c4 52%, #c9a032 60%, #9b7418 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; animation: gold-shine 6s ease-in-out infinite; }
+@keyframes gold-shine { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+
+/* pièces et lingots : reflet et léger mouvement */
+.pimg { position: relative; overflow: hidden; border-radius: 6px; }
+.pimg img, .pimg .art { transition: transform .5s cubic-bezier(.2, .8, .2, 1); }
+.pcard:hover .pimg img, .pcard:hover .pimg .art, .bcard:hover .pimg img, .bcard:hover .pimg .art, .news-item:hover .pimg img, .news-item:hover .pimg .art, .ptable tr:hover .pimg img { transform: scale(1.08) rotate(-3deg); }
+.pimg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, .55) 50%, transparent 65%); transform: translateX(-120%); pointer-events: none; }
+.pcard:hover .pimg::after, .bcard:hover .pimg::after, .news-item:hover .pimg::after, .hcard:hover .pimg::after, .product-media:hover .pimg::after { transition: transform .9s ease; transform: translateX(120%); }
+.hcard-img .art { animation: float 5s ease-in-out infinite; }
+.hcard:nth-child(2) .hcard-img .art { animation-delay: -2.5s; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* apparition au défilement */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+/* boutons vivants */
+.pill, .btn-buy, .btn-green, .btn-green-lg, .cc-add, .btn-blue { transition: transform .15s ease, box-shadow .2s ease, filter .2s; }
+.pill:hover, .btn-buy:hover { box-shadow: 0 0 0 3px rgba(201, 160, 50, .35), 0 8px 22px rgba(0, 0, 0, .25); transform: translateY(-1px); }
+.cc-add:active, .btn-green:active, .pill:active, .btn-buy:active { transform: scale(.97); }
+.floater-wa { animation: wa-pulse 2.4s infinite; }
+@keyframes wa-pulse { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, .6); } 70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+.badge-count { animation: pop .35s ease; }
+@keyframes pop { 0% { transform: scale(.4); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.ticker tbody td { transition: background .3s; }
+.ticker .live-row td:first-child::after { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #3fd17f; margin-left: 6px; vertical-align: 1px; animation: live-pulse 1.6s infinite; }
+.spotbar .live-dot { margin-right: 6px; }
+
+/* vraies photos des produits */
+.pimg.has-photo { background: radial-gradient(circle at 50% 45%, #fff 0%, #f4f1ea 70%); }
+.pimg.has-photo img { object-fit: contain; aspect-ratio: 6 / 5; }
+.pimg-row.has-photo img { aspect-ratio: 1; }
+.photo-credit { font-size: 11px; color: #9a958c; margin: 6px 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-track { animation: none; }
+  .reveal { opacity: 1; transform: none; }
+}
+.hcard-img .hcard-photo { height: 190px; width: auto; max-width: 100%; object-fit: cover; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); animation: float 5s ease-in-out infinite; }
+.hcard:nth-child(2) .hcard-photo { animation-delay: -2.5s; }

@@ -1,11 +1,11 @@
 // Suivi automatique du cours des métaux (source : gold-api.com, gratuit, sans clé).
-// Le cours est relevé toutes les 2 minutes ; un historique de 48 h sert à
+// Le cours est relevé toutes les minutes ; un historique de 48 h sert à
 // calculer la variation sur 24 h.
 import fs from 'node:fs';
 import path from 'node:path';
 
 const API = 'https://api.gold-api.com/price';
-const INTERVAL = 2 * 60000;
+const INTERVAL = 60000;
 const SAMPLE_EVERY = 10 * 60000;
 const KEEP = 48 * 3600000;
 

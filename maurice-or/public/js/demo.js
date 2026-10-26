@@ -81,7 +81,7 @@ export async function createDemoBackend() {
   }
 
   await refresh();
-  setInterval(refresh, 120000);
+  setInterval(refresh, 60000);
 
   const getHistory = () => prices.samples.map((x) => [x.t, Math.round(x.or * 100) / 100]);
   const core = createCore({ state, save, deps, getSpot, getHistory, instantPayments: true });

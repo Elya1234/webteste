@@ -4,13 +4,18 @@ import { S, on, loadPrices, loadProducts, loadConfig, loadMe, cartCount } from '
 import { $, $$, esc, eur, num2, pct, ICON, toast, waLink } from './ui.js';
 import { track } from './track.js';
 import { productArt } from './art.js';
+import { PHOTOS } from './photos.js';
 import * as shop from './views-shop.js';
 import * as account from './views-account.js';
 import * as admin from './views-admin.js';
 import * as info from './views-info.js';
 
+// Vraie photo du produit si elle existe (img/produits/), sinon illustration dessinée.
 export function productImage(p, cls = '') {
-  return `<div class="pimg ${cls}">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : productArt(p)}</div>`;
+  const photo = p.image || (PHOTOS[p.id] && `img/produits/${PHOTOS[p.id].file}`);
+  return photo
+    ? `<div class="pimg has-photo ${cls}"><img src="${esc(photo)}" alt="${esc(p.name)}" loading="lazy" onerror="this.parentNode.classList.remove('has-photo');this.remove()"></div>`
+    : `<div class="pimg ${cls}">${productArt(p)}</div>`;
 }
 
 // Message WhatsApp pré-rempli avec le numéro client quand il est connecté.
@@ -93,6 +98,8 @@ async function render() {
     view.focus({ preventScroll: true });
     paintIcons(view);
     live();
+    reveal(view);
+    reveal(document.querySelector('.news'));
     track('page', { path });
     return;
   }
@@ -100,9 +107,22 @@ async function render() {
 }
 
 // Met à jour tous les prix affichés sans recharger la page.
+// Quand un prix change, il clignote en vert (hausse) ou en rouge (baisse).
+const toNum = (t) => Number(String(t).replace(/[^\d,-]/g, '').replace(',', '.'));
+function setText(el, txt) {
+  const old = el.textContent;
+  if (old === txt) return;
+  el.textContent = txt;
+  const a = toNum(old), b = toNum(txt);
+  if (!Number.isFinite(a) || !Number.isFinite(b) || !old.trim() || old.includes('…') || a === b) return;
+  el.classList.remove('flash-up', 'flash-down');
+  void el.offsetWidth; // relance l'animation
+  el.classList.add(b > a ? 'flash-up' : 'flash-down');
+}
+
 export function live(root = document) {
   const p = S.prices;
-  const set = (key, txt) => $$(`[data-live="${key}"]`, root).forEach((el) => { el.textContent = txt; });
+  const set = (key, txt) => $$(`[data-live="${key}"]`, root).forEach((el) => { setText(el, txt); });
   if (p && p.available) {
     set('g-eur', num2(p.gram.eur.or) + ' €');
     set('g-gbp', num2(p.gram.gbp.or) + ' £');
@@ -113,7 +133,8 @@ export function live(root = document) {
     set('gram-buy', eur(p.gramBuy));
     set('gram-sell', eur(p.gramSell));
     set('change', p.changePct == null ? '—' : pct(p.changePct));
-    set('updated', new Date(p.updatedAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }));
+    set('updated', new Date(p.updatedAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'medium' }));
+    set('clock', new Date(p.updatedAt).toLocaleTimeString('fr-FR'));
     $$('[data-live="change"]', root).forEach((el) => { el.classList.toggle('up', p.changePct > 0); el.classList.toggle('down', p.changePct < 0); });
   }
   $$('[data-price]', root).forEach((el) => {
@@ -122,9 +143,43 @@ export function live(root = document) {
     const qtyEl = el.dataset.qtyFrom ? $(el.dataset.qtyFrom) : null;
     const qty = Math.max(1, parseInt(qtyEl ? qtyEl.value : el.dataset.qty || '1', 10) || 1);
     const unit = shop.unit(prod, qty);
-    el.textContent = eur(el.dataset.total ? unit * qty : unit);
+    setText(el, eur(el.dataset.total ? unit * qty : unit));
   });
   $$('.stale-warning', root).forEach((el) => { el.hidden = !(p && p.stale); });
+}
+
+// Bandeau défilant des cours, sous l'en-tête.
+function paintBand() {
+  const p = S.prices;
+  const track = $('#tb-track');
+  if (!track || !p || !p.available) return;
+  const ch = p.changePct == null ? '' : `<em class="${p.changePct >= 0 ? 'up' : 'down'}">${p.changePct >= 0 ? '▲' : '▼'} ${pct(p.changePct)}</em>`;
+  const items = [
+    `<b>OR</b> ${num2(p.gram.eur.or)} €/g ${ch}`, `<b>OR</b> ${num2(p.oz.or)} €/once`, `<b>OR</b> ${num2(p.kilo.or)} €/kg`,
+    `<b>OR</b> ${num2(p.gram.usd.or)} $/g`, `<b>OR</b> ${num2(p.gram.gbp.or)} £/g`,
+    `<b>ARGENT</b> ${num2(p.gram.eur.argent)} €/g`, `<b>PLATINE</b> ${num2(p.gram.eur.platine)} €/g`,
+    `<b>ACHAT AU GRAMME</b> ${eur(p.gramBuy)}`, `<b>REVENTE AU GRAMME</b> ${eur(p.gramSell)}`,
+    `<span class="tb-live"><i></i>EN DIRECT · ${new Date(p.updatedAt).toLocaleTimeString('fr-FR')}</span>`,
+  ].map((x) => `<span class="tb-item">${x}</span>`).join('');
+  track.innerHTML = items + items; // deux fois pour une boucle sans coupure
+}
+
+// Apparition douce des blocs quand on fait défiler la page.
+let revealObs = null;
+function reveal(root) {
+  const els = $$('.hcard, .ptable-wrap, .pcard, .bcard, .trust-item, .news-item, .gram-panel, .wallet-panel, .wact, .steps li, .product > div', root);
+  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  revealObs ||= new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -40px 0px' });
+  els.forEach((el, i) => {
+    if (el.classList.contains('reveal')) return;
+    el.classList.add('reveal');
+    el.style.transitionDelay = `${Math.min(i % 6, 5) * 60}ms`;
+    revealObs.observe(el);
+  });
+  // filet de sécurité : tout est visible au bout d'un instant
+  setTimeout(() => $$('.reveal:not(.in)', root).forEach((el) => el.classList.add('in')), 1800);
 }
 
 export function paintIcons(root = document) {
@@ -186,7 +241,8 @@ async function boot() {
   updateCartBadge();
   on('cart', updateCartBadge);
   on('me', () => { $$('[data-cta-account]').forEach((a) => { a.innerHTML = S.me ? 'Mon compte<br>poids or' : 'Créez votre compte<br>poids or'; }); });
-  on('prices', () => live());
+  on('prices', () => { live(); paintBand(); });
+  paintBand();
   on('products', () => { renderNews(); updateCartBadge(); live(); });
   $$('[data-cta-account]').forEach((a) => { a.innerHTML = S.me ? 'Mon compte<br>poids or' : 'Créez votre compte<br>poids or'; });
 
@@ -194,10 +250,12 @@ async function boot() {
   await render();
 
   // Le cours est relevé automatiquement : rafraîchissement régulier de l'affichage.
+  // Le cours suit le marché : nouvelle lecture toutes les 30 secondes.
   setInterval(async () => {
+    if (document.visibilityState !== 'visible') return;
     await loadPrices();
-    if (document.visibilityState === 'visible') await loadProducts().catch(() => {});
-  }, 60000);
+    await loadProducts().catch(() => {});
+  }, 30000);
 }
 
 boot();
