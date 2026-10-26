@@ -100,11 +100,11 @@ export async function registerPage(view, _p, query) {
 }
 
 // ================= MON COMPTE =================
-const TABS = [['coffre', 'Mes pièces & lingots'], ['demandes', 'Mes demandes'], ['historique', 'Historique'], ['commandes', 'Commandes'], ['argent', 'Versements & retraits'], ['securite', 'Sécurité'], ['infos', 'Mes informations']];
+const TABS = [['demandes', 'Mes demandes'], ['historique', 'Historique'], ['commandes', 'Commandes'], ['argent', 'Versements & retraits'], ['securite', 'Sécurité'], ['infos', 'Mes informations']];
 const DEP_STATUS = { en_attente: 'En attente', validee: 'Validé', refusee: 'Refusé' };
 const WD_STATUS = { en_attente: 'En cours', effectue: 'Effectué', refuse: 'Refusé' };
 
-export async function accountPage(view, { tab = 'coffre' }, query) {
+export async function accountPage(view, { tab = 'historique' }, query) {
   if (!S.me) { go('#/connexion?next=' + encodeURIComponent(location.hash.slice(1) || '/compte')); return; }
   let acc = await get('/api/account');
   const cfg = S.config || DEFAULT_SETTINGS;
@@ -112,6 +112,7 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
   const bars = () => S.products.filter((p) => p.category === 'lingot' && p.stock > 0).sort((a, b) => a.weight - b.weight);
   const coins = () => S.products.filter((p) => p.category === 'piece' && p.metal === 'or' && p.stock > 0);
 
+  const newIds = new Set();
   const paint = () => {
     const u = acc.user;
     // Le porte-monnaie : euros, or au gramme, pièces et lingots gardés au coffre
@@ -119,7 +120,29 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
     const vCoins = inVault('piece'), vBars = inVault('lingot');
     const nCoins = vCoins.reduce((a, x) => a + x.qty, 0), nBars = vBars.reduce((a, x) => a + x.qty, 0);
     const vCoinsVal = vCoins.reduce((a, x) => a + x.value, 0), vBarsVal = vBars.reduce((a, x) => a + x.value, 0);
-    const detail = (list) => list.map((x) => `${x.qty} × ${esc(x.product.name)}`).join(' · ');
+    // Ce qui vient d'arriver dans le porte-monnaie (par exemple après la validation du conseiller)
+    const seenKey = `mo-wallet-seen-${u.id}`;
+    let seen = null;
+    try { seen = JSON.parse(localStorage.getItem(seenKey)); } catch { /* rien */ }
+    if (seen) {
+      if (acc.goldMg > (seen.gold || 0)) newIds.add('gold');
+      for (const x of acc.vault) if (x.qty > (seen.vault?.[x.product.id] || 0)) newIds.add(x.product.id);
+    }
+    try { localStorage.setItem(seenKey, JSON.stringify({ gold: acc.goldMg, vault: Object.fromEntries(acc.vault.map((x) => [x.product.id, x.qty])) })); } catch { /* rien */ }
+    const pendingBuys = acc.requests.filter((r) => r.status === 'en_attente' && r.kind.startsWith('buy'));
+    const incoming = (cat) => {
+      const list = pendingBuys.filter((r) => (cat === 'gold' ? r.kind === 'buy_gold' : r.kind === 'buy_product' && S.byId[r.productId]?.category === cat));
+      return list.map((r) => `<div class="wp-incoming">${ICON.lock.replace('<svg', '<svg class="inline-ico"')} <span><b>${esc(r.label)}</b> arrive ici dès la validation du conseiller · <span data-until="${r.expiresAt}">${countdown(r.expiresAt)}</span></span></div>`).join('');
+    };
+    const itemsList = (list, cat) => {
+      const rows = list.map((x) => `<div class="wp-item${newIds.has(x.product.id) ? ' is-new' : ''}">
+        ${productImage(x.product, 'pimg-row')}
+        <div class="wp-item-name"><b>${esc(x.product.name)}</b>${newIds.has(x.product.id) ? ' <span class="wp-badge">Nouveau</span>' : ''}<span>${x.qty} × · vaut ${eur(x.value)} · revente ${eur(x.buyback)}</span></div>
+        <div class="wp-item-btns"><button class="btn-gold-outline" data-sellp="${x.product.id}">Vendre</button><button class="btn-gold" data-deliver="${x.product.id}">Retirer</button></div>
+      </div>`).join('');
+      const empty = !list.length ? `<p class="wp-empty">Aucun${cat === 'piece' ? 'e pièce' : ' lingot'} pour le moment. <button class="link-gold" data-act="buy-bar" data-kind="${cat === 'piece' ? 'coin' : 'bar'}">Acheter ${cat === 'piece' ? 'une pièce' : 'un lingot'}</button></p>` : '';
+      return rows + incoming(cat) + empty;
+    };
     view.innerHTML = `<div class="page page-wide account">
       <h1 class="title">Mon compte</h1>
       ${S.prices?.stale ? '<p class="stale-warning">Le cours n\'a pas pu être actualisé récemment : achats et ventes reprennent dès la prochaine mise à jour.</p>' : ''}
@@ -138,16 +161,32 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
 
       <div class="wallet">
         <div class="wallet-panel">
-          <h2 class="wallet-title">Mon porte-monnaie</h2>
-          <div class="wrow"><span class="wlabel">Gramme</span><span class="wbox"><small>QTÉ :</small><b>${mg2g(acc.goldMg)}</b><em>${eur(acc.goldValue)}</em></span></div>
-          <div class="wrow"><span class="wlabel">Pièces</span><span class="wbox"><small>QTÉ :</small><b>${nCoins}</b><em>${eur(vCoinsVal)}</em></span></div>
-          ${nCoins ? `<p class="wdetail">${detail(vCoins)}</p>` : ''}
-          <div class="wrow"><span class="wlabel">Lingots</span><span class="wbox"><small>QTÉ :</small><b>${nBars}</b><em>${eur(vBarsVal)}</em></span></div>
-          ${nBars ? `<p class="wdetail">${detail(vBars)}</p>` : ''}
-          <div class="wrow"><span class="wlabel">Total or</span><span class="wbox"><small>QTÉ :</small><b>${mg2g(acc.totalGoldMg)}</b><em>${eur(acc.totalGoldValue)}</em></span></div>
-          <div class="wrow wrow-cash"><span class="wlabel">Solde</span><span class="wbox"><small>EUROS :</small><b>${eur(acc.cash)}</b><em>disponible</em></span></div>
-          ${acc.held || acc.heldMg ? `<p class="held-line">Réservé en attente de validation : <b>${eur(acc.held)}</b>${acc.heldMg ? ` · ${mg2g(acc.heldMg)} en vente` : ''}</p>` : ''}
-          <div class="wallet-cash-btns"><button class="btn-gold" data-act="deposit">Alimenter</button><button class="btn-gold-outline" data-act="withdraw">Retirer</button></div>
+          <div class="wp-head"><h2 class="wallet-title">Mon porte-monnaie</h2><div class="wp-total"><span>Valeur totale</span><b>${eur(acc.cash + acc.held + acc.goldValue + acc.vaultValue)}</b></div></div>
+
+          <section class="wp-sec">
+            <div class="wp-sec-h"><h3>${ICON.euro}Mon argent</h3><b class="wp-big">${eur(acc.cash)}</b></div>
+            <p class="wp-sub">disponible${acc.held ? ` · <span class="wp-wait">${eur(acc.held)} réservés le temps de la validation</span>` : ''}</p>
+            <div class="wp-btns"><button class="btn-gold" data-act="deposit">Alimenter</button><button class="btn-gold-outline" data-act="withdraw">Retirer vers ma banque</button></div>
+          </section>
+
+          <section class="wp-sec${newIds.has('gold') ? ' is-new' : ''}">
+            <div class="wp-sec-h"><h3>${ICON.piggy}Or au gramme${newIds.has('gold') ? ' <span class="wp-badge">Nouveau</span>' : ''}</h3><b class="wp-big">${mg2g(acc.goldMg)}</b></div>
+            <p class="wp-sub">vaut <b>${eur(acc.goldValue)}</b> au cours actuel${acc.heldMg ? ` · <span class="wp-wait">${mg2g(acc.heldMg)} en cours de vente</span>` : ''}</p>
+            ${incoming('gold')}
+            <div class="wp-btns"><button class="btn-gold" data-act="buy-gram">Acheter</button><button class="btn-gold-outline" data-act="sell-gram"${acc.goldMg ? '' : ' disabled'}>Vendre</button></div>
+          </section>
+
+          <section class="wp-sec">
+            <div class="wp-sec-h"><h3>${ICON.shop}Mes pièces <span class="wp-count">${nCoins}</span></h3><b class="wp-big">${eur(vCoinsVal)}</b></div>
+            ${itemsList(vCoins, 'piece')}
+          </section>
+
+          <section class="wp-sec">
+            <div class="wp-sec-h"><h3>${ICON.safe}Mes lingots <span class="wp-count">${nBars}</span></h3><b class="wp-big">${eur(vBarsVal)}</b></div>
+            ${itemsList(vBars, 'lingot')}
+          </section>
+
+          <p class="wp-foot">Total de mon or : <b>${mg2g(acc.totalGoldMg)}</b> · ${eur(acc.totalGoldValue)}. Pièces et lingots sont gardés au coffre, assurés : vendez-les en un clic ou retirez-les (livraison ou boutique).</p>
         </div>
         <div class="wallet-actions">
           <div class="wact">
@@ -437,7 +476,7 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
 
   function deliverModal(firstId) {
     const u = acc.user;
-    const m = modal(`<h2>Me faire livrer mon or</h2>
+    const m = modal(`<h2>Retirer mon or</h2><p class="tiny">Choisissez ce que vous retirez et comment le recevoir : livraison assurée chez vous, ou remise en main propre en boutique.</p>
       <form class="form" id="dl">
         ${acc.vault.map((x) => `<label class="row-inline">${esc(x.product.name)} <input type="number" name="q-${x.product.id}" min="0" max="${x.qty}" value="${x.product.id === firstId ? x.qty : 0}"> / ${x.qty}</label>`).join('')}
         <fieldset class="radios"><legend>Mode</legend>
