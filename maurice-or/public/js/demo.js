@@ -3,7 +3,7 @@
 // est quand même réel (relevé en direct). Aucun paiement réel.
 import { createCore, emptyState } from './shared/core.js';
 
-const KEY = 'mauriceor-demo-v1';
+const KEY = 'mauriceor-demo-v2';
 const PKEY = 'mauriceor-demo-prices';
 const TKEY = 'mauriceor-demo-token';
 const API = 'https://api.gold-api.com/price';
@@ -105,6 +105,9 @@ export async function createDemoBackend() {
     await core.handle({ method: 'POST', path: '/api/auth/register', body: { ...base, email: 'client@maurice-or.fr', password: 'Client-demo-2026', firstName: 'Jean', lastName: 'Dupont' } });
     const client = state.users[2];
     client.cash = 500000;
+    // un porte-monnaie déjà garni pour la démonstration
+    client.goldMg = 12500;
+    state.vault[2] = { '20-fr-coq': 2, 'krugerrand': 1, 'lingot-or-10g': 1 };
     state.ledger.push({ id: ++state.seq.ledger, userId: 2, at: new Date().toISOString(), type: 'versement', label: 'Versement de bienvenue (démo)', amount: 500000 });
     state.sessions = {};
     save();

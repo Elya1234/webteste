@@ -100,7 +100,7 @@ export async function registerPage(view, _p, query) {
 }
 
 // ================= MON COMPTE =================
-const TABS = [['coffre', 'Mon coffre'], ['demandes', 'Mes demandes'], ['historique', 'Historique'], ['commandes', 'Commandes'], ['argent', 'Versements & retraits'], ['securite', 'Sécurité'], ['infos', 'Mes informations']];
+const TABS = [['coffre', 'Mes pièces & lingots'], ['demandes', 'Mes demandes'], ['historique', 'Historique'], ['commandes', 'Commandes'], ['argent', 'Versements & retraits'], ['securite', 'Sécurité'], ['infos', 'Mes informations']];
 const DEP_STATUS = { en_attente: 'En attente', validee: 'Validé', refusee: 'Refusé' };
 const WD_STATUS = { en_attente: 'En cours', effectue: 'Effectué', refuse: 'Refusé' };
 
@@ -110,10 +110,16 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
   const cfg = S.config || DEFAULT_SETTINGS;
   if (query.paiement === 'ok') toast('Paiement reçu : votre solde est mis à jour dès confirmation de la banque.');
   const bars = () => S.products.filter((p) => p.category === 'lingot' && p.stock > 0).sort((a, b) => a.weight - b.weight);
+  const coins = () => S.products.filter((p) => p.category === 'piece' && p.metal === 'or' && p.stock > 0);
 
   const paint = () => {
     const u = acc.user;
-    const vaultCount = acc.vault.reduce((a, x) => a + x.qty, 0);
+    // Le porte-monnaie : euros, or au gramme, pièces et lingots gardés au coffre
+    const inVault = (cat) => acc.vault.filter((x) => x.product.category === cat);
+    const vCoins = inVault('piece'), vBars = inVault('lingot');
+    const nCoins = vCoins.reduce((a, x) => a + x.qty, 0), nBars = vBars.reduce((a, x) => a + x.qty, 0);
+    const vCoinsVal = vCoins.reduce((a, x) => a + x.value, 0), vBarsVal = vBars.reduce((a, x) => a + x.value, 0);
+    const detail = (list) => list.map((x) => `${x.qty} × ${esc(x.product.name)}`).join(' · ');
     view.innerHTML = `<div class="page page-wide account">
       <h1 class="title">Mon compte</h1>
       ${S.prices?.stale ? '<p class="stale-warning">Le cours n\'a pas pu être actualisé récemment : achats et ventes reprennent dès la prochaine mise à jour.</p>' : ''}
@@ -132,8 +138,12 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
 
       <div class="wallet">
         <div class="wallet-panel">
+          <h2 class="wallet-title">Mon porte-monnaie</h2>
           <div class="wrow"><span class="wlabel">Gramme</span><span class="wbox"><small>QTÉ :</small><b>${mg2g(acc.goldMg)}</b><em>${eur(acc.goldValue)}</em></span></div>
-          <div class="wrow"><span class="wlabel">Lingots</span><span class="wbox"><small>QTÉ :</small><b>${vaultCount}</b><em>${eur(acc.vaultValue)}</em></span></div>
+          <div class="wrow"><span class="wlabel">Pièces</span><span class="wbox"><small>QTÉ :</small><b>${nCoins}</b><em>${eur(vCoinsVal)}</em></span></div>
+          ${nCoins ? `<p class="wdetail">${detail(vCoins)}</p>` : ''}
+          <div class="wrow"><span class="wlabel">Lingots</span><span class="wbox"><small>QTÉ :</small><b>${nBars}</b><em>${eur(vBarsVal)}</em></span></div>
+          ${nBars ? `<p class="wdetail">${detail(vBars)}</p>` : ''}
           <div class="wrow"><span class="wlabel">Total or</span><span class="wbox"><small>QTÉ :</small><b>${mg2g(acc.totalGoldMg)}</b><em>${eur(acc.totalGoldValue)}</em></span></div>
           <div class="wrow wrow-cash"><span class="wlabel">Solde</span><span class="wbox"><small>EUROS :</small><b>${eur(acc.cash)}</b><em>disponible</em></span></div>
           ${acc.held || acc.heldMg ? `<p class="held-line">Réservé en attente de validation : <b>${eur(acc.held)}</b>${acc.heldMg ? ` · ${mg2g(acc.heldMg)} en vente` : ''}</p>` : ''}
@@ -149,9 +159,14 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
             <label class="wq"><small>QTÉ :</small><input type="number" id="q-sell" min="${cfg.minGramTrade}" step="0.1" value="${acc.goldMg ? Math.min(1, acc.goldMg / 1000) : 1}" aria-label="Grammes à vendre"><span>g</span><b id="p-sell">…</b></label>
           </div>
           <div class="wact">
-            <button class="pill" data-act="buy-bar">Acheter un lingot</button>
+            <button class="pill" data-act="buy-bar" data-kind="bar">Acheter un lingot</button>
             <label class="wq wq-bar"><select id="bar-id" aria-label="Lingot">${bars().map((p) => `<option value="${p.id}"${p.id === 'lingot-or-10g' ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select>
               <input type="number" id="q-bar" min="1" max="999" value="1" aria-label="Nombre de lingots"><b id="p-bar">…</b></label>
+          </div>
+          <div class="wact">
+            <button class="pill" data-act="buy-bar" data-kind="coin">Acheter une pièce</button>
+            <label class="wq wq-bar"><select id="coin-id" aria-label="Pièce">${coins().map((p) => `<option value="${p.id}"${p.id === '20-fr-coq' ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select>
+              <input type="number" id="q-coin" min="1" max="999" value="1" aria-label="Nombre de pièces"><b id="p-coin">…</b></label>
           </div>
           ${cfg.approvalBuy ? `<p class="approval-note">${ICON.lock.replace('<svg', '<svg class="inline-ico"')} <b>Sécurité :</b> chaque achat est confirmé par votre conseiller. Le prix est bloqué ${cfg.approvalWindowMin} min et le montant mis de côté ; sans validation, tout vous est rendu.</p>` : ''}
           <p class="tiny">Prix en direct : achat <b data-live="gram-buy">…</b>/g · vente <b data-live="gram-sell">…</b>/g. Le lingot acheté est gardé dans votre coffre : vous pouvez le revendre ou vous le faire livrer.</p>
@@ -191,7 +206,7 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
       </tbody></table></div>`;
     }
     if (t === 'coffre') {
-      if (!acc.vault.length) return '<p class="muted">Votre coffre est vide. Achetez un lingot ci-dessus, ou choisissez « Garder au coffre » lors d\'une commande.</p>';
+      if (!acc.vault.length) return '<p class="muted">Vous n\'avez pas encore de pièces ni de lingots. Achetez-en ci-dessus : ils sont gardés au coffre dans votre porte-monnaie, revendables en un clic ou livrables chez vous.</p>';
       return `<div class="ptable-wrap"><table class="ptable"><thead><tr><th colspan="2">Produit</th><th>Qté</th><th>Valeur métal</th><th>Rachat immédiat</th><th></th></tr></thead><tbody>
         ${acc.vault.map((x) => `<tr><td class="pt-img">${productImage(x.product, 'pimg-row')}</td><td class="pt-name"><b>${esc(x.product.name)}</b></td><td>${x.qty}</td><td>${eur(x.value)}</td><td>${eur(x.buyback)}</td>
           <td class="row-btns"><button class="btn-green" data-sellp="${x.product.id}">Revendre</button><button class="btn-outline" data-deliver="${x.product.id}">Me faire livrer</button></td></tr>`).join('')}
@@ -254,6 +269,9 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
     const bar = S.byId[$('#bar-id', view)?.value];
     const n = Math.max(1, parseInt($('#q-bar', view)?.value, 10) || 1);
     if (bar) $('#p-bar', view).textContent = eur((bar.tiers ? unitFor(bar, n) : bar.price) * n);
+    const coin = S.byId[$('#coin-id', view)?.value];
+    const nc = Math.max(1, parseInt($('#q-coin', view)?.value, 10) || 1);
+    if (coin) $('#p-coin', view).textContent = eur((coin.tiers ? unitFor(coin, nc) : coin.price) * nc);
   }
   const unitFor = (p, n) => { let u = p.tiers[0].unit; for (const t of p.tiers) if (n >= t.min) u = t.unit; return u; };
 
@@ -322,14 +340,15 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
         return r;
       }, { what: `vente de ${gramsNum(g)} g d'or`, amount: Math.floor(g * unit), buying: false });
     },
-    'buy-bar'() {
-      const p = S.byId[$('#bar-id', view).value];
-      const n = Math.max(1, parseInt($('#q-bar', view).value, 10) || 1);
+    'buy-bar'(btn) {
+      const coin = btn.dataset.kind === 'coin';
+      const p = S.byId[$(coin ? '#coin-id' : '#bar-id', view).value];
+      const n = Math.max(1, parseInt($(coin ? '#q-coin' : '#q-bar', view).value, 10) || 1);
       if (!p) return;
       const unit = unitFor(p, n);
-      confirmTrade(`Acheter ${esc(p.name)}`, [['Quantité', n], ['Prix unitaire', eur(unit)], ['Total débité', `<b>${eur(unit * n)}</b>`], ['Stockage', 'Gardé dans votre coffre (gratuit)']], async () => {
+      confirmTrade(`Acheter ${esc(p.name)}`, [['Quantité', n], ['Prix unitaire', eur(unit)], ['Total débité', `<b>${eur(unit * n)}</b>`], ['Où ?', 'Dans votre porte-monnaie, gardé au coffre (gratuit) : revendable en un clic ou livrable']], async () => {
         const r = await post('/api/wallet/buy-product', { productId: p.id, qty: n, expected: unit });
-        if (!r.pending) toast(`${n} × ${p.name} ajouté(s) à votre coffre.`);
+        if (!r.pending) toast(`${n} × ${p.name} ajouté(s) à votre porte-monnaie.`);
         return r;
       }, { what: `achat de ${n} × ${p.name}`, amount: unit * n });
     },
@@ -443,8 +462,8 @@ export async function accountPage(view, { tab = 'coffre' }, query) {
     });
   }
 
-  view.addEventListener('input', (e) => { if (['q-buy', 'q-sell', 'q-bar'].includes(e.target.id)) quote(); });
-  view.addEventListener('change', (e) => { if (e.target.id === 'bar-id') quote(); });
+  view.addEventListener('input', (e) => { if (['q-buy', 'q-sell', 'q-bar', 'q-coin'].includes(e.target.id)) quote(); });
+  view.addEventListener('change', (e) => { if (['bar-id', 'coin-id'].includes(e.target.id)) quote(); });
   view.addEventListener('submit', async (e) => {
     const f = e.target;
     if (!['pwform', 'totp-on', 'totp-off', 'profile'].includes(f.id)) return;

@@ -1,5 +1,5 @@
 // Démarrage du site, navigation entre les pages et éléments communs (en-tête, pied de page).
-import { initApi, demo } from './api.js';
+import { initApi, demo, post } from './api.js';
 import { S, on, loadPrices, loadProducts, loadConfig, loadMe, cartCount } from './store.js';
 import { $, $$, esc, eur, num2, pct, ICON, toast, waLink } from './ui.js';
 import { track } from './track.js';
@@ -179,7 +179,7 @@ function reveal(root) {
     revealObs.observe(el);
   });
   // filet de sécurité : tout est visible au bout d'un instant
-  setTimeout(() => $$('.reveal:not(.in)', root).forEach((el) => el.classList.add('in')), 1800);
+  setTimeout(() => $$('.reveal:not(.in)', root).forEach((el) => el.classList.add('in')), 700);
 }
 
 export function paintIcons(root = document) {
@@ -228,6 +228,20 @@ async function boot() {
     r.hidden = false;
     const { offlinePrices } = await import('./demo.js');
     r.innerHTML = `Démonstration : ${offlinePrices ? 'cours <b>simulé</b> dans cet aperçu (le vrai site suit le cours réel chaque minute)' : 'cours de l\'or réel'}, aucun paiement réel. Comptes d'essai : <b>client@maurice-or.fr</b> / Client-demo-2026 · <b>admin@maurice-or.fr</b> / Admin-demo-2026`;
+    r.insertAdjacentHTML('beforeend', '<span class="demo-switch"><button data-demo-as="client">Voir côté client</button><button data-demo-as="admin">Voir côté administrateur</button></span>');
+    // Bascule en un clic entre le côté client et le côté administrateur (démo uniquement).
+    r.addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-demo-as]');
+      if (!b) return;
+      const admin = b.dataset.demoAs === 'admin';
+      try {
+        if (S.me) await post('/api/auth/logout');
+        await post('/api/auth/login', admin ? { email: 'admin@maurice-or.fr', password: 'Admin-demo-2026' } : { email: 'client@maurice-or.fr', password: 'Client-demo-2026' });
+        await loadMe();
+        toast(admin ? 'Vous êtes côté administrateur.' : 'Vous êtes côté client (Jean Dupont).');
+        go(admin ? '#/admin' : '#/compte');
+      } catch (err) { toast(err.message, 'err'); }
+    });
   }
   await Promise.all([loadConfig(), loadPrices(), loadMe()]);
   await loadProducts().catch(() => toast('Catalogue indisponible pour le moment.', 'err'));
