@@ -1,9 +1,7 @@
 import { useNow, useSynagogue } from "../lib/synagogue";
 import { clean, frenchDate, hebrewDate, hm, nextOffice, nowParts, officeView, parashaName, todayIn, upcoming, wdName, weekdayIn, type OfficeGroup } from "../lib/zmanim";
-import { go, type Route } from "../lib/router";
-import { ITEMS, LineIcon } from "./Menu";
+import { go } from "../lib/router";
 
-const QUICK: Route[] = ["siddour", "calendrier", "zmanim", "halakha", "daf", "cours"];
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -59,10 +57,6 @@ export default function Home() {
         )}
         {offline && <div className="muted small">Hors connexion : dernières données enregistrées.</div>}
       </section>
-
-      <nav className="quick" aria-label="Accès rapide">
-        {QUICK.map((r) => { const i = ITEMS.find((x) => x.r === r)!; return <a key={r} href={"#/" + r} className="card"><LineIcon d={i.icon} /><span>{i.label}</span></a>; })}
-      </nav>
 
       <div className="grid-2">
         <section className="card">

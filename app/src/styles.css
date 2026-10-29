@@ -41,9 +41,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px); background: rgba(5,11,31,.94); border-top: 1px solid var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .nav a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; font-size: 11px; color: var(--muted); border-radius: 12px; min-height: 48px; }
 .nav a.on { color: var(--gold); }
-/* Menu (3 traits) encadré : c'est là qu'on trouve toutes les rubriques */
-.nav a.nav-menu { color: var(--gold-hi); border: 1.5px solid var(--gold); background: rgba(217,191,140,.12); margin: 0 4px; box-shadow: 0 0 14px rgba(217,191,140,.25); }
-.nav a.nav-menu.on { background: rgba(217,191,140,.24); }
+/* Menu (3 traits) encadré, à côté du Maguen David : c'est là qu'on trouve toutes les rubriques */
+.top-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.menu-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 12px; font-weight: 600; font-size: .9rem;
+  color: var(--gold-hi); border: 1.5px solid var(--gold); background: rgba(217,191,140,.12); box-shadow: 0 0 14px rgba(217,191,140,.25); }
+.menu-btn.on { background: rgba(217,191,140,.26); }
+@media (max-width: 380px) { .menu-btn span { display: none; } .menu-btn { padding: 0 10px; } }
 .main { padding: 16px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 24px); }
 .page { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 .page.narrow { max-width: 620px; }
@@ -149,11 +152,6 @@ textarea.input { resize: vertical; }
 .menu-list a { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 12px; padding: 12px 16px; min-height: 60px; }
 .menu-ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--gold); background: rgba(217,191,140,.08); border: 1px solid var(--line); }
 .menu-t { display: flex; flex-direction: column; } .menu-t b { font-size: 1.05rem; font-weight: 600; }
-.quick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.quick a { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; padding: 12px; font-size: .9rem; text-align: left; color: var(--ivory); min-height: 56px; }
-.quick a svg { flex: none; }
-.quick a svg { color: var(--gold); }
-@media (min-width: 900px) { .quick { grid-template-columns: repeat(3, 1fr); } }
 .center { text-align: center; } .cap::first-letter { text-transform: uppercase; } .cap { text-transform: none; }
 
 /* Calendrier */

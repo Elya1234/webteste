@@ -16,10 +16,10 @@ import Compte from "./pages/Compte";
 const NAV: { r: Route; label: string; icon: string }[] = [
   { r: "accueil", label: "Accueil", icon: "M3 11 12 4l9 7v9h-6v-6H9v6H3z" },
   { r: "horaires", label: "Horaires", icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4v5l3.5 2" },
-  { r: "menu", label: "Menu", icon: "M4 6h16M4 12h16M4 18h16" },
   { r: "boutique", label: "Boutique", icon: "M5 8h14l-1.2 12H6.2zM9 8V6a3 3 0 0 1 6 0v2" },
   { r: "compte", label: "Compte", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9a8 8 0 0 1 16 0" }
 ];
+const MENU_ICON = "M4 6h16M4 12h16M4 18h16";
 const Icon = ({ d }: { d: string }) => <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>;
 
 export default function App() {
@@ -38,17 +38,21 @@ export default function App() {
   return (
     <div className="shell">
       <header className="topbar">
-        <a className="brand" href="#/accueil">
-          <span className="logo serif">✡&#xFE0E;</span>
-          <span><span className="serif gold-text brand-name">{config.name}</span><span className="hebrew brand-he">{config.nameHe}</span></span>
-        </a>
+        <div className="top-left">
+          <a className="brand" href="#/accueil">
+            <span className="logo serif">✡&#xFE0E;</span>
+            <span><span className="serif gold-text brand-name">{config.name}</span><span className="hebrew brand-he">{config.nameHe}</span></span>
+          </a>
+          {/* Menu (3 traits) à côté du Maguen David, encadré : toutes les rubriques sont là */}
+          <a className={"menu-btn" + (tab === "menu" ? " on" : "")} href="#/menu" aria-current={route === "menu" ? "page" : undefined}><Icon d={MENU_ICON} /><span>Menu</span></a>
+        </div>
         <a className="cart-btn" href="#/panier" aria-label={"Panier, " + count + " article(s)"}>
-          <Icon d={NAV[3].icon} />{count > 0 && <span className="badge">{count}</span>}
+          <Icon d={NAV[2].icon} />{count > 0 && <span className="badge">{count}</span>}
         </a>
       </header>
       <nav className="nav" aria-label="Navigation principale">
         {NAV.map((n) => (
-          <a key={n.r} href={"#/" + n.r} className={(tab === n.r ? "on" : "") + (n.r === "menu" ? " nav-menu" : "")} aria-current={route === n.r ? "page" : undefined}>
+          <a key={n.r} href={"#/" + n.r} className={tab === n.r ? "on" : ""} aria-current={route === n.r ? "page" : undefined}>
             <Icon d={n.icon} /><span>{n.label}</span>
           </a>
         ))}
