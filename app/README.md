@@ -109,3 +109,25 @@ Les réglages (offices de la semaine type, annonces, dédicace, ville) restent c
   - *Envoi groupé et rappels* : message ou **rappel de paiement** (montant + motif) à tous, à des balises ou aux membres
     cochés. Le rappel arrive dans la conversation du membre avec un bouton « Payer » qui ouvre le don déjà rempli.
 - Les membres **restent connectés** sur leur téléphone (session gardée et renouvelée seule) jusqu'à « Se déconnecter ».
+
+## Paiements (Stripe)
+
+- **Moyens** : carte bancaire, Apple Pay, Google Pay, prélèvement SEPA, Link — ceux cochés dans Stripe › Paramètres ›
+  Moyens de paiement (aucun code à changer). La carte est saisie sur la page sécurisée de Stripe, jamais chez nous.
+- **Dons ponctuels ou mensuels** (« Chaque mois ») ; le membre arrête son don mensuel ou change de carte depuis son compte
+  (espace client Stripe). Chaque mois payé crée une ligne dans Paiements.
+- **États suivis automatiquement** (webhook) : en attente, prélèvement en cours (SEPA, 3 à 5 jours), payé, échoué, annulé,
+  remboursé. Reçu Stripe envoyé par e-mail et consultable dans le compte.
+- **Administration › Paiements** : dons mensuels actifs (total par mois, arrêt), tous les paiements filtrés par type et
+  par état, fiche de chaque paiement, **remboursement total ou partiel** avec confirmation, export Excel.
+- **Test sans argent réel** : mettre la clé `sk_test_…` ; carte 4242 4242 4242 4242 (acceptée), 4000 0000 0000 0002
+  (refusée), IBAN de test FR1420041010050500013M02606. Puis remplacer par `sk_live_…` pour ouvrir les vrais paiements.
+- Webhook : `https://<ref>.supabase.co/functions/v1/stripe-webhook`, événements : checkout.session.completed,
+  checkout.session.async_payment_succeeded, checkout.session.async_payment_failed, checkout.session.expired, invoice.paid,
+  customer.subscription.updated, customer.subscription.deleted, charge.refunded.
+- Stripe › Paramètres › Espace client : autoriser « annuler l'abonnement » et « modifier le moyen de paiement ».
+
+## Langues
+
+Français et anglais (Menu ou Compte › Français / English ; par défaut la langue du téléphone). Les textes sont dans
+`src/lib/i18n.ts` : le français sert de clé, la traduction anglaise à côté. L'espace administrateur reste en français.

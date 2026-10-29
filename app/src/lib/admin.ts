@@ -2,7 +2,7 @@
  * - Avec Supabase : tout passe par la fonction serveur « admin », qui vérifie le code et renvoie un jeton de 12 h.
  * - Sans (démonstration) : le code est vérifié par la base Google de l'écran, les données sont des exemples gardés sur l'appareil. */
 import { REMOTE_URL } from "../config";
-import { DEMO, demoChat, saveDemoChat, supabase, type ChatMessage, type Order, type Profile } from "./backend";
+import { DEMO, demoChat, saveDemoChat, supabase, K_DEMO_ORDERS, K_DEMO_SUBS, type ChatMessage, type Order, type Profile, type Subscription } from "./backend";
 import { read, write } from "./storage";
 
 export type Member = { id: string; email: string; created_at: string; first_name: string; last_name: string; phone: string;
@@ -57,7 +57,7 @@ function demoDb(): DemoDb {
     m("m6", "Esther", "Exemple", [], 30), m("m7", "Aharon", "Exemple", ["Conseil"], 12), m("m8", "Léa", "Exemple", ["Jeunes", "Femmes"], 3)
   ];
   const o = (id: string, user: string, kind: "shop" | "donation", cents: number, label: string, days: number, extra: Partial<AdminOrder> = {}): AdminOrder =>
-    ({ id, user_id: user, kind, total_cents: cents, label, status: "paid", created_at: d(days), ...extra });
+    ({ id, user_id: user, kind, total_cents: cents, label, status: "paid", created_at: d(days), payment_method: "card", refunded_cents: 0, ...extra });
   const orders: AdminOrder[] = [
     o("o1", "m1", "donation", 36000, "Cotisation annuelle", 200, { purpose: "Cotisation annuelle" }),
     o("o2", "m1", "donation", 18000, "Kibboud / Mitsva (montée à la Torah)", 40, { purpose: "Kibboud", dedication: "Leilouy Nichmat de mon père" }),
@@ -66,7 +66,9 @@ function demoDb(): DemoDb {
     o("o5", "m3", "donation", 5400, "Hazkara / Leilouy Nichmat", 14, { purpose: "Hazkara", dedication: "Leilouy Nichmat" }),
     o("o6", "m4", "shop", 3700, "2 article(s)", 9, { order_items: [{ ref: "SID-001", name: "Siddour Patah Eliyahou", qty: 1, unit_cents: 2500, comment: "" }, { ref: "KIP-030", name: "Kippa brodée", qty: 1, unit_cents: 1200, comment: "" }] }),
     o("o7", "m5", "donation", 1800, "Don général", 5, { purpose: "Don général" }),
-    o("o8", "m7", "donation", 10000, "Neder", 2, { purpose: "Neder" })
+    o("o8", "m7", "donation", 10000, "Neder", 2, { purpose: "Neder", payment_method: "apple_pay" }),
+    o("o9", "m2", "donation", 3600, "Don général (mensuel)", 1, { purpose: "Don général", stripe_subscription_id: "sub_ex1", payment_method: "sepa_debit" }),
+    o("o10", "m5", "donation", 5000, "Don général", 0, { purpose: "Don général", status: "processing", payment_method: "sepa_debit" })
   ];
   const messages: SentMessage[] = [{ id: "s1", created_at: d(6), title: "Horaires de Souccot", body: "Les horaires des offices de Souccot sont disponibles dans l'application.", target: "Tous", sent: 8, read: 6 }];
   const db = { members, orders, messages };
@@ -103,7 +105,8 @@ function withDemoUser(db: DemoDb): DemoDb {
 }
 export async function listAllOrders(userId?: string): Promise<AdminOrder[]> {
   if (!DEMO) return (await call<{ orders: AdminOrder[] }>("orders", userId ? { id: userId } : {})).orders;
-  const all = withDemoUser(demoDb()).orders.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const all = withDemoUser(demoDb()).orders.map((o) => ({ ...o, refunded_cents: (read<Record<string, number>>(K_REFUNDS) || {})[o.id] ?? o.refunded_cents,
+    status: (read<Record<string, number>>(K_REFUNDS) || {})[o.id] >= o.total_cents ? "refunded" as const : o.status })).slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
   return userId ? all.filter((o) => o.user_id === userId) : all;
 }
 export async function saveMember(id: string, tags: string[], note: string) {
@@ -159,4 +162,29 @@ export async function listSent(): Promise<SentMessage[]> {
 /** Fichier tableur (CSV, ouvert par Excel) : liste des membres ou des dons, pour la comptabilité et les reçus. */
 export function toCsv(rows: (string | number)[][]) {
   return "﻿" + rows.map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
+}
+
+/* ───────── Paiements : remboursements et dons mensuels ───────── */
+const K_REFUNDS = "app.admin.demo.refunds";
+export async function refundOrder(id: string, amount_cents?: number) {
+  if (!DEMO) { await call("refund", { id, amount_cents }); return; }
+  const o = (await listAllOrders()).find((x) => x.id === id);
+  if (!o || o.status !== "paid") throw new Error("Ce paiement ne peut pas être remboursé ici.");
+  const left = o.total_cents - (o.refunded_cents || 0), amount = amount_cents || left;
+  if (!(amount > 0 && amount <= left)) throw new Error("Montant de remboursement invalide.");
+  const r = read<Record<string, number>>(K_REFUNDS) || {}; r[id] = (o.refunded_cents || 0) + amount; write(K_REFUNDS, r);
+  if (o.user_id === "demo") write(K_DEMO_ORDERS, (read<Order[]>(K_DEMO_ORDERS) || []).map((x) => (x.id === id ? { ...x, refunded_cents: r[id], status: r[id] >= x.total_cents ? "refunded" : x.status } : x)));
+}
+export async function listSubscriptions(): Promise<Subscription[]> {
+  if (!DEMO) return (await call<{ subscriptions: Subscription[] }>("subscriptions")).subscriptions;
+  const ex: Subscription[] = [{ id: "sub_ex1", user_id: "m2", amount_cents: 3600, purpose: "Don général", status: "active", created_at: new Date(Date.now() - 31 * 86400000).toISOString() },
+    { id: "sub_ex2", user_id: "m1", amount_cents: 1800, purpose: "Kiddouch / Séouda", status: "active", created_at: new Date(Date.now() - 90 * 86400000).toISOString() }];
+  const canceled = read<string[]>(K_SUBS_CANCELED) || [];
+  return [...(read<Subscription[]>(K_DEMO_SUBS) || []), ...ex].map((x) => (canceled.includes(x.id) ? { ...x, status: "canceled" } : x));
+}
+const K_SUBS_CANCELED = "app.admin.demo.subscanceled";
+export async function cancelSubscription(id: string) {
+  if (!DEMO) { await call("cancelSub", { id }); return; }
+  write(K_SUBS_CANCELED, [...(read<string[]>(K_SUBS_CANCELED) || []), id]);
+  write(K_DEMO_SUBS, (read<Subscription[]>(K_DEMO_SUBS) || []).map((x) => (x.id === id ? { ...x, status: "canceled", canceled_at: new Date().toISOString() } : x)));
 }

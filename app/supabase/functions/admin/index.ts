@@ -4,6 +4,9 @@
 // Secrets : ADMIN_TOKEN_SECRET (texte long au hasard), REMOTE_URL (adresse de la base Google) ou ADMIN_CODE.
 // Déployer avec --no-verify-jwt (l'administrateur n'a pas de compte Supabase).
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
+import Stripe from "npm:stripe@22.6.2";
+
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 
 const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
@@ -28,7 +31,7 @@ async function checkCode(code: string) {
   return j.ok === true;
 }
 
-type Body = { action: string; code?: string; token?: string; id?: string; tags?: string[]; note?: string; body?: string;
+type Body = { action: string; code?: string; token?: string; id?: string; tags?: string[]; note?: string; body?: string; amount_cents?: number;
   message?: { title: string; body: string; to: "all" | "tags" | "users"; tags?: string[]; user_ids?: string[];
     kind?: "broadcast" | "reminder"; amount_cents?: number; purpose?: string } };
 
@@ -117,6 +120,27 @@ Deno.serve(async (req) => {
     if (!body) return json({ error: "Message vide." }, 400);
     const { error } = await admin.from("chat_messages").insert({ user_id: b.id, from_admin: true, kind: "text", body });
     return error ? json({ error: error.message }, 500) : json({ ok: true });
+  }
+  // ───────── paiements : remboursement, dons mensuels ─────────
+  if (b.action === "refund" && b.id) {
+    const { data: o } = await admin.from("orders").select("*").eq("id", b.id).single();
+    if (!o || o.status !== "paid" || !o.stripe_payment_intent) return json({ error: "Ce paiement ne peut pas être remboursé ici." }, 400);
+    const left = o.total_cents - (o.refunded_cents || 0);
+    const amount = b.amount_cents ? Math.round(Number(b.amount_cents)) : left;
+    if (!(amount > 0 && amount <= left)) return json({ error: "Montant de remboursement invalide." }, 400);
+    await stripe.refunds.create({ payment_intent: o.stripe_payment_intent, amount, metadata: { order_id: o.id } });
+    const refunded = (o.refunded_cents || 0) + amount;
+    await admin.from("orders").update({ refunded_cents: refunded, ...(refunded >= o.total_cents ? { status: "refunded" } : {}) }).eq("id", o.id);
+    return json({ ok: true });
+  }
+  if (b.action === "subscriptions") {
+    const { data } = await admin.from("subscriptions").select("*").order("created_at", { ascending: false });
+    return json({ subscriptions: data || [] });
+  }
+  if (b.action === "cancelSub" && b.id) {
+    await stripe.subscriptions.cancel(b.id);
+    await admin.from("subscriptions").update({ status: "canceled", canceled_at: new Date().toISOString() }).eq("id", b.id);
+    return json({ ok: true });
   }
   return json({ error: "Action inconnue" }, 400);
 });

@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { useEffect, useState } from "react";
 import { getText, todaysLearning, type CalendarItem } from "../lib/sefaria";
 
@@ -12,10 +13,10 @@ export default function Etude({ kind }: { kind: "halakha" | "daf" }) {
       const it = kind === "daf" ? t.daf : t.halakha;
       setItem(it);
       if (it?.ref) return getText(it.ref, ["hebrew", "english"]).then(setText);
-    }).catch(() => setErr("Pas de connexion : la lecture du jour n'a pas pu être chargée."));
+    }).catch(() => setErr(t("Pas de connexion : la lecture du jour n'a pas pu être chargée.")));
   }, [kind]);
 
-  const title = kind === "daf" ? "Daf Hayomi" : "Halakha Yomit";
+  const title = kind === "daf" ? t("Daf Hayomi") : t("Halakha Yomit");
   const he = kind === "daf" ? "דף היומי" : "הלכה יומית";
   const paras = text ? (lang === "en" && text.en.length ? text.en : text.he) : [];
   return (
@@ -23,19 +24,19 @@ export default function Etude({ kind }: { kind: "halakha" | "daf" }) {
       <section className="card">
         <h2 className="serif gold-text">{title} <span className="hebrew">{he}</span></h2>
         {item && <div className="study-ref"><b>{item.displayValue.en}</b> · <span className="hebrew gold">{item.displayValue.he}</span></div>}
-        {kind === "halakha" && <p className="small muted">Le Choulhan Aroukh de Maran Rabbi Yossef Karo, quelques paragraphes chaque jour.</p>}
+        {kind === "halakha" && <p className="small muted">{t("Le Choulhan Aroukh de Maran Rabbi Yossef Karo, quelques paragraphes chaque jour.")}</p>}
         {text && text.en.length > 0 && (
           <div className="seg" style={{ marginTop: 12 }}>
-            <button className={lang === "he" ? "on" : ""} onClick={() => setLang("he")}>Texte original</button>
-            <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>Traduction (anglais)</button>
+            <button className={lang === "he" ? "on" : ""} onClick={() => setLang("he")}>{t("Texte original")}</button>
+            <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>{t("Traduction (anglais)")}</button>
           </div>
         )}
         {err && <p className="error">{err}</p>}
-        {!text && !err && <p className="muted">Chargement…</p>}
+        {!text && !err && <p className="muted">{t("Chargement…")}</p>}
         <div className={"study-text" + (lang === "he" ? " hebrew" : "")}>
           {paras.map((p, i) => <p key={i} dangerouslySetInnerHTML={{ __html: p }} />)}
         </div>
-        <p className="small muted">Texte : Sefaria.org</p>
+        <p className="small muted">{t("Texte : Sefaria.org")}</p>
       </section>
     </div>
   );

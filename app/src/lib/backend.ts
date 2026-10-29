@@ -4,6 +4,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { Capacitor } from "@capacitor/core";
 import { read, write } from "./storage";
+import { loc } from "./i18n";
 
 const URL_ = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -21,10 +22,15 @@ export type Product = {
 };
 export type Profile = { id: string; email: string; first_name: string; last_name: string; phone: string };
 export type CartLine = { product_id: string; qty: number; comment: string };
-export type Order = { id: string; created_at: string; status: "pending" | "paid" | "cancelled"; total_cents: number; kind: "shop" | "donation"; label: string };
-export type DonationInput = { amount_cents: number; purpose: string; dedication: string };
+export type OrderStatus = "pending" | "processing" | "paid" | "failed" | "cancelled" | "refunded";
+export type Order = { id: string; created_at: string; status: OrderStatus; total_cents: number; kind: "shop" | "donation"; label: string;
+  payment_method?: string | null; receipt_url?: string | null; refunded_cents?: number; purpose?: string | null; dedication?: string | null; stripe_subscription_id?: string | null };
+export type Subscription = { id: string; user_id: string | null; amount_cents: number; purpose: string; dedication?: string | null; status: string; created_at: string; canceled_at?: string | null };
+/** Nom lisible du moyen de paiement */
+export const METHOD: Record<string, string> = { card: "Carte bancaire", apple_pay: "Apple Pay", google_pay: "Google Pay", sepa_debit: "Prélèvement SEPA", link: "Link", paypal: "PayPal" };
+export type DonationInput = { amount_cents: number; purpose: string; dedication: string; monthly?: boolean };
 
-export const euros = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+export const euros = (c: number) => (c / 100).toLocaleString(loc(), { style: "currency", currency: "EUR" });
 
 /* ───────── Données de démonstration (remplacées par la table « products ») ───────── */
 const DEMO_PRODUCTS: Product[] = [
@@ -94,22 +100,21 @@ export function onAuthChange(cb: () => void) {
 /* ───────── Commandes et dons ───────── */
 export async function listOrders(): Promise<Order[]> {
   if (!supabase) return read<Order[]>(K_DEMO_ORDERS) || [];
-  const { data, error } = await supabase.from("orders").select("id, created_at, status, total_cents, kind, label").order("created_at", { ascending: false });
+  const { data, error } = await supabase.from("orders").select("id, created_at, status, total_cents, kind, label, payment_method, receipt_url, refunded_cents, purpose, stripe_subscription_id").order("created_at", { ascending: false });
   if (error) throw error;
   return data as Order[];
 }
 
-/** Lance le paiement. Les prix sont recalculés côté serveur : le téléphone n'envoie que les références et quantités. */
-export async function checkout(body: { cart: CartLine[] } | { donation: DonationInput }): Promise<{ url?: string; demoOrder?: Order }> {
+/** Lance le paiement. Les prix sont recalculés côté serveur : le téléphone n'envoie que les références et quantités.
+ * Démonstration : ouvre une page de paiement simulée (#/paiement) au lieu de Stripe. */
+export async function checkout(body: { cart: CartLine[] } | { donation: DonationInput }): Promise<{ url: string }> {
   if (!supabase) {
     const isShop = "cart" in body;
     const total = isShop
       ? body.cart.reduce((s, l) => s + (DEMO_PRODUCTS.find((p) => p.id === l.product_id)?.price_cents || 0) * l.qty, 0)
       : body.donation.amount_cents;
-    const o: Order = { id: "D" + Date.now().toString(36).toUpperCase(), created_at: new Date().toISOString(), status: "paid", total_cents: total,
-      kind: isShop ? "shop" : "donation", label: isShop ? body.cart.length + " article(s)" : body.donation.purpose };
-    write(K_DEMO_ORDERS, [o, ...(read<Order[]>(K_DEMO_ORDERS) || [])]);
-    return { demoOrder: o };
+    write(K_DEMO_PENDING, { body, total, label: isShop ? body.cart.reduce((s, l) => s + l.qty, 0) + " article(s)" : body.donation.purpose });
+    return { url: "#/paiement" };
   }
   const { data, error } = await supabase.functions.invoke("checkout", {
     // appli iPhone/Android : Stripe s'ouvre dans le navigateur et revient sur la version web (VITE_WEB_URL)
@@ -118,6 +123,44 @@ export async function checkout(body: { cart: CartLine[] } | { donation: Donation
   if (error) throw error;
   return { url: (data as { url: string }).url };
 }
+
+/* ───────── Démonstration : paiement simulé ───────── */
+const K_DEMO_PENDING = "app.demo.pending", K_DEMO_SUBS = "app.demo.subs";
+export type DemoPending = { body: { cart: CartLine[] } | { donation: DonationInput }; total: number; label: string };
+export const demoPending = () => read<DemoPending>(K_DEMO_PENDING);
+export function demoComplete(method: string): Order {
+  const p = demoPending()!;
+  const isShop = "cart" in p.body;
+  const d = isShop ? null : (p.body as { donation: DonationInput }).donation;
+  const sub: Subscription | null = d?.monthly ? { id: "sub_demo" + Date.now(), user_id: "demo", amount_cents: p.total, purpose: d.purpose, dedication: d.dedication, status: "active", created_at: new Date().toISOString() } : null;
+  const o: Order = { id: "D" + Date.now().toString(36).toUpperCase(), created_at: new Date().toISOString(), status: method === "sepa_debit" ? "processing" : "paid",
+    total_cents: p.total, kind: isShop ? "shop" : "donation", label: d?.monthly ? p.label + " (mensuel)" : p.label, payment_method: method,
+    receipt_url: null, refunded_cents: 0, purpose: d?.purpose || null, dedication: d?.dedication || null, stripe_subscription_id: sub?.id || null };
+  write(K_DEMO_ORDERS, [o, ...(read<Order[]>(K_DEMO_ORDERS) || [])]);
+  if (sub) write(K_DEMO_SUBS, [sub, ...(read<Subscription[]>(K_DEMO_SUBS) || [])]);
+  try { localStorage.removeItem(K_DEMO_PENDING); } catch { /* mode privé */ }
+  return o;
+}
+
+/* ───────── Dons mensuels du membre ───────── */
+export async function listMySubscriptions(): Promise<Subscription[]> {
+  if (!supabase) return read<Subscription[]>(K_DEMO_SUBS) || [];
+  const { data, error } = await supabase.from("subscriptions").select("*").order("created_at", { ascending: false });
+  if (error) throw error;
+  return data as Subscription[];
+}
+/** Espace client Stripe : arrêter un don mensuel, changer de carte, télécharger les reçus. */
+export async function openPaymentPortal(): Promise<string | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.functions.invoke("checkout", {
+    body: { portal: true, return_url: Capacitor.isNativePlatform() ? import.meta.env.VITE_WEB_URL : window.location.origin + window.location.pathname } });
+  if (error) throw error;
+  return (data as { url: string }).url;
+}
+export function demoCancelSubscription(id: string) {
+  write(K_DEMO_SUBS, (read<Subscription[]>(K_DEMO_SUBS) || []).map((x) => (x.id === id ? { ...x, status: "canceled", canceled_at: new Date().toISOString() } : x)));
+}
+export { K_DEMO_ORDERS, K_DEMO_SUBS };
 
 /** Suppression du compte depuis l'appli : obligatoire pour l'App Store et le Play Store. */
 export async function deleteAccount() {

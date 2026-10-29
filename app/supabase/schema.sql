@@ -7,6 +7,7 @@ create table if not exists public.profiles (
   last_name  text not null default '',
   phone      text not null default '',
   is_admin   boolean not null default false,
+  stripe_customer_id text,                  -- client Stripe : cartes enregistrées, dons mensuels
   created_at timestamptz not null default now()
 );
 
@@ -29,11 +30,17 @@ create table if not exists public.orders (
   user_id uuid references auth.users on delete set null,   -- compte supprimé : la commande reste (comptabilité, reçus)
   kind text not null check (kind in ('shop', 'donation')),
   label text not null default '',
-  status text not null default 'pending' check (status in ('pending', 'paid', 'cancelled')),
+  status text not null default 'pending' check (status in ('pending', 'processing', 'paid', 'failed', 'cancelled', 'refunded')),
+  -- processing : prélèvement SEPA en cours (quelques jours) ; refunded : remboursé (en tout ou partie)
   total_cents integer not null,
   purpose text,                             -- dons : motif (cotisation, kibboud, neder…)
   dedication text,
   stripe_session_id text unique,
+  stripe_payment_intent text,
+  stripe_subscription_id text,              -- don mensuel : chaque mois payé crée une ligne
+  payment_method text,                      -- card, sepa_debit, apple_pay, google_pay, link…
+  receipt_url text,                         -- reçu Stripe
+  refunded_cents integer not null default 0,
   created_at timestamptz not null default now(),
   paid_at timestamptz
 );
@@ -47,7 +54,17 @@ create table if not exists public.order_items (
   comment text not null default ''
 );
 
+-- Dons mensuels (abonnements Stripe)
+create table if not exists public.subscriptions (
+  id text primary key,                      -- identifiant Stripe sub_…
+  user_id uuid references auth.users on delete set null,
+  amount_cents integer not null, purpose text not null default 'Don mensuel', dedication text,
+  status text not null default 'active',    -- active, past_due, canceled…
+  created_at timestamptz not null default now(), canceled_at timestamptz
+);
+
 alter table public.profiles enable row level security;
+alter table public.subscriptions enable row level security;
 alter table public.products enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
@@ -68,6 +85,8 @@ create policy "produits: gestion admin" on public.products for all using (public
 -- commandes : lecture seule pour le membre ; création et paiement uniquement par les fonctions serveur (clé service)
 drop policy if exists "commandes: les miennes" on public.orders;
 create policy "commandes: les miennes" on public.orders for select using (user_id = auth.uid() or public.is_admin());
+drop policy if exists "abonnements: les miens" on public.subscriptions;
+create policy "abonnements: les miens" on public.subscriptions for select using (user_id = auth.uid() or public.is_admin());
 drop policy if exists "lignes: les miennes" on public.order_items;
 create policy "lignes: les miennes" on public.order_items for select using (
   exists (select 1 from public.orders o where o.id = order_id and (o.user_id = auth.uid() or public.is_admin())));
@@ -139,7 +158,8 @@ create policy "profil: modifier soi-même" on public.profiles for update using (
   id = auth.uid()
   and is_admin = (select p.is_admin from public.profiles p where p.id = auth.uid())
   and tags = (select p.tags from public.profiles p where p.id = auth.uid())
-  and admin_note = (select p.admin_note from public.profiles p where p.id = auth.uid()));
+  and admin_note = (select p.admin_note from public.profiles p where p.id = auth.uid())
+  and stripe_customer_id is not distinct from (select p.stripe_customer_id from public.profiles p where p.id = auth.uid()));
 
 -- Messagerie : chaque membre a sa conversation privée avec l'administration.
 -- Les messages de groupe (« à tous », « balise ») et les rappels de paiement y arrivent aussi.

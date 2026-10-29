@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { DEMO, euros } from "../lib/backend";
-import { adminLogin, adminLogout, getThread, isAdmin, listAllOrders, listMembers, listSent, listThreads, replyTo, saveMember, sendMessage, toCsv,
+import { cancelSubscription, listSubscriptions, refundOrder, adminLogin, adminLogout, getThread, isAdmin, listAllOrders, listMembers, listSent, listThreads, replyTo, saveMember, sendMessage, toCsv,
   type AdminOrder, type Member, type Outgoing, type SentMessage, type Thread } from "../lib/admin";
-import type { ChatMessage } from "../lib/backend";
+import { METHOD, type ChatMessage, type Subscription } from "../lib/backend";
 import { ChatThread } from "./Messages";
 import { PURPOSES } from "./Dons";
 import { go } from "../lib/router";
 
 /* Espace administrateur : tableau de bord, membres (balises, historique), dons et achats, messages. */
 type Tab = "tableau" | "membres" | "dons" | "messages";
-const TABS: [Tab, string][] = [["tableau", "Tableau de bord"], ["membres", "Membres"], ["dons", "Dons et achats"], ["messages", "Messages"]];
+const TABS: [Tab, string][] = [["tableau", "Tableau de bord"], ["membres", "Membres"], ["dons", "Paiements"], ["messages", "Messages"]];
 const fullName = (m?: Member) => (m ? [m.first_name, m.last_name].filter(Boolean).join(" ") || m.email : "Compte supprimé");
 const REMINDER_TEXT = "Bonjour, petit rappel amical : votre cotisation annuelle n'a pas encore été réglée. Vous pouvez la payer directement dans l'application avec le bouton ci-dessous. Merci pour votre soutien !";
 const dateFr = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
@@ -82,7 +82,7 @@ function Dashboard({ tab, onLogout }: { tab: Tab; onLogout: () => void }) {
         <>
           {tab === "tableau" && <Overview members={members} orders={orders} byId={byId} allTags={allTags} />}
           {tab === "membres" && <Members members={members} allTags={allTags} onOpen={setOpen} onWrite={write} onRemind={remind} />}
-          {tab === "dons" && <Orders orders={orders} byId={byId} />}
+          {tab === "dons" && <Orders orders={orders} byId={byId} onChanged={reload} />}
           {tab === "messages" && <Messages members={members} byId={byId} allTags={allTags} draft={compose} clearDraft={() => setCompose(null)} thread={thread} setThread={setThread} />}
         </>
       )}
@@ -225,41 +225,122 @@ function MemberSheet({ member, allTags, orders, onClose, onSaved, onWrite, onRem
   );
 }
 
-function OrderList({ orders, byId }: { orders: AdminOrder[]; byId?: Map<string, Member> }) {
+const STATUS_FR: Record<string, string> = { pending: "En attente", processing: "Prélèvement en cours", paid: "Payé", failed: "Échoué", cancelled: "Annulé", refunded: "Remboursé" };
+
+function OrderList({ orders, byId, onPick }: { orders: AdminOrder[]; byId?: Map<string, Member>; onPick?: (o: AdminOrder) => void }) {
   if (!orders.length) return <p className="muted">Aucun don ni achat.</p>;
   return (
     <ul className="admin-list">
       {orders.map((o) => (
-        <li key={o.id}>
+        <li key={o.id} className={onPick ? "pickable" : ""} onClick={onPick ? () => onPick(o) : undefined}>
           <div>
             <b>{byId ? fullName(byId.get(o.user_id || "")) + " · " : ""}{o.kind === "donation" ? "Don" : "Boutique"} · {o.label}</b>
-            <div className="small muted">{dateFr(o.created_at)}{o.status !== "paid" && " · " + (o.status === "pending" ? "en attente" : "annulé")}</div>
+            <div className="small muted">{dateFr(o.created_at)}{o.payment_method && " · " + (METHOD[o.payment_method] || o.payment_method)}{o.stripe_subscription_id && " · mensuel"}</div>
             {o.dedication && <div className="small">Dédicace : « {o.dedication} »</div>}
             {o.order_items?.map((it, i) => <div key={i} className="small">{it.qty} × {it.name} (réf. {it.ref}){it.comment && " · « " + it.comment + " »"}</div>)}
           </div>
-          <b className="num">{euros(o.total_cents)}</b>
+          <div className="right"><b className="num">{euros(o.total_cents)}</b><div className={"small status-" + o.status}>{STATUS_FR[o.status] || o.status}</div>
+            {!!o.refunded_cents && o.status !== "refunded" && <div className="small muted">remb. {euros(o.refunded_cents)}</div>}</div>
         </li>
       ))}
     </ul>
   );
 }
 
-function Orders({ orders, byId }: { orders: AdminOrder[]; byId: Map<string, Member> }) {
-  const [kind, setKind] = useState<"" | "donation" | "shop">("");
-  const shown = orders.filter((o) => !kind || o.kind === kind);
-  const total = shown.filter((o) => o.status === "paid").reduce((s, o) => s + o.total_cents, 0);
-  const exportCsv = () => download("dons-et-achats.csv", toCsv([["Date", "Membre", "E-mail", "Type", "Motif", "Dédicace / commentaire", "Montant (€)", "État"],
+function PaymentSheet({ order, member, onClose, onDone }: { order: AdminOrder; member?: Member; onClose: () => void; onDone: () => void }) {
+  const left = order.total_cents - (order.refunded_cents || 0);
+  const [amount, setAmount] = useState((left / 100).toFixed(2).replace(".", ","));
+  const [confirm, setConfirm] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const cents = Math.round(Number(amount.replace(",", ".")) * 100);
+  async function refund() {
+    setBusy(true); setErr("");
+    try { await refundOrder(order.id, cents); onDone(); } catch (x) { setErr((x as Error).message); setBusy(false); }
+  }
+  return (
+    <div className="sheet-bg" onClick={onClose}>
+      <div className="sheet card member-sheet" role="dialog" aria-label="Paiement" onClick={(e) => e.stopPropagation()}>
+        <div className="card-head"><h2 className="serif gold-text">{euros(order.total_cents)}</h2><button className="btn ghost sm" aria-label="Fermer" onClick={onClose}>✕</button></div>
+        <dl className="kv">
+          <dt>Membre</dt><dd>{fullName(member)}{member?.email && " · " + member.email}</dd>
+          <dt>Objet</dt><dd>{order.kind === "donation" ? "Don" : "Boutique"} · {order.label}</dd>
+          {order.dedication && <><dt>Dédicace</dt><dd>{order.dedication}</dd></>}
+          <dt>Date</dt><dd>{new Date(order.created_at).toLocaleString("fr-FR")}</dd>
+          <dt>Moyen</dt><dd>{order.payment_method ? METHOD[order.payment_method] || order.payment_method : "—"}</dd>
+          <dt>État</dt><dd className={"status-" + order.status}>{STATUS_FR[order.status]}{order.refunded_cents ? " · remboursé " + euros(order.refunded_cents) : ""}</dd>
+          <dt>N°</dt><dd className="num">{order.id}</dd>
+        </dl>
+        {order.receipt_url && <a className="btn ghost" href={order.receipt_url} target="_blank" rel="noreferrer">Voir le reçu Stripe</a>}
+        {order.status === "paid" && left > 0 && (
+          <div className="refund">
+            <h3 className="serif">Rembourser</h3>
+            <div className="tag-add">
+              <input id="refund-amount" className="input num" inputMode="decimal" value={amount} onChange={(e) => { setAmount(e.target.value.replace(/[^\d,.]/g, "")); setConfirm(false); }} aria-label="Montant à rembourser (€)" />
+              {!confirm
+                ? <button className="btn ghost" disabled={!(cents > 0 && cents <= left)} onClick={() => setConfirm(true)}>Rembourser</button>
+                : <button className="btn danger-solid" disabled={busy} onClick={refund}>{busy ? "…" : "Confirmer " + euros(cents)}</button>}
+            </div>
+            <p className="small muted">{confirm ? "Le membre est remboursé sur son moyen de paiement (5 à 10 jours). Cette action est définitive." : "Remboursement total ou partiel (jusqu'à " + euros(left) + ")."}</p>
+          </div>
+        )}
+        {err && <p className="error">{err}</p>}
+      </div>
+    </div>
+  );
+}
+
+function Orders({ orders, byId, onChanged }: { orders: AdminOrder[]; byId: Map<string, Member>; onChanged: () => void }) {
+  const [kind, setKind] = useState<"" | "donation" | "shop" | "mensuel">("");
+  const [status, setStatus] = useState("");
+  const [pick, setPick] = useState<AdminOrder | null>(null);
+  const shown = orders.filter((o) => (!kind || (kind === "mensuel" ? !!o.stripe_subscription_id : o.kind === kind)) && (!status || o.status === status));
+  const total = shown.filter((o) => o.status === "paid").reduce((s, o) => s + o.total_cents - (o.refunded_cents || 0), 0);
+  const exportCsv = () => download("dons-et-achats.csv", toCsv([["Date", "Membre", "E-mail", "Type", "Motif", "Dédicace / commentaire", "Montant (€)", "Remboursé (€)", "Moyen", "État", "N°"],
     ...shown.map((o) => { const m = byId.get(o.user_id || ""); return [dateFr(o.created_at), fullName(m), m?.email || "", o.kind === "donation" ? "Don" : "Boutique", o.label,
-      o.dedication || (o.order_items || []).map((i) => i.comment).filter(Boolean).join(" / "), (o.total_cents / 100).toFixed(2), o.status === "paid" ? "Payé" : o.status]; })]));
+      o.dedication || (o.order_items || []).map((i) => i.comment).filter(Boolean).join(" / "), (o.total_cents / 100).toFixed(2), ((o.refunded_cents || 0) / 100).toFixed(2),
+      o.payment_method ? METHOD[o.payment_method] || o.payment_method : "", STATUS_FR[o.status] || o.status, o.id]; })]));
+  return (
+    <>
+      <Subscriptions byId={byId} />
+      <section className="card">
+        <h2 className="serif gold-text">Tous les paiements</h2>
+        <div className="admin-tools">
+          <div className="chips">
+            {([["", "Tout"], ["donation", "Dons"], ["mensuel", "Dons mensuels"], ["shop", "Boutique"]] as const).map(([k, l]) => <button key={k} className={"chip" + (kind === k ? " on" : "")} onClick={() => setKind(k)}>{l}</button>)}
+          </div>
+          <div className="chips">
+            {[["", "Tous états"], ["paid", "Payés"], ["processing", "Prélèvement en cours"], ["pending", "En attente"], ["failed", "Échoués"], ["refunded", "Remboursés"], ["cancelled", "Annulés"]].map(([k, l]) =>
+              <button key={k} className={"chip" + (status === k ? " on" : "")} onClick={() => setStatus(k)}>{l} · {orders.filter((o) => !k || o.status === k).length}</button>)}
+          </div>
+          <div className="row-end"><span className="muted">Total encaissé : <b className="gold-text num">{euros(total)}</b></span><button className="btn ghost" onClick={exportCsv}>Exporter (Excel)</button></div>
+        </div>
+        <OrderList orders={shown} byId={byId} onPick={setPick} />
+      </section>
+      {pick && <PaymentSheet order={pick} member={byId.get(pick.user_id || "")} onClose={() => setPick(null)} onDone={() => { setPick(null); onChanged(); }} />}
+    </>
+  );
+}
+
+function Subscriptions({ byId }: { byId: Map<string, Member> }) {
+  const [subs, setSubs] = useState<Subscription[] | null>(null);
+  const [ask, setAsk] = useState<string | null>(null);
+  const load = () => listSubscriptions().then(setSubs, () => setSubs([]));
+  useEffect(() => { load(); }, []);
+  const active = (subs || []).filter((x) => x.status !== "canceled");
+  if (!subs) return null;
   return (
     <section className="card">
-      <div className="admin-tools">
-        <div className="chips">
-          {([["", "Tout"], ["donation", "Dons"], ["shop", "Boutique"]] as const).map(([k, l]) => <button key={k} className={"chip" + (kind === k ? " on" : "")} onClick={() => setKind(k)}>{l}</button>)}
-        </div>
-        <div className="row-end"><span className="muted">Total payé : <b className="gold-text num">{euros(total)}</b></span><button className="btn ghost" onClick={exportCsv}>Exporter (Excel)</button></div>
-      </div>
-      <OrderList orders={shown} byId={byId} />
+      <div className="card-head"><h2 className="serif gold-text">Dons mensuels</h2><span className="muted">{active.length} actif(s) · <b className="gold-text num">{euros(active.reduce((s, x) => s + x.amount_cents, 0))}</b> / mois</span></div>
+      {!subs.length ? <p className="muted">Aucun don mensuel pour le moment.</p> : (
+        <ul className="admin-list">{subs.map((x) => (
+          <li key={x.id}><div><b>{fullName(byId.get(x.user_id || ""))} · {x.purpose}</b><div className="small muted">depuis le {dateFr(x.created_at)}{x.status === "canceled" ? " · arrêté" : x.status === "past_due" ? " · paiement en retard" : ""}</div></div>
+            <div className="right"><b className="num">{euros(x.amount_cents)}</b><div className="small muted">/ mois</div>
+              {x.status !== "canceled" && (ask === x.id
+                ? <button className="btn danger-solid sm-text" onClick={() => cancelSubscription(x.id).then(() => { setAsk(null); load(); })}>Confirmer l'arrêt</button>
+                : <button className="link small" onClick={() => setAsk(x.id)}>Arrêter</button>)}</div></li>
+        ))}</ul>
+      )}
     </section>
   );
 }

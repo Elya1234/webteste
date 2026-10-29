@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { useEffect, useState } from "react";
 import { getText, siddurOutline, type SiddurNode } from "../lib/sefaria";
 import { CATEGORIES, fr, suggestion } from "../lib/siddour-fr";
@@ -13,9 +14,9 @@ const link = (q: Record<string, string>) => "#/siddour?" + new URLSearchParams(q
 export default function Siddour({ params }: { params: URLSearchParams }) {
   const [outline, setOutline] = useState<SiddurNode[] | null>(null);
   const [err, setErr] = useState("");
-  useEffect(() => { siddurOutline().then(setOutline, () => setErr("Pas de connexion : ouvrez le Siddour une première fois avec Internet, il restera ensuite disponible.")); }, []);
+  useEffect(() => { siddurOutline().then(setOutline, () => setErr(t("Pas de connexion : ouvrez le Siddour une première fois avec Internet, il restera ensuite disponible."))); }, []);
   if (err) return <div className="page narrow"><div className="card">{err}</div></div>;
-  if (!outline) return <div className="page narrow"><div className="card muted">Chargement du Siddour…</div></div>;
+  if (!outline) return <div className="page narrow"><div className="card muted">{t("Chargement du Siddour…")}</div></div>;
 
   const ref = params.get("ref"), sec = params.get("sec"), cat = params.get("cat");
   const all = leaves(outline);
@@ -42,15 +43,15 @@ function Home({ outline }: { outline: SiddurNode[] }) {
   const sec = outline.find((n) => n.en === s.section);
   return (
     <div className="page narrow">
-      <Crumbs items={[["Menu", "#/menu"], ["Siddour"]]} />
+      <Crumbs items={[[t("Menu"), "#/menu"], [t("Siddour")]]} />
       <header className="page-head">
-        <h1 className="serif gold-text">Siddour <span className="hebrew">סידור</span></h1>
-        <p className="muted">Rite séfarade, nossah Edot Hamizrah.</p>
+        <h1 className="serif gold-text">{t("Siddour")} <span className="hebrew">סידור</span></h1>
+        <p className="muted">{t("Rite séfarade, nossah Edot Hamizrah.")}</p>
       </header>
       {sec && (
         <a className="card now-card" href={sec.children ? link({ sec: sec.en }) : link({ ref: sec.ref })}>
-          <span className="small muted">À prier maintenant</span>
-          <b className="serif">{s.label}</b>
+          <span className="small muted">{t("À prier maintenant")}</span>
+          <b className="serif">{fr(s.section)}</b>
           <span className="hebrew gold">{sec.he}</span>
         </a>
       )}
@@ -58,13 +59,13 @@ function Home({ outline }: { outline: SiddurNode[] }) {
         {CATEGORIES.map((c) => (
           <a key={c.id} className="card tile-sq" href={link({ cat: c.id })}>
             <span className="tile-ic"><LineIcon d={c.icon} size={26} /></span>
-            <b>{c.label}</b>
+            <b>{t(c.label)}</b>
             <span className="hebrew muted">{c.he}</span>
-            <span className="small muted">{c.sections.length} parties</span>
+            <span className="small muted">{t("{n} parties", { n: c.sections.length })}</span>
           </a>
         ))}
       </div>
-      <p className="small muted">Texte : Sefaria.org (domaine public). Chaque prière ouverte reste lisible sans Internet.</p>
+      <p className="small muted">{t("Texte : Sefaria.org (domaine public). Chaque prière ouverte reste lisible sans Internet.")}</p>
     </div>
   );
 }
@@ -73,14 +74,14 @@ function CategoryView({ cat, outline }: { cat: (typeof CATEGORIES)[number]; outl
   const nodes = cat.sections.map((en) => outline.find((n) => n.en === en)).filter((n): n is SiddurNode => !!n);
   return (
     <div className="page narrow">
-      <Crumbs items={[["Siddour", "#/siddour"], [cat.label]]} />
-      <header className="page-head"><h1 className="serif gold-text">{cat.label} <span className="hebrew">{cat.he}</span></h1></header>
+      <Crumbs items={[[t("Siddour"), "#/siddour"], [t(cat.label)]]} />
+      <header className="page-head"><h1 className="serif gold-text">{t(cat.label)} <span className="hebrew">{cat.he}</span></h1></header>
       <div className="tiles-sq">
         {nodes.map((n) => (
           <a key={n.key} className="card tile-sq" href={n.children ? link({ sec: n.en, cat: cat.id }) : link({ ref: n.ref })}>
             <b>{fr(n.en)}</b>
             <span className="hebrew gold">{n.he}</span>
-            <span className="small muted">{n.children ? n.children.length + " prières" : "Lire"}</span>
+            <span className="small muted">{n.children ? t("{n} prières", { n: n.children.length }) : t("Lire")}</span>
           </a>
         ))}
       </div>
@@ -92,7 +93,7 @@ function Section({ node }: { node: SiddurNode }) {
   const cat = CATEGORIES.find((c) => c.sections.includes(node.en));
   return (
     <div className="page narrow">
-      <Crumbs items={[["Siddour", "#/siddour"], ...(cat ? [[cat.label, link({ cat: cat.id })] as [string, string]] : []), [fr(node.en)]]} />
+      <Crumbs items={[[t("Siddour"), "#/siddour"], ...(cat ? [[t(cat.label), link({ cat: cat.id })] as [string, string]] : []), [fr(node.en)]]} />
       <header className="page-head"><h1 className="serif gold-text">{fr(node.en)}</h1><div className="hebrew gold head-he">{node.he}</div></header>
       <ol className="card prayer-list">
         {(node.children || []).map((c, i) => (
@@ -120,22 +121,22 @@ function Reader({ refName, all, outline }: { refName: string; all: SiddurNode[];
   const prev = all[i - 1], next = all[i + 1];
   return (
     <div className="page narrow">
-      <Crumbs items={[["Siddour", "#/siddour"], ...(parent && parent.children ? [[fr(parent.en), link({ sec: parent.en })] as [string, string]] : [])]} />
+      <Crumbs items={[[t("Siddour"), "#/siddour"], ...(parent && parent.children ? [[fr(parent.en), link({ sec: parent.en })] as [string, string]] : [])]} />
       <div className="reader-bar">
-        <header className="page-head"><h1 className="serif gold-text">{node ? fr(node.en) : "Siddour"}</h1>{node && <div className="hebrew gold head-he">{node.he}</div>}</header>
-        <div className="zoom" role="group" aria-label="Taille du texte">
-          <button className="btn ghost sm" aria-label="Texte plus petit" onClick={() => zoom(-0.15)}>A−</button>
-          <button className="btn ghost sm" aria-label="Texte plus grand" onClick={() => zoom(0.15)}>A+</button>
+        <header className="page-head"><h1 className="serif gold-text">{node ? fr(node.en) : t("Siddour")}</h1>{node && <div className="hebrew gold head-he">{node.he}</div>}</header>
+        <div className="zoom" role="group" aria-label={t("Taille du texte")}>
+          <button className="btn ghost sm" aria-label={t("Texte plus petit")} onClick={() => zoom(-0.15)}>A−</button>
+          <button className="btn ghost sm" aria-label={t("Texte plus grand")} onClick={() => zoom(0.15)}>A+</button>
         </div>
       </div>
       <article className="card reader">
-        {err && <p className="error">Pas de connexion : cette prière n'a pas encore été enregistrée sur l'appareil.</p>}
-        {!paras && !err && <p className="muted">Chargement…</p>}
+        {err && <p className="error">{t("Pas de connexion : cette prière n'a pas encore été enregistrée sur l'appareil.")}</p>}
+        {!paras && !err && <p className="muted">{t("Chargement…")}</p>}
         <div className="hebrew sid-text" style={{ fontSize: size + "rem" }}>{paras?.map((p, k) => <p key={k} dangerouslySetInnerHTML={{ __html: p }} />)}</div>
       </article>
       <div className="pager">
-        <button className="card pager-btn" disabled={!prev} onClick={() => open(prev)}><span className="small muted">‹ Précédent</span><b>{prev ? fr(prev.en) : "—"}</b></button>
-        <button className="card pager-btn right" disabled={!next} onClick={() => open(next)}><span className="small muted">Suivant ›</span><b>{next ? fr(next.en) : "—"}</b></button>
+        <button className="card pager-btn" disabled={!prev} onClick={() => open(prev)}><span className="small muted">{t("‹ Précédent")}</span><b>{prev ? fr(prev.en) : "—"}</b></button>
+        <button className="card pager-btn right" disabled={!next} onClick={() => open(next)}><span className="small muted">{t("Suivant ›")}</span><b>{next ? fr(next.en) : "—"}</b></button>
       </div>
     </div>
   );

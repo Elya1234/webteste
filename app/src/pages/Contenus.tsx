@@ -1,3 +1,4 @@
+import { loc, t } from "../lib/i18n";
 import { useEffect, useState } from "react";
 import { listCourses, listPhotos, listVideos, type Course, type Photo, type Video } from "../lib/backend";
 
@@ -7,7 +8,7 @@ function useList<T>(fn: () => Promise<T[]>) {
   useEffect(() => { fn().then(setV, () => setErr(true)); }, [fn]);
   return { v, err };
 }
-const Loading = ({ err }: { err: boolean }) => <div className="muted">{err ? "Impossible de charger. Vérifiez votre connexion." : "Chargement…"}</div>;
+const Loading = ({ err }: { err: boolean }) => <div className="muted">{err ? t("Impossible de charger. Vérifiez votre connexion.") : t("Chargement…")}</div>;
 
 const DAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Chabbat"];
 export function Cours() {
@@ -15,8 +16,8 @@ export function Cours() {
   return (
     <div className="page narrow">
       <section className="card">
-        <h2 className="serif gold-text">Cours à la synagogue <span className="hebrew">שיעורים</span></h2>
-        {!v ? <Loading err={err} /> : !v.length ? <div className="muted">Aucun cours annoncé.</div> : DAYS.filter((d) => v.some((c) => c.day === d)).concat(v.some((c) => !DAYS.includes(c.day)) ? ["Autres"] : []).map((d) => (
+        <h2 className="serif gold-text">{t("Cours à la synagogue")} <span className="hebrew">שיעורים</span></h2>
+        {!v ? <Loading err={err} /> : !v.length ? <div className="muted">{t("Aucun cours annoncé.")}</div> : DAYS.filter((d) => v.some((c) => c.day === d)).concat(v.some((c) => !DAYS.includes(c.day)) ? ["Autres"] : []).map((d) => (
           <div key={d} className="office-group">
             <div className="og-title"><span>{d}</span></div>
             {v.filter((c) => (d === "Autres" ? !DAYS.includes(c.day) : c.day === d)).map((c) => (
@@ -37,8 +38,8 @@ export function Videos() {
   const [playing, setPlaying] = useState<string | null>(null);
   return (
     <div className="page">
-      <h2 className="serif gold-text">Cours en vidéo <span className="hebrew">שיעורי וידאו</span></h2>
-      {!v ? <Loading err={err} /> : !v.length ? <div className="card muted">Les vidéos des cours seront bientôt ajoutées ici.</div> : (
+      <h2 className="serif gold-text">{t("Cours en vidéo")} <span className="hebrew">שיעורי וידאו</span></h2>
+      {!v ? <Loading err={err} /> : !v.length ? <div className="card muted">{t("Les vidéos des cours seront bientôt ajoutées ici.")}</div> : (
         <div className="products">
           {v.map((x) => (
             <article key={x.id} className="card product">
@@ -48,7 +49,7 @@ export function Videos() {
                   : <button onClick={() => setPlaying(x.id)} aria-label={"Lire " + x.title}><img src={"https://i.ytimg.com/vi/" + encodeURIComponent(x.youtube_id) + "/hqdefault.jpg"} alt="" loading="lazy" /><span className="play">▶</span></button>}
               </div>
               <h3 className="serif">{x.title}</h3>
-              <div className="small muted">{x.rav}{x.published_at && " · " + new Date(x.published_at).toLocaleDateString("fr-FR")}</div>
+              <div className="small muted">{x.rav}{x.published_at && " · " + new Date(x.published_at).toLocaleDateString(loc())}</div>
             </article>
           ))}
         </div>
@@ -63,7 +64,7 @@ export function Galerie() {
   const albums = v ? Array.from(new Set(v.map((p) => p.album))) : [];
   return (
     <div className="page">
-      <h2 className="serif gold-text">Galerie <span className="hebrew">גלריה</span></h2>
+      <h2 className="serif gold-text">{t("Galerie")} <span className="hebrew">גלריה</span></h2>
       {!v ? <Loading err={err} /> : albums.map((a) => (
         <section key={a}>
           <h3 className="serif">{a}</h3>

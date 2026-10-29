@@ -1,3 +1,4 @@
+import { loc, t } from "../lib/i18n";
 import { useState } from "react";
 import { useSynagogue } from "../lib/synagogue";
 import { CATALOG, addDays, hebrewDate, hm, officeView, resolveZman, schedDayGroup, todayIn, weekdayIn } from "../lib/zmanim";
@@ -12,7 +13,7 @@ export function DayStrip({ day, setDay, days = 8 }: { day: string; setDay: (d: s
         const x = new Date(d + "T12:00:00Z");
         return (
           <button key={d} role="tab" aria-selected={d === day} className={"day-chip" + (d === day ? " on" : "")} onClick={() => setDay(d)}>
-            <span className="small">{d === today ? "Auj." : new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "short" }).format(x)}</span>
+            <span className="small">{d === today ? t("Auj.") : new Intl.DateTimeFormat(loc(), { timeZone: "UTC", weekday: "short" }).format(x)}</span>
             <b className="num">{x.getUTCDate()}</b>
           </button>
         );
@@ -31,10 +32,10 @@ export default function Horaires() {
     <div className="page narrow">
       <DayStrip day={day} setDay={setDay} days={15} />
       <section className="card">
-        <h2 className="serif gold-text">Offices <span className="hebrew">תפילות</span></h2>
-        {groups.length ? <OfficeList groups={groups.map((g) => ({ ...g, isToday: true }))} /> : <div className="muted">Pas d'horaires pour ce jour.</div>}
+        <h2 className="serif gold-text">{t("Offices")} <span className="hebrew">תפילות</span></h2>
+        {groups.length ? <OfficeList groups={groups.map((g) => ({ ...g, isToday: true }))} /> : <div className="muted">{t("Pas d'horaires pour ce jour.")}</div>}
       </section>
-      <a className="btn ghost full" href="#/zmanim">Zmanim de ce jour</a>
+      <a className="btn ghost full" href="#/zmanim">{t("Zmanim de ce jour")}</a>
     </div>
   );
 }
@@ -48,16 +49,16 @@ export function Zmanim() {
     <div className="page narrow">
       <DayStrip day={day} setDay={setDay} days={30} />
       <section className="card">
-        <h2 className="serif gold-text">Zmanim <span className="hebrew">זמני היום</span></h2>
-        <div className="small muted cap">{new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(new Date(day + "T12:00:00Z"))} · {hd.fr} · <span className="hebrew">{hd.he}</span>{bundle && <> · {config.cityLabel || bundle.location.city}</>}</div>
-        {!times && <div className="muted">Horaires indisponibles : en attente de Hebcal…</div>}
+        <h2 className="serif gold-text">{t("Zmanim")} <span className="hebrew">זמני היום</span></h2>
+        <div className="small muted cap">{new Intl.DateTimeFormat(loc(), { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(new Date(day + "T12:00:00Z"))} · {hd.fr} · <span className="hebrew">{hd.he}</span>{bundle && <> · {config.cityLabel || bundle.location.city}</>}</div>
+        {!times && <div className="muted">{t("Horaires indisponibles : en attente de Hebcal…")}</div>}
         <ul className="zmanim">
           {config.zmanim.map((z) => {
             const def = CATALOG[z.id]; if (!def) return null;
             return <li key={z.id}><span>{def.short || def.fr} <span className="hebrew muted">{def.he}</span></span><span className="num gold-text">{hm(resolveZman(times, z.id, z.method), tz)}</span></li>;
           })}
         </ul>
-        {!config.validatedByRav && <div className="small muted">Méthodes de calcul à faire valider par le Rav.</div>}
+        {!config.validatedByRav && <div className="small muted">{t("Méthodes de calcul à faire valider par le Rav.")}</div>}
       </section>
     </div>
   );

@@ -2,6 +2,7 @@
  * zmanim Hebcal (31 jours en une requête), calendrier (Chabbat, paracha, fêtes), calendrier des offices. */
 import { GeoLocation, HDate, HebrewCalendar, Location, Zmanim } from "@hebcal/core";
 import { read, write } from "./storage";
+import { loc, t, getLang } from "./i18n";
 import type { SynaConfig } from "../config";
 
 const BASE = "https://www.hebcal.com";
@@ -48,7 +49,7 @@ export const todayIn = (tz: string, d = new Date()) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 export function addDays(ymd: string, n: number) { const d = new Date(ymd + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
 export const hm = (iso: string | null | undefined, tz: string) =>
-  iso ? new Intl.DateTimeFormat("fr-FR", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(iso)) : "—";
+  iso ? new Intl.DateTimeFormat(loc(), { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(iso)) : "—";
 export function nowParts(tz: string, d: Date) {
   const p = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).formatToParts(d);
   const g = (t: string) => Number(p.find((x) => x.type === t)!.value);
@@ -57,8 +58,8 @@ export function nowParts(tz: string, d: Date) {
 export const weekdayIn = (tz: string, d: Date) =>
   ({ Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 } as Record<string, number>)[new Intl.DateTimeFormat("en-US", { timeZone: tz, weekday: "short" }).format(d)];
 export const frenchDate = (tz: string, d: Date) =>
-  new Intl.DateTimeFormat("fr-FR", { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d);
-export const wdName = (iso: string, tz: string) => new Intl.DateTimeFormat("fr-FR", { timeZone: tz, weekday: "long" }).format(new Date(iso));
+  new Intl.DateTimeFormat(loc(), { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d);
+export const wdName = (iso: string, tz: string) => new Intl.DateTimeFormat(loc(), { timeZone: tz, weekday: "long" }).format(new Date(iso));
 export const clean = (x: string) => x.normalize("NFC").replace(/[̱̲̣]/g, "");
 export const parashaName = (p: CalItem) => clean(p.title).replace(/^Parach?a?h?\s*/i, "");
 export const toMin = (t: string) => { const p = t.split(":").map(Number); return p[0] * 60 + p[1]; };
@@ -99,7 +100,7 @@ async function getJson<T>(url: string, tries = 3): Promise<T> {
   }
 }
 
-export const bundleKey = (c: SynaConfig) => "app.bundle.v1." + [c.geonameid, c.candleMinutes, c.havdalah, c.elevation].join("|");
+export const bundleKey = (c: SynaConfig) => "app.bundle.v1." + [getLang(), c.geonameid, c.candleMinutes, c.havdalah, c.elevation].join("|");
 
 /* Secours sans Hebcal : les mêmes calculs (bibliothèque @hebcal/core) faits sur l'appareil, à partir de la
  * position de la synagogue enregistrée lors du dernier accès réussi. Les écrans ne restent jamais vides. */
@@ -165,7 +166,7 @@ async function hebcalBundle(c: SynaConfig, tzGuess: string): Promise<Bundle> {
   });
   const s = todayIn(z.location.tzid);
   const hv = c.havdalah ? "&m=" + c.havdalah : "";
-  const url = BASE + "/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&mf=on&ss=on&s=on&c=on&M=on&i=off&lg=fr" +
+  const url = BASE + "/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&mf=on&ss=on&s=on&c=on&M=on&i=off&lg=" + (getLang() === "en" ? "s" : "fr") +
     "&b=" + c.candleMinutes + hv + "&" + loc + "&start=" + s + "&end=" + addDays(s, 37);
   const cal = await getJson<{ items: CalItem[] }>(url).then((j) => j.items || [], () => []);
   return { generatedAt: new Date().toISOString(), location: z.location, days, calendar: cal };
@@ -184,11 +185,11 @@ const GROUPS = [{ key: "weekday", title: "Semaine", he: "חול" }, { key: "frid
 
 export function schedDayGroup(d: SchedDay, label = ""): OfficeGroup {
   const dt = new Date(d.date + "T12:00:00Z");
-  const wdn = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(dt);
+  const wdn = new Intl.DateTimeFormat(loc(), { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(dt);
   const rows: OfficeRow[] = [];
   SROWS.forEach(([k, lab, he]) => {
     const c = d[k] as SchedSlot | undefined; if (!c) return;
-    rows.push({ id: d.date + k, label: k === "sortie" ? d.sortieLabel || "Sortie" : lab, labelHe: he,
+    rows.push({ id: d.date + k, label: k === "sortie" ? d.sortieLabel || t("Sortie") : lab, labelHe: he,
       times: (c.times || []).filter(validTime), text: c.text || "", note: c.note || "", counts: k !== "sortie" });
   });
   return { date: d.date, title: label + wdn, he: HE_DAY[dt.getUTCDay()], sub: [d.event, d.title].filter(Boolean).join(" · "), isToday: false, rows };
@@ -198,13 +199,13 @@ export function officeView(c: SynaConfig, schedule: Schedule | null, today: stri
   const sd = schedule && c.useSchedule !== false ? schedule.byDate : null;
   if (sd && sd[today]) {
     return [0, 1].map((i) => sd[addDays(today, i)]).filter(Boolean).map((d, i) => {
-      const g = schedDayGroup(d, i === 0 ? "Aujourd'hui · " : "Demain · ");
+      const g = schedDayGroup(d, i === 0 ? t("Aujourd'hui · ") : t("Demain · "));
       g.isToday = i === 0;
       return g;
     });
   }
   return GROUPS.map((g) => ({
-    title: g.title + (g.key === group ? " · aujourd'hui" : ""), he: g.he, sub: "", isToday: g.key === group,
+    title: t(g.title) + (g.key === group ? t(" · aujourd'hui") : ""), he: g.he, sub: "", isToday: g.key === group,
     rows: (c.prayers || []).filter((p) => p.group === g.key).map((p) => ({
       id: p.id, label: p.label, labelHe: p.labelHe, counts: true,
       times: String(p.times || "").split(/[/,;]/).map((x) => x.trim()).filter(validTime)

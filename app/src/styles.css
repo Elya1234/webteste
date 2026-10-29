@@ -354,3 +354,26 @@ textarea.input { resize: vertical; }
 .conv-list .admin-list li { padding: 10px 6px; }
 .conv-back { padding: 4px 0; }
 .bubble .btn { white-space: normal; text-align: left; max-width: 100%; height: auto; padding: 10px 16px; }
+
+.lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 14px; background: rgba(5,11,31,.6); box-shadow: inset 0 2px 6px rgba(0,0,0,.45); }
+.lang-switch button { min-height: 42px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; color: var(--muted); }
+.lang-switch button.on { color: var(--night); font-weight: 600; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); }
+
+/* ───────── Paiement ───────── */
+.pay { display: flex; flex-direction: column; gap: 12px; }
+.pay-head { display: flex; flex-direction: column; gap: 2px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.pay-head b.serif { font-size: 1.3rem; } .pay-amount { font-size: 2.2rem; }
+.pay-methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 560px) { .pay-methods { grid-template-columns: repeat(4, 1fr); } }
+.pay-methods button { min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: rgba(5,11,31,.5); cursor: pointer; font-weight: 500;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 3px 8px rgba(0,0,0,.25); }
+.pay-methods button.on { border-color: var(--gold); color: var(--gold-hi); background: rgba(217,191,140,.14); }
+.btn.wallet { background: #000; color: #fff; text-shadow: none; border: 1px solid rgba(255,255,255,.25); }
+.status-paid { color: #9fe0b0; } .status-failed, .status-cancelled { color: #ffb4a8; } .status-processing, .status-pending { color: var(--gold); } .status-refunded { color: var(--muted); }
+
+.admin-list li.pickable { cursor: pointer; border-radius: 10px; } .admin-list li.pickable:hover { background: rgba(217,191,140,.06); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 8px 0 12px; } .kv dt { color: var(--muted); font-size: .9rem; } .kv dd { margin: 0; overflow-wrap: anywhere; }
+.refund { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 8px; }
+.btn.danger-solid { background: linear-gradient(180deg, #ffb4a8, #e0705f); color: #2a0702; text-shadow: none; }
+.sm-text { min-height: 34px; padding: 0 10px; font-size: .85rem; }
+.card-head { flex-wrap: wrap; } .card-head h2 { margin-right: auto; }

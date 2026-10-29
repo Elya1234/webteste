@@ -35,7 +35,9 @@ export const FR: Record<string, string> = {
   "Seventeenth of Tammuz": "17 Tamouz", "Sheva Berachot": "Chéva Berakhot", "Tenth of Tevet": "10 Tévet", "Fast of Gedalya": "Jeûne de Guédalia",
   "Tevillat Kelim": "Tevilat Kélim", "Torah Reading for Fast Days": "Lecture de la Torah des jeûnes", "Traveler's Prayer": "Téfilat Hadérekh"
 };
-export const fr = (en: string) => FR[en] || en;
+import { getLang } from "./i18n";
+/** Nom affiché : français, ou l'anglais d'origine de Sefaria si l'application est en anglais */
+export const fr = (en: string) => (getLang() === "en" ? en : FR[en] || en);
 
 export type Category = { id: string; label: string; he: string; icon: string; sections: string[] };
 export const CATEGORIES: Category[] = [

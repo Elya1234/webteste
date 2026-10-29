@@ -1,3 +1,4 @@
+import { t } from "./lib/i18n";
 import { useRoute, type Route } from "./lib/router";
 import { useSynagogue } from "./lib/synagogue";
 import { useCart } from "./lib/cart";
@@ -15,6 +16,7 @@ import Dons from "./pages/Dons";
 import Compte from "./pages/Compte";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
+import Paiement from "./pages/Paiement";
 import { unreadCount } from "./lib/backend";
 import { useAuth } from "./lib/auth";
 
@@ -57,7 +59,7 @@ export default function App() {
   const page = {
     accueil: <Home />, horaires: <Horaires />, boutique: <Boutique />, panier: <Panier />, dons: <Dons key={params.toString()} params={params} />, compte: <Compte params={params} />,
     menu: <Menu />, siddour: <Siddour params={params} />, calendrier: <Calendrier />, zmanim: <Zmanim />, cours: <Cours />,
-    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />, messages: <Messages />
+    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />, messages: <Messages />, paiement: <Paiement />
   }[route];
   // les rubriques ouvertes depuis le Menu gardent l'onglet Menu allumé
   const tab = NAV.some((n) => n.r === route) ? route : route === "panier" ? "boutique" : route === "messages" ? "compte" : ITEMS.some((i) => i.r === route) ? "menu" : route;
@@ -67,29 +69,29 @@ export default function App() {
       <header className="topbar">
         {/* Menu (3 traits) à gauche ; Maguen David et nom de la synagogue au centre ; panier à droite */}
         <button type="button" className={"menu-btn" + (menuOpen || tab === "menu" ? " on" : "")} aria-expanded={menuOpen} aria-controls="menu-panel" onClick={() => setMenuOpen((o) => !o)}>
-          <Icon d={menuOpen ? CLOSE_ICON : MENU_ICON} /><span>{menuOpen ? "Fermer" : "Menu"}</span>
+          <Icon d={menuOpen ? CLOSE_ICON : MENU_ICON} /><span>{menuOpen ? t("Fermer") : t("Menu")}</span>
         </button>
         <a className="brand" href="#/accueil">
           <span className="logo serif">✡&#xFE0E;</span>
           <span><span className="serif gold-text brand-name">{config.name}</span><span className="hebrew brand-he">{config.nameHe}</span></span>
         </a>
-        <a className="cart-btn" href="#/panier" aria-label={"Panier, " + count + " article(s)"}>
+        <a className="cart-btn" href="#/panier" aria-label={t("Panier") + " · " + count}>
           <Icon d={NAV[2].icon} />{count > 0 && <span className="badge">{count}</span>}
         </a>
       </header>
       <nav className="nav" aria-label="Navigation principale">
         {NAV.map((n) => (
           <a key={n.r} href={"#/" + n.r} className={tab === n.r ? "on" : ""} aria-current={route === n.r ? "page" : undefined}>
-            <span className="nav-ic"><Icon d={n.icon} />{n.r === "compte" && unread > 0 && <span className="badge">{unread}</span>}</span><span>{n.label}</span>
+            <span className="nav-ic"><Icon d={n.icon} />{n.r === "compte" && unread > 0 && <span className="badge">{unread}</span>}</span><span>{t(n.label)}</span>
           </a>
         ))}
       </nav>
       {menuOpen && <div className="drawer-bg" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
-      <aside id="menu-panel" className={"drawer" + (menuOpen ? " open" : "")} aria-label="Menu" aria-hidden={!menuOpen} inert={!menuOpen}>
+      <aside id="menu-panel" className={"drawer" + (menuOpen ? " open" : "")} aria-label={t("Menu")} aria-hidden={!menuOpen} inert={!menuOpen}>
         {menuOpen && <MenuContent onPick={() => setMenuOpen(false)} />}
       </aside>
       <main className="main">
-        {BACK_TO_MENU.includes(route) && <nav className="page back-bar"><a className="crumbs" href="#/menu"><span className="gold">‹ Menu</span></a></nav>}
+        {BACK_TO_MENU.includes(route) && <nav className="page back-bar"><a className="crumbs" href="#/menu"><span className="gold">{t("‹ Menu")}</span></a></nav>}
         {page}
       </main>
     </div>

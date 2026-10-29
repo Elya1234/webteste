@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { useState } from "react";
 import { checkout, euros, DEMO } from "../lib/backend";
 import { useAuth } from "../lib/auth";
@@ -15,6 +16,7 @@ export default function Dons({ params }: { params?: URLSearchParams }) {
   const [custom, setCustom] = useState(preAmount && !AMOUNTS.includes(preAmount) ? String(preAmount / 100).replace(".", ",") : "");
   const [purpose, setPurpose] = useState(preMotif && PURPOSES.includes(preMotif) ? preMotif : PURPOSES[0]);
   const [dedication, setDedication] = useState("");
+  const [monthly, setMonthly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const cents = custom ? Math.round(Number(custom.replace(",", ".")) * 100) : amount;
@@ -23,33 +25,39 @@ export default function Dons({ params }: { params?: URLSearchParams }) {
   async function pay(e: React.FormEvent) {
     e.preventDefault();
     if (!profile) { go("compte", "suite=dons"); return; }
-    setBusy(true); setMsg("");
+    setBusy(true); setMsg(t(""));
     try {
-      const r = await checkout({ donation: { amount_cents: cents, purpose, dedication: dedication.trim() } });
-      if (r.url) { window.location.href = r.url; return; }
-      go("compte", "paiement=ok");
-    } catch { setMsg("Le paiement n'a pas pu démarrer. Réessayez dans un instant."); }
+      const r = await checkout({ donation: { amount_cents: cents, purpose, dedication: dedication.trim(), monthly } });
+      window.location.href = r.url; return;
+    } catch { setMsg(t("Le paiement n'a pas pu démarrer. Réessayez dans un instant.")); }
     setBusy(false);
   }
 
   return (
     <div className="page narrow">
       <form className="card" onSubmit={pay}>
-        <h2 className="serif gold-text">Faire un don <span className="hebrew">צדקה</span></h2>
-        <label className="field"><span>Motif</span>
-          <select className="input" value={purpose} onChange={(e) => setPurpose(e.target.value)}>{PURPOSES.map((p) => <option key={p}>{p}</option>)}</select>
+        <h2 className="serif gold-text">{t("Faire un don")} <span className="hebrew">צדקה</span></h2>
+        <label className="field"><span>{t("Motif")}</span>
+          <select className="input" value={purpose} onChange={(e) => setPurpose(e.target.value)}>{PURPOSES.map((p) => <option key={p} value={p}>{t(p)}</option>)}</select>
         </label>
-        <div className="field"><span>Montant</span>
+        <div className="field"><span>{t("Montant")}</span>
           <div className="chips">{AMOUNTS.map((a) => <button type="button" key={a} className={"chip" + (!custom && a === amount ? " on" : "")} onClick={() => { setAmount(a); setCustom(""); }}>{euros(a)}</button>)}</div>
-          <input className="input" inputMode="decimal" placeholder="Autre montant (€)" value={custom} onChange={(e) => setCustom(e.target.value.replace(/[^\d,.]/g, ""))} />
+          <input className="input" inputMode="decimal" placeholder={t("Autre montant (€)")} value={custom} onChange={(e) => setCustom(e.target.value.replace(/[^\d,.]/g, ""))} />
         </div>
-        <label className="field"><span>Dédicace (facultatif)</span>
-          <input className="input" maxLength={200} placeholder="Ex. Leilouy Nichmat …, Refoua Chelema de …" value={dedication} onChange={(e) => setDedication(e.target.value)} />
+        <div className="field"><span>{t("Fréquence")}</span>
+          <div className="seg">
+            <button type="button" className={!monthly ? "on" : ""} onClick={() => setMonthly(false)}>{t("Une fois")}</button>
+            <button type="button" className={monthly ? "on" : ""} onClick={() => setMonthly(true)}>{t("Chaque mois")}</button>
+          </div>
+          {monthly && <span className="small muted">{t("Arrêtable à tout moment depuis votre compte.")}</span>}
+        </div>
+        <label className="field"><span>{t("Dédicace (facultatif)")}</span>
+          <input className="input" maxLength={200} placeholder={t("Ex. Leilouy Nichmat …, Refoua Chelema de …")} value={dedication} onChange={(e) => setDedication(e.target.value)} />
         </label>
-        {DEMO && <p className="small muted">Mode démonstration : aucun paiement réel.</p>}
+        {DEMO && <p className="small muted">{t("Mode démonstration : aucun paiement réel.")}</p>}
         {msg && <p className="error">{msg}</p>}
-        <button className="btn full" disabled={!valid || busy}>{profile ? (busy ? "Ouverture du paiement…" : "Donner " + (valid ? euros(cents) : "")) : "Créer un compte ou se connecter"}</button>
-        <p className="small muted">Un reçu est envoyé par e-mail après le paiement.</p>
+        <button className="btn full" disabled={!valid || busy}>{profile ? (busy ? t("Ouverture du paiement…") : t(monthly ? "Donner {m} par mois" : "Donner {m}", { m: valid ? euros(cents) : "" })) : t("Créer un compte ou se connecter")}</button>
+        <p className="small muted">{t("Un reçu est envoyé par e-mail après le paiement.")}</p>
       </form>
     </div>
   );
