@@ -100,7 +100,8 @@ export default function Home() {
       {(config.dedication || config.dedicationNames) && (
         <section className="dedication">
           {config.dedication && <div className="hebrew gold-text">{config.dedication}</div>}
-          {config.dedicationNames && <div className="hebrew gold-text small">{config.dedicationNames.split("\n").join(" ")}</div>}
+          {config.dedication && config.dedicationNames && <div className="ded-sep" aria-hidden="true"><i /><span>✦</span><i /></div>}
+          {config.dedicationNames && <div className="hebrew gold-text">{config.dedicationNames.split("\n").join(" ")}</div>}
         </section>
       )}
     </div>

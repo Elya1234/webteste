@@ -7,8 +7,13 @@
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; min-height: 100vh; color: var(--ivory); font: 16px/1.45 var(--font-sans), system-ui, sans-serif;
-  background: radial-gradient(900px 600px at 10% -10%, rgba(28,58,138,.5), transparent 60%), linear-gradient(160deg, #060e26, #02050f) fixed; }
+body { margin: 0; min-height: 100vh; color: var(--ivory); font: 16px/1.45 var(--font-sans), system-ui, sans-serif; background: var(--night); }
+/* Fond : la photo de la synagogue assombrie, comme sur l'écran TV (calque fixe : marche aussi sur iPhone) */
+body::before, body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+body::before { background: url("./assets/synagogue-bg.jpg") center / cover no-repeat; }
+body::after { background:
+  radial-gradient(1200px 700px at 15% -10%, rgba(28,58,138,.45), transparent 60%),
+  linear-gradient(180deg, rgba(4,10,28,.72) 0%, rgba(4,10,28,.55) 35%, rgba(4,10,28,.6) 70%, rgba(2,5,15,.85) 100%); }
 h2, h3 { margin: 0 0 .6rem; font-weight: 600; }
 h2 { font-size: 1.6rem; } h3 { font-size: 1.25rem; }
 p { margin: .4rem 0; }
@@ -36,6 +41,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px); background: rgba(5,11,31,.94); border-top: 1px solid var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .nav a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; font-size: 11px; color: var(--muted); border-radius: 12px; min-height: 48px; }
 .nav a.on { color: var(--gold); }
+/* Menu (3 traits) encadré : c'est là qu'on trouve toutes les rubriques */
+.nav a.nav-menu { color: var(--gold-hi); border: 1.5px solid var(--gold); background: rgba(217,191,140,.12); margin: 0 4px; box-shadow: 0 0 14px rgba(217,191,140,.25); }
+.nav a.nav-menu.on { background: rgba(217,191,140,.24); }
 .main { padding: 16px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 24px); }
 .page { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 .page.narrow { max-width: 620px; }
@@ -54,7 +62,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* ───────── Éléments ───────── */
-.card { background: linear-gradient(180deg, rgba(10,22,51,.62), rgba(5,11,31,.72)); border: 1px solid var(--line); border-radius: 18px; padding: 18px;
+.card { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: linear-gradient(180deg, rgba(10,22,51,.55), rgba(5,11,31,.68)); border: 1px solid var(--line); border-radius: 18px; padding: 18px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 36px rgba(0,0,0,.3); }
 .card.ok { border-color: var(--gold); }
 .btn { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 12px; border: 0; cursor: pointer;
@@ -98,7 +106,9 @@ textarea.input { resize: vertical; }
 .tile { border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-transform: capitalize; } .tile-v { font-size: 2rem; }
 .ann { margin: 0; padding-left: 1.1rem; display: grid; gap: 8px; }
 .cta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.dedication { text-align: center; display: grid; gap: 6px; padding: 8px 0; font-size: 1.1rem; }
+.dedication { text-align: center; display: grid; gap: 8px; padding: 8px 0; font-size: 1.15rem; line-height: 1.6; }
+.ded-sep { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--gold); font-size: .8rem; }
+.ded-sep i { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
 
 /* Horaires */
 .day-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
@@ -139,10 +149,11 @@ textarea.input { resize: vertical; }
 .menu-list a { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 12px; padding: 12px 16px; min-height: 60px; }
 .menu-ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--gold); background: rgba(217,191,140,.08); border: 1px solid var(--line); }
 .menu-t { display: flex; flex-direction: column; } .menu-t b { font-size: 1.05rem; font-weight: 600; }
-.quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.quick a { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; font-size: .85rem; text-align: center; color: var(--ivory); }
+.quick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.quick a { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; padding: 12px; font-size: .9rem; text-align: left; color: var(--ivory); min-height: 56px; }
+.quick a svg { flex: none; }
 .quick a svg { color: var(--gold); }
-@media (min-width: 900px) { .quick { grid-template-columns: repeat(6, 1fr); } }
+@media (min-width: 900px) { .quick { grid-template-columns: repeat(3, 1fr); } }
 .center { text-align: center; } .cap::first-letter { text-transform: uppercase; } .cap { text-transform: none; }
 
 /* Calendrier */

@@ -48,7 +48,7 @@ export default function App() {
       </header>
       <nav className="nav" aria-label="Navigation principale">
         {NAV.map((n) => (
-          <a key={n.r} href={"#/" + n.r} className={tab === n.r ? "on" : ""} aria-current={route === n.r ? "page" : undefined}>
+          <a key={n.r} href={"#/" + n.r} className={(tab === n.r ? "on" : "") + (n.r === "menu" ? " nav-menu" : "")} aria-current={route === n.r ? "page" : undefined}>
             <Icon d={n.icon} /><span>{n.label}</span>
           </a>
         ))}
