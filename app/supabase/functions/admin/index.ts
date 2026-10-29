@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
   // ───────── contenus : boutique, cours, vidéos, galerie (champs autorisés seulement) ─────────
   const FIELDS: Record<string, string[]> = {
     products: ["ref", "name", "description", "category", "price_cents", "image_url", "stock", "comment_label", "active"],
-    courses: ["title", "rav", "day", "time", "place", "audience", "description", "position"],
+    courses: ["title", "rav", "day", "time", "place", "audience", "description", "position", "registration", "capacity"],
     videos: ["title", "rav", "youtube_id", "published_at"],
     gallery: ["url", "caption", "album"]
   };
@@ -160,12 +160,26 @@ Deno.serve(async (req) => {
     return json({ path, token: data.token, publicUrl: admin.storage.from("media").getPublicUrl(path).data.publicUrl });
   }
 
+  // ───────── inscrits à un cours, reçus fiscaux émis ─────────
+  if (b.action === "registrations" && b.id) {
+    const { data } = await admin.from("course_registrations").select("user_id, created_at").eq("course_id", b.id).order("created_at");
+    return json({ registrations: data || [] });
+  }
+  if (b.action === "taxReceipts") {
+    const [{ data: per }, { data: annual }] = await Promise.all([
+      admin.from("orders").select("id, user_id, total_cents, refunded_cents, created_at, tax_receipt_no").not("tax_receipt_no", "is", null).order("tax_receipt_no"),
+      admin.from("annual_receipts").select("*").order("receipt_no")
+    ]);
+    return json({ per: per || [], annual: annual || [] });
+  }
+
   // ───────── fiche de l'association ─────────
   if (b.action === "saveAssociation" && b.row) {
-    const keys = ["legal_name", "address", "postal_code", "city", "rna", "siret", "email", "phone", "object", "president", "tax_receipts", "category"];
+    const keys = ["legal_name", "address", "postal_code", "city", "rna", "siret", "email", "phone", "object", "president", "tax_receipts", "category", "receipt_mode"];
     const row: Record<string, unknown> = { updated_at: new Date().toISOString() };
     for (const k of keys) if (k in b.row) row[k] = k === "tax_receipts" ? !!b.row[k] : String(b.row[k] ?? "").slice(0, 400);
     if (row.category && !["cultuelle", "interet_general", "utilite_publique"].includes(String(row.category))) delete row.category;
+    if (row.receipt_mode && !["per_donation", "annual"].includes(String(row.receipt_mode))) delete row.receipt_mode;
     const { error } = await admin.from("association").update(row).eq("id", 1);
     return error ? json({ error: error.message }, 500) : json({ ok: true });
   }

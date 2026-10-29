@@ -242,3 +242,79 @@ begin
 end $$;
 revoke all on function public.tax_receipt_number(uuid) from public, anon;
 grant execute on function public.tax_receipt_number(uuid) to authenticated;
+
+-- ───────── Reçu fiscal annuel ─────────
+-- receipt_mode : « per_donation » (un reçu par don) ou « annual » (un reçu récapitulatif par année civile terminée).
+-- Jamais les deux pour la même année : un don ne peut pas figurer sur deux reçus fiscaux.
+alter table public.association add column if not exists receipt_mode text not null default 'per_donation' check (receipt_mode in ('per_donation', 'annual'));
+create table if not exists public.annual_receipts (
+  id bigint generated always as identity primary key,
+  user_id uuid references auth.users on delete set null,   -- compte supprimé : le reçu émis reste (comptabilité)
+  year integer not null, receipt_no integer not null unique, total_cents integer not null,
+  issued_at timestamptz not null default now(),
+  unique (user_id, year)
+);
+alter table public.annual_receipts enable row level security;
+drop policy if exists "reçus annuels: les miens" on public.annual_receipts;
+create policy "reçus annuels: les miens" on public.annual_receipts for select using (user_id = auth.uid() or public.is_admin());
+create or replace function public.annual_receipt(p_year integer) returns json language plpgsql security definer set search_path = public as $$
+declare r public.annual_receipts; total integer;
+begin
+  if auth.uid() is null or p_year >= extract(year from now())::int then raise exception 'année non terminée'; end if;
+  if (select receipt_mode from public.association where id = 1) <> 'annual' then raise exception 'mode reçu par don'; end if;
+  select * into r from public.annual_receipts where user_id = auth.uid() and year = p_year;
+  if not found then
+    select coalesce(sum(total_cents - refunded_cents), 0) into total from public.orders
+      where user_id = auth.uid() and kind = 'donation' and status = 'paid' and extract(year from created_at)::int = p_year;
+    if total <= 0 then raise exception 'aucun don'; end if;
+    insert into public.annual_receipts (user_id, year, receipt_no, total_cents) values (auth.uid(), p_year, nextval('public.tax_receipt_seq'), total) returning * into r;
+  end if;
+  return row_to_json(r);
+end $$;
+revoke all on function public.annual_receipt(integer) from public, anon;
+grant execute on function public.annual_receipt(integer) to authenticated;
+-- reçu par don : refusé si l'association est en mode annuel
+create or replace function public.tax_receipt_number(order_id uuid) returns integer language plpgsql security definer set search_path = public as $$
+declare n integer;
+begin
+  if (select receipt_mode from public.association where id = 1) <> 'per_donation' then raise exception 'mode reçu annuel'; end if;
+  select tax_receipt_no into n from public.orders where id = order_id and user_id = auth.uid() and kind = 'donation' and status = 'paid';
+  if not found then raise exception 'reçu indisponible'; end if;
+  if n is null then
+    n := nextval('public.tax_receipt_seq');
+    update public.orders set tax_receipt_no = n where id = order_id;
+  end if;
+  return n;
+end $$;
+
+-- ───────── Inscription aux cours ─────────
+alter table public.courses add column if not exists registration boolean not null default false;
+alter table public.courses add column if not exists capacity integer check (capacity is null or capacity > 0);
+create table if not exists public.course_registrations (
+  course_id uuid not null references public.courses on delete cascade,
+  user_id uuid not null references auth.users on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (course_id, user_id)
+);
+alter table public.course_registrations enable row level security;
+drop policy if exists "inscriptions: les miennes" on public.course_registrations;
+create policy "inscriptions: les miennes" on public.course_registrations for select using (user_id = auth.uid() or public.is_admin());
+drop policy if exists "inscriptions: me désinscrire" on public.course_registrations;
+create policy "inscriptions: me désinscrire" on public.course_registrations for delete using (user_id = auth.uid());
+-- s'inscrire : seulement si le cours accepte les inscriptions et qu'il reste de la place (vérifié côté serveur, sans course entre deux inscrits)
+create or replace function public.register_course(p_course uuid) returns void language plpgsql security definer set search_path = public as $$
+declare c public.courses; n integer;
+begin
+  if auth.uid() is null then raise exception 'connexion requise'; end if;
+  select * into c from public.courses where id = p_course for update;
+  if not found or not c.registration then raise exception 'inscriptions fermées'; end if;
+  select count(*) into n from public.course_registrations where course_id = p_course;
+  if c.capacity is not null and n >= c.capacity then raise exception 'complet'; end if;
+  insert into public.course_registrations (course_id, user_id) values (p_course, auth.uid()) on conflict do nothing;
+end $$;
+revoke all on function public.register_course(uuid) from public, anon;
+grant execute on function public.register_course(uuid) to authenticated;
+create or replace function public.course_counts() returns table (course_id uuid, n bigint) language sql stable security definer set search_path = public as $$
+  select course_id, count(*) from public.course_registrations group by course_id
+$$;
+grant execute on function public.course_counts() to anon, authenticated;

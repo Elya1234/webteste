@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { euros, METHOD, taxReceiptNumber, type Association, type Order, type Profile } from "../lib/backend";
+import { euros, METHOD, type Association, type Profile } from "../lib/backend";
 import { eurosInWords } from "../lib/words";
 
 /* Reçu fiscal (modèle Cerfa n° 11580) : dons à certains organismes d'intérêt général, articles 200, 238 bis et 978 du CGI.
@@ -11,12 +11,16 @@ const CAT: [Association["category"], string][] = [
 ];
 const MODE: Record<string, string> = { card: "Carte bancaire", apple_pay: "Carte bancaire (Apple Pay)", google_pay: "Carte bancaire (Google Pay)", sepa_debit: "Prélèvement / virement", link: "Carte bancaire" };
 
-export default function RecuFiscal({ order, asso, donor }: { order: Order; asso: Association; donor: Profile }) {
+/** Un don (date du versement) ou le récapitulatif d'une année (liste des versements). */
+export type FiscalInput = { key: string; amount_cents: number; year: number; method?: string | null; date?: string; lines?: { date: string; amount_cents: number; label: string }[];
+  number: () => Promise<number> };
+
+export default function RecuFiscal({ input, asso, donor }: { input: FiscalInput; asso: Association; donor: Profile }) {
   const [no, setNo] = useState<number | null>(null);
   const [err, setErr] = useState("");
-  useEffect(() => { taxReceiptNumber(order.id).then(setNo, () => setErr("Le numéro du reçu n'a pas pu être attribué. Réessayez avec Internet.")); }, [order.id]);
-  const amount = order.total_cents - (order.refunded_cents || 0);
-  const year = new Date(order.created_at).getFullYear();
+  useEffect(() => { input.number().then(setNo, () => setErr("Le numéro du reçu n'a pas pu être attribué. Réessayez avec Internet.")); }, [input.key]); // eslint-disable-line react-hooks/exhaustive-deps
+  const amount = input.amount_cents, year = input.year;
+  const order = { payment_method: input.method };
   const box = (on: boolean) => <span className={"cerfa-box" + (on ? " on" : "")} aria-hidden="true">{on ? "✕" : ""}</span>;
   if (err) return <p className="error">{err}</p>;
   return (
@@ -41,7 +45,9 @@ export default function RecuFiscal({ order, asso, donor }: { order: Order; asso:
         <h3>Le bénéficiaire reconnaît avoir reçu au titre des dons et versements ouvrant droit à réduction d'impôt la somme de :</h3>
         <p className="cerfa-amount num">{euros(amount)}</p>
         <p>Somme en toutes lettres : <b>{eurosInWords(amount)}</b></p>
-        <p>Date du versement : <b>{new Date(order.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}</b></p>
+        {input.date
+          ? <p>Date du versement : <b>{new Date(input.date).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}</b></p>
+          : <p>Versements effectués du <b>01/01/{year}</b> au <b>31/12/{year}</b> (détail ci-dessous)</p>}
         <p>Le bénéficiaire certifie sur l'honneur que les dons et versements qu'il reçoit ouvrent droit à la réduction d'impôt prévue à l'article :</p>
         <ul className="cerfa-list"><li>{box(true)} 200 du CGI</li><li>{box(false)} 238 bis du CGI</li><li>{box(false)} 978 du CGI</li></ul>
         <div className="cerfa-cols">
@@ -51,6 +57,12 @@ export default function RecuFiscal({ order, asso, donor }: { order: Order; asso:
             <li>{box(true)} Virement, prélèvement, carte bancaire{order.payment_method ? " (" + (MODE[order.payment_method] || METHOD[order.payment_method] || order.payment_method) + ")" : ""}</li></ul></div>
         </div>
       </section>
+      {input.lines && (
+        <section>
+          <h3>Détail des versements de {year}</h3>
+          <table className="receipt-table"><tbody>{input.lines.map((l, i) => <tr key={i}><td>{new Date(l.date).toLocaleDateString("fr-FR")}</td><td>{l.label}</td><td className="right num">{euros(l.amount_cents)}</td></tr>)}</tbody></table>
+        </section>
+      )}
       <footer className="cerfa-sign">
         <div>Fait le {new Date().toLocaleDateString("fr-FR")}<br />{asso.president && <>{asso.president}, président(e)</>}</div>
         <div className="small muted">Réduction d'impôt : 66 % du montant, dans la limite de 20 % du revenu imposable, soit {euros(Math.round(amount * 0.66))} pour ce don (coût réel {euros(amount - Math.round(amount * 0.66))}).</div>

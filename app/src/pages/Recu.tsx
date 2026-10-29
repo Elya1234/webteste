@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { euros, getAssociation, getOrder, METHOD, type Association, type Order } from "../lib/backend";
+import { euros, getAssociation, getOrder, METHOD, taxReceiptNumber, type Association, type Order } from "../lib/backend";
 import RecuFiscal from "./RecuFiscal";
 import { useAuth } from "../lib/auth";
 import { useSynagogue } from "../lib/synagogue";
@@ -18,13 +18,13 @@ export default function Recu({ params }: { params: URLSearchParams }) {
   if (o === undefined) return <div className="page narrow"><div className="card muted">{t("Chargement…")}</div></div>;
   if (!o) return <div className="page narrow"><div className="card">{t("Reçu introuvable.")} <a className="gold" href="#/compte">{t("‹ Mon compte")}</a></div></div>;
   const items = o.order_items || [];
-  const canFiscal = !!asso?.tax_receipts && o.kind === "donation" && o.status === "paid" && o.total_cents > (o.refunded_cents || 0);
+  const canFiscal = !!asso?.tax_receipts && asso.receipt_mode === "per_donation" && o.kind === "donation" && o.status === "paid" && o.total_cents > (o.refunded_cents || 0);
   const addressOk = !!(profile?.address && profile.postal_code && profile.city && profile.last_name);
   if (fiscal && canFiscal && profile) return (
     <div className="page narrow">
       <nav className="crumbs no-print"><a href={"#/recu?id=" + encodeURIComponent(o.id)}>‹ {t("Reçu de don")}</a></nav>
       <article className="card receipt">
-        {addressOk ? <RecuFiscal order={o} asso={asso!} donor={profile} />
+        {addressOk ? <RecuFiscal asso={asso!} donor={profile} input={{ key: o.id, amount_cents: o.total_cents - (o.refunded_cents || 0), year: new Date(o.created_at).getFullYear(), method: o.payment_method, date: o.created_at, number: () => taxReceiptNumber(o.id) }} />
           : <p>{t("Pour le reçu fiscal, ajoutez votre adresse dans Mon compte.")} <a className="gold" href="#/compte">{t("‹ Mon compte")}</a></p>}
         {addressOk && <div className="row-end no-print"><button className="btn" onClick={() => window.print()}>{t("Imprimer ou enregistrer en PDF")}</button></div>}
       </article>

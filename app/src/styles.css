@@ -432,3 +432,5 @@ textarea.input { resize: vertical; }
 .legal h1 { font-size: 1.9rem; margin: 0 0 4px; } .legal h2 { font-size: 1.1rem; margin: 18px 0 6px; color: var(--gold-hi); font-weight: 600; }
 .legal p, .legal li { line-height: 1.6; } .legal ul { padding-left: 1.2rem; display: grid; gap: 6px; }
 .legal-links { display: flex; justify-content: center; gap: 18px; } .legal-links a { color: var(--muted); text-decoration: underline; padding: 6px; }
+.course-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; text-align: right; }
+.reg-list { margin: 0 0 12px; padding-left: 1.4rem; display: grid; gap: 6px; }

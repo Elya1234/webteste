@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { euros, listCourses, listPhotos, listProducts, listVideos, type ContentTable, type Course, type Photo, type Product, type Video } from "../lib/backend";
-import { deleteContent, saveContent, uploadImage, type ContentRow } from "../lib/admin";
+import { courseRegistrants, deleteContent, listMembers, saveContent, sendMessage, uploadImage, type ContentRow, type Member } from "../lib/admin";
+import { courseCounts } from "../lib/backend";
 
 /* Administration › Contenus : tout ce que les membres voient dans la boutique, les cours, les vidéos et la galerie. */
 type Kind = "products" | "courses" | "videos" | "gallery";
@@ -141,27 +142,32 @@ function ProductForm({ initial, cats, onClose, onSaved }: { initial: Partial<Pro
 function Courses() {
   const { rows, reload } = useRows<Course & { position?: number }>(listCourses);
   const [edit, setEdit] = useState<Partial<Course & { position?: number }> | null>(null);
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [who, setWho] = useState<Course | null>(null);
+  useEffect(() => { courseCounts().then(setCounts, () => {}); }, [rows]);
   return (
     <section className="card">
       <div className="card-head"><h2 className="serif gold-text">Cours</h2><button className="btn" onClick={() => setEdit({ day: "Dimanche", audience: "Tous" })}>+ Ajouter un cours</button></div>
       {!rows ? <p className="muted">Chargement…</p> : !rows.length ? <Empty what="cours" onAdd={() => setEdit({ day: "Dimanche", audience: "Tous" })} /> : (
         <ul className="admin-list">{rows.map((c) => (
-          <li key={c.id}><div><b>{c.title}</b><div className="small muted">{c.day} · {c.time} · {[c.rav, c.place, c.audience].filter(Boolean).join(" · ")}</div></div>
-            <div className="row-end"><button className="link small" onClick={() => setEdit(c)}>Modifier</button><Confirm onYes={() => deleteContent("courses", c.id).then(reload)} /></div></li>
+          <li key={c.id}><div><b>{c.title}</b><div className="small muted">{c.day} · {c.time} · {[c.rav, c.place, c.audience].filter(Boolean).join(" · ")}</div>
+            {c.registration && <div className="small gold">Inscriptions ouvertes · {counts[c.id] || 0}{c.capacity ? " / " + c.capacity : ""} inscrit(s)</div>}</div>
+            <div className="row-end">{c.registration && <button className="link small" onClick={() => setWho(c)}>Inscrits</button>}<button className="link small" onClick={() => setEdit(c)}>Modifier</button><Confirm onYes={() => deleteContent("courses", c.id).then(reload)} /></div></li>
         ))}</ul>
       )}
       {edit && <CourseForm initial={edit} onClose={() => setEdit(null)} onSaved={() => { setEdit(null); reload(); }} />}
+      {who && <Registrants course={who} onClose={() => setWho(null)} />}
     </section>
   );
 }
 function CourseForm({ initial, onClose, onSaved }: { initial: Partial<Course & { position?: number }>; onClose: () => void; onSaved: () => void }) {
   const [c, setC] = useState({ title: initial.title || "", rav: initial.rav || "", day: initial.day || "Dimanche", time: initial.time || "", place: initial.place || "",
-    audience: initial.audience || "Tous", description: initial.description || "" });
+    audience: initial.audience || "Tous", description: initial.description || "", registration: !!initial.registration, capacity: initial.capacity ? String(initial.capacity) : "" });
   const { busy, err, save } = useSave("courses", onSaved);
-  const set = (k: keyof typeof c) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setC({ ...c, [k]: e.target.value });
+  const set = (k: "title" | "rav" | "day" | "time" | "place" | "audience" | "description") => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setC({ ...c, [k]: e.target.value });
   return (
     <Sheet title={initial.id ? "Modifier le cours" : "Nouveau cours"} onClose={onClose}>
-      <form onSubmit={(e) => { e.preventDefault(); save({ id: initial.id, ...c, title: c.title.trim(), position: DAYS.indexOf(c.day) * 10000 + (Number(c.time.replace(/\D/g, "")) || 0) }); }}>
+      <form onSubmit={(e) => { e.preventDefault(); save({ id: initial.id, ...c, capacity: c.registration && c.capacity ? Number(c.capacity) : null, title: c.title.trim(), position: DAYS.indexOf(c.day) * 10000 + (Number(c.time.replace(/\D/g, "")) || 0) }); }}>
         <label className="field"><span>Titre</span><input id="c-title" className="input" required maxLength={120} value={c.title} onChange={set("title")} placeholder="Guemara, Halakha, Paracha…" /></label>
         <div className="grid-2 tight">
           <label className="field"><span>Jour</span><select id="c-day" className="input" value={c.day} onChange={set("day")}>{DAYS.map((d) => <option key={d}>{d}</option>)}</select></label>
@@ -173,6 +179,8 @@ function CourseForm({ initial, onClose, onSaved }: { initial: Partial<Course & {
         </div>
         <label className="field"><span>Public</span><select id="c-aud" className="input" value={c.audience} onChange={set("audience")}>{["Tous", "Hommes", "Femmes", "Jeunes", "Enfants"].map((x) => <option key={x}>{x}</option>)}</select></label>
         <label className="field"><span>Description</span><textarea id="c-desc" className="input" rows={2} maxLength={600} value={c.description} onChange={set("description")} /></label>
+        <label className="check"><input type="checkbox" checked={c.registration} onChange={(e) => setC({ ...c, registration: e.target.checked })} /> Les membres peuvent s'inscrire depuis l'application</label>
+        {c.registration && <label className="field"><span>Nombre de places (vide = sans limite)</span><input id="c-cap" className="input num" inputMode="numeric" value={c.capacity} onChange={(e) => setC({ ...c, capacity: e.target.value.replace(/\D/g, "").slice(0, 4) })} /></label>}
         {err && <p className="error">{err}</p>}
         <button className="btn full" disabled={busy}>{busy ? "…" : "Enregistrer"}</button>
       </form>
@@ -249,6 +257,35 @@ function PhotoForm({ initial, albums, onClose, onSaved }: { initial: Partial<Pho
         {err && <p className="error">{err}</p>}
         <button className="btn full" disabled={busy}>{busy ? "…" : "Enregistrer"}</button>
       </form>
+    </Sheet>
+  );
+}
+
+/* Inscrits à un cours, avec un message à tous les inscrits (rappel, changement d'horaire…) */
+function Registrants({ course, onClose }: { course: Course; onClose: () => void }) {
+  const [list, setList] = useState<{ user_id: string; created_at: string }[] | null>(null);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [text, setText] = useState("");
+  const [msg, setMsg] = useState("");
+  useEffect(() => { courseRegistrants(course.id).then(setList, () => setList([])); listMembers().then(setMembers, () => {}); }, [course.id]);
+  const name = (id: string) => { const m = members.find((x) => x.id === id); return m ? [m.first_name, m.last_name].filter(Boolean).join(" ") || m.email : "—"; };
+  async function send(e: React.FormEvent) {
+    e.preventDefault(); setMsg("");
+    try { const n = await sendMessage({ title: course.title + " · " + course.day + " " + course.time, body: text.trim(), to: "users", user_ids: (list || []).map((x) => x.user_id) }); setMsg("Message envoyé à " + n + " inscrit(s)."); setText(""); }
+    catch (x) { setMsg((x as Error).message); }
+  }
+  return (
+    <Sheet title={"Inscrits · " + course.title} onClose={onClose}>
+      {!list ? <p className="muted">Chargement…</p> : !list.length ? <p className="muted">Personne n'est encore inscrit.</p> : (
+        <>
+          <ol className="reg-list">{list.map((r) => <li key={r.user_id}>{name(r.user_id)}{r.created_at && <span className="small muted"> · {new Date(r.created_at).toLocaleDateString("fr-FR")}</span>}</li>)}</ol>
+          <form onSubmit={send}>
+            <label className="field"><span>Message aux {list.length} inscrit(s)</span><textarea id="reg-msg" className="input" rows={3} required maxLength={2000} value={text} onChange={(e) => setText(e.target.value)} placeholder="Ex. Le cours de ce soir commence à 21h." /></label>
+            {msg && <p className="small gold">{msg}</p>}
+            <button className="btn full" disabled={!text.trim()}>Envoyer</button>
+          </form>
+        </>
+      )}
     </Sheet>
   );
 }

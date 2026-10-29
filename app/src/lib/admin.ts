@@ -2,7 +2,7 @@
  * - Avec Supabase : tout passe par la fonction serveur « admin », qui vérifie le code et renvoie un jeton de 12 h.
  * - Sans (démonstration) : le code est vérifié par la base Google de l'écran, les données sont des exemples gardés sur l'appareil. */
 import { REMOTE_URL } from "../config";
-import { saveDemoAssociation, type Association, DEMO, demoChat, demoContent, saveDemoChat, saveDemoContent, supabase, K_DEMO_ORDERS, K_DEMO_SUBS, type ContentTable, type ChatMessage, type Order, type Profile, type Subscription } from "./backend";
+import { demoRegistrations, saveDemoAssociation, type Association, DEMO, demoChat, demoContent, saveDemoChat, saveDemoContent, supabase, K_DEMO_ORDERS, K_DEMO_SUBS, type ContentTable, type ChatMessage, type Order, type Profile, type Subscription } from "./backend";
 import { read, write } from "./storage";
 
 export type Member = { id: string; email: string; created_at: string; first_name: string; last_name: string; phone: string;
@@ -187,4 +187,25 @@ export async function uploadImage(file: File): Promise<string> {
 export async function saveAssociation(a: Association) {
   if (!DEMO) { await call("saveAssociation", { row: a }); return; }
   saveDemoAssociation(a);
+}
+
+export async function courseRegistrants(courseId: string): Promise<{ user_id: string; created_at: string }[]> {
+  if (!DEMO) return (await call<{ registrations: { user_id: string; created_at: string }[] }>("registrations", { id: courseId })).registrations;
+  return demoRegistrations(courseId).map((user_id) => ({ user_id, created_at: "" }));
+}
+export type IssuedReceipt = { no: number; user_id: string | null; year: number; total_cents: number; date: string; kind: "don" | "annuel" };
+export async function listTaxReceipts(): Promise<IssuedReceipt[]> {
+  if (!DEMO) {
+    const r = await call<{ per: { user_id: string; total_cents: number; refunded_cents: number; created_at: string; tax_receipt_no: number }[];
+      annual: { user_id: string; year: number; receipt_no: number; total_cents: number; issued_at: string }[] }>("taxReceipts");
+    return [...r.per.map((o) => ({ no: o.tax_receipt_no, user_id: o.user_id, year: new Date(o.created_at).getFullYear(), total_cents: o.total_cents - (o.refunded_cents || 0), date: o.created_at, kind: "don" as const })),
+      ...r.annual.map((a) => ({ no: a.receipt_no, user_id: a.user_id, year: a.year, total_cents: a.total_cents, date: a.issued_at, kind: "annuel" as const }))].sort((x, y) => x.no - y.no);
+  }
+  const map = read<Record<string, number>>("app.demo.taxno") || {};
+  const orders = read<Order[]>(K_DEMO_ORDERS) || [];
+  return Object.entries(map).map(([k, no]) => {
+    if (k.startsWith("annual-")) { const year = Number(k.slice(7)); return { no, user_id: "demo", year, total_cents: orders.filter((o) => o.kind === "donation" && o.status === "paid" && new Date(o.created_at).getFullYear() === year).reduce((s, o) => s + o.total_cents, 0), date: "", kind: "annuel" as const }; }
+    const o = orders.find((x) => x.id === k);
+    return { no, user_id: "demo", year: o ? new Date(o.created_at).getFullYear() : 0, total_cents: o ? o.total_cents - (o.refunded_cents || 0) : 0, date: o?.created_at || "", kind: "don" as const };
+  }).sort((a, b) => a.no - b.no);
 }

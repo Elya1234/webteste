@@ -2,7 +2,7 @@ import { cart } from "../lib/cart";
 import { loc, t } from "../lib/i18n";
 import { useEffect, useState } from "react";
 import { LangSwitch } from "../components-lang";
-import { demoCancelSubscription, listMySubscriptions, METHOD, openPaymentPortal, type Subscription, deleteAccount, DEMO, euros, listOrders, resetPassword, signIn, signOut, signUp, unreadCount, updateProfile, type Order, type Profile } from "../lib/backend";
+import { donationYears, getAssociation, type Association, demoCancelSubscription, listMySubscriptions, METHOD, openPaymentPortal, type Subscription, deleteAccount, DEMO, euros, listOrders, resetPassword, signIn, signOut, signUp, unreadCount, updateProfile, type Order, type Profile } from "../lib/backend";
 import { useAuth } from "../lib/auth";
 import { PasswordField, PhoneField } from "../components-forms";
 import { checkPassword, countryOf, localPart, normalizePhone, type Country } from "../lib/validate";
@@ -116,6 +116,7 @@ function Account({ profile }: { profile: Profile }) {
       </form>
       <Inbox />
       <MonthlyGifts />
+      {orders && <TaxReceipts orders={orders} />}
       <section className="card">
         <h2 className="serif gold-text">{t("Mes commandes et dons")}</h2>
         {!orders ? <div className="muted">{t("Chargement…")}</div> : !orders.length ? <div className="muted">{t("Rien pour le moment.")}</div> : (
@@ -131,6 +132,22 @@ function Account({ profile }: { profile: Profile }) {
         <button className="btn ghost danger" onClick={() => { if (confirm("Supprimer définitivement votre compte ? Vos reçus déjà envoyés restent valables.")) deleteAccount().then(refresh); }}>{t("Supprimer mon compte")}</button>
       </div>
     </>
+  );
+}
+
+function TaxReceipts({ orders }: { orders: Order[] }) {
+  const [asso, setAsso] = useState<Association | null>(null);
+  useEffect(() => { getAssociation().then(setAsso, () => {}); }, []);
+  if (!asso?.tax_receipts || asso.receipt_mode !== "annual") return null;
+  // années terminées seulement (en démonstration, l'année en cours aussi, pour pouvoir essayer)
+  const years = donationYears(orders).filter((y) => DEMO || y < new Date().getFullYear());
+  if (!years.length) return null;
+  return (
+    <section className="card">
+      <h2 className="serif gold-text">{t("Reçus fiscaux")}</h2>
+      <p className="small muted">{t("Un reçu par année pour l'ensemble de vos dons, à joindre à votre déclaration de revenus.")}</p>
+      <div className="chips">{years.map((y) => <a key={y} className="chip" href={"#/recu-annuel?annee=" + y}>{t("Reçu fiscal")} {y}</a>)}</div>
+    </section>
   );
 }
 

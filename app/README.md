@@ -167,3 +167,12 @@ Aucun exemple : la boutique, les cours, les vidéos et la galerie se remplissent
   montant en toutes lettres, imprimable / PDF.
 - **Confidentialité** et **Conditions de vente et de don** : Menu et Compte (exigées par l'App Store et le Play Store).
 - **Icônes** : `resources/icon.png` (1024 px) ; pour iPhone et Android : `npx @capacitor/assets generate`.
+
+## Reçu fiscal annuel et inscription aux cours
+
+- **Reçus fiscaux** (Administration › Association) : « un reçu par don » ou « un reçu par an » (récapitulatif de tous les
+  dons de l'année civile, disponible à partir du 1er janvier suivant, dans Compte › Reçus fiscaux). Jamais les deux pour
+  un même don. Liste des reçus émis (numéros à la suite) exportable pour la comptabilité.
+- **Inscription aux cours** (Administration › Contenus › Cours) : « les membres peuvent s'inscrire », nombre de places ;
+  le membre s'inscrit ou se désinscrit dans Cours ; l'administration voit les inscrits et leur écrit en un message.
+  Le nombre de places est vérifié par le serveur (`register_course`), même si deux personnes s'inscrivent en même temps.

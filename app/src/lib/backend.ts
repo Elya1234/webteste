@@ -223,7 +223,7 @@ export async function deleteAccount() {
 }
 
 /* ───────── Contenus de la synagogue : cours, vidéos, galerie (tables Supabase, sinon exemples) ───────── */
-export type Course = { id: string; title: string; rav: string; day: string; time: string; place: string; audience: string; description: string };
+export type Course = { id: string; title: string; rav: string; day: string; time: string; place: string; audience: string; description: string; registration?: boolean; capacity?: number | null };
 export type Video = { id: string; title: string; rav: string; youtube_id: string; published_at: string };
 export type Photo = { id: string; url: string; caption: string; album: string; created_at?: string };
 export type CourseRow = Course & { position?: number };
@@ -293,8 +293,8 @@ export async function getOrder(id: string): Promise<Order | null> {
 
 /* ───────── Fiche de l'association (reçus, reçus fiscaux, mentions légales) ───────── */
 export type Association = { legal_name: string; address: string; postal_code: string; city: string; rna: string; siret: string; email: string; phone: string;
-  object: string; president: string; tax_receipts: boolean; category: "cultuelle" | "interet_general" | "utilite_publique" };
-export const EMPTY_ASSOCIATION: Association = { legal_name: "", address: "", postal_code: "", city: "", rna: "", siret: "", email: "", phone: "", object: "", president: "", tax_receipts: false, category: "cultuelle" };
+  object: string; president: string; tax_receipts: boolean; category: "cultuelle" | "interet_general" | "utilite_publique"; receipt_mode: "per_donation" | "annual" };
+export const EMPTY_ASSOCIATION: Association = { legal_name: "", address: "", postal_code: "", city: "", rna: "", siret: "", email: "", phone: "", object: "", president: "", tax_receipts: false, category: "cultuelle", receipt_mode: "per_donation" };
 const K_ASSO = "app.association";
 export async function getAssociation(): Promise<Association> {
   if (!supabase) return { ...EMPTY_ASSOCIATION, ...(read<Association>(K_ASSO) || {}) };
@@ -316,3 +316,56 @@ export async function taxReceiptNumber(orderId: string): Promise<number> {
   if (error) throw error;
   return data as number;
 }
+
+/* ───────── Reçu fiscal annuel ───────── */
+export type AnnualReceipt = { year: number; receipt_no: number; total_cents: number; issued_at: string };
+/** Années pour lesquelles le membre a des dons payés (les plus récentes d'abord). */
+export function donationYears(orders: Order[]): number[] {
+  return Array.from(new Set(orders.filter((o) => o.kind === "donation" && o.status === "paid").map((o) => new Date(o.created_at).getFullYear()))).sort((a, b) => b - a);
+}
+export async function annualReceipt(year: number): Promise<AnnualReceipt> {
+  if (!supabase) {
+    const total = (read<Order[]>(K_DEMO_ORDERS) || []).filter((o) => o.kind === "donation" && o.status === "paid" && new Date(o.created_at).getFullYear() === year)
+      .reduce((s, o) => s + o.total_cents - (o.refunded_cents || 0), 0);
+    if (total <= 0) throw new Error("aucun don");
+    const map = read<Record<string, number>>("app.demo.taxno") || {};
+    const key = "annual-" + year;
+    if (!map[key]) { map[key] = Object.keys(map).length + 1; write("app.demo.taxno", map); }
+    return { year, receipt_no: map[key], total_cents: total, issued_at: new Date().toISOString() };
+  }
+  const { data, error } = await supabase.rpc("annual_receipt", { p_year: year });
+  if (error) throw error;
+  return data as AnnualReceipt;
+}
+
+/* ───────── Inscription aux cours ───────── */
+const K_REGS = "app.demo.regs";
+export async function courseCounts(): Promise<Record<string, number>> {
+  if (!supabase) { const r = read<Record<string, string[]>>(K_REGS) || {}; return Object.fromEntries(Object.entries(r).map(([k, v]) => [k, v.length])); }
+  const { data } = await supabase.rpc("course_counts");
+  return Object.fromEntries(((data || []) as { course_id: string; n: number }[]).map((x) => [x.course_id, Number(x.n)]));
+}
+export async function myRegistrations(): Promise<string[]> {
+  if (!supabase) { const r = read<Record<string, string[]>>(K_REGS) || {}; return Object.keys(r).filter((k) => r[k].includes("demo")); }
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  const { data } = await supabase.from("course_registrations").select("course_id").eq("user_id", user.id);
+  return (data || []).map((x) => x.course_id as string);
+}
+export async function registerCourse(c: Course) {
+  if (!supabase) {
+    const r = read<Record<string, string[]>>(K_REGS) || {};
+    const list = r[c.id] || [];
+    if (!c.registration) throw new Error("inscriptions fermées");
+    if (c.capacity && list.length >= c.capacity) throw new Error("complet");
+    r[c.id] = Array.from(new Set([...list, "demo"])); write(K_REGS, r); return;
+  }
+  const { error } = await supabase.rpc("register_course", { p_course: c.id });
+  if (error) throw error;
+}
+export async function unregisterCourse(id: string) {
+  if (!supabase) { const r = read<Record<string, string[]>>(K_REGS) || {}; r[id] = (r[id] || []).filter((x) => x !== "demo"); write(K_REGS, r); return; }
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) await supabase.from("course_registrations").delete().eq("course_id", id).eq("user_id", user.id);
+}
+export const demoRegistrations = (courseId: string) => (read<Record<string, string[]>>(K_REGS) || {})[courseId] || [];

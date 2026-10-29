@@ -1,6 +1,8 @@
 import { loc, t } from "../lib/i18n";
 import { useEffect, useState } from "react";
-import { listCourses, listPhotos, listVideos, type Course, type Photo, type Video } from "../lib/backend";
+import { courseCounts, listCourses, listPhotos, listVideos, myRegistrations, registerCourse, unregisterCourse, type Course, type Photo, type Video } from "../lib/backend";
+import { useAuth } from "../lib/auth";
+import { go } from "../lib/router";
 
 function useList<T>(fn: () => Promise<T[]>) {
   const [v, setV] = useState<T[] | null>(null);
@@ -13,17 +15,43 @@ const Loading = ({ err }: { err: boolean }) => <div className="muted">{err ? t("
 const DAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Chabbat"];
 export function Cours() {
   const { v, err } = useList<Course>(listCourses);
+  const { profile } = useAuth();
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [mine, setMine] = useState<string[]>([]);
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState("");
+  const refresh = () => { courseCounts().then(setCounts, () => {}); if (profile) myRegistrations().then(setMine, () => {}); };
+  useEffect(refresh, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  async function toggle(c: Course) {
+    if (!profile) { go("compte", "suite=cours"); return; }
+    setBusy(c.id); setMsg("");
+    try { if (mine.includes(c.id)) await unregisterCourse(c.id); else await registerCourse(c); }
+    catch (e) { setMsg(/complet/.test(String(e)) ? t("Inscription impossible : le cours est complet.") : t("Une erreur est survenue. Réessayez.")); }
+    refresh(); setBusy("");
+  }
   return (
     <div className="page narrow">
       <section className="card">
         <h2 className="serif gold-text">{t("Cours à la synagogue")} <span className="hebrew">שיעורים</span></h2>
+        {msg && <p className="error small">{msg}</p>}
         {!v ? <Loading err={err} /> : !v.length ? <div className="muted">{t("Aucun cours annoncé.")}</div> : DAYS.filter((d) => v.some((c) => c.day === d)).concat(v.some((c) => !DAYS.includes(c.day)) ? ["Autres"] : []).map((d) => (
           <div key={d} className="office-group">
             <div className="og-title"><span>{d}</span></div>
             {v.filter((c) => (d === "Autres" ? !DAYS.includes(c.day) : c.day === d)).map((c) => (
               <div key={c.id} className="office-row">
                 <div><div className="serif or-label">{c.title}</div><div className="small muted">{[c.rav, c.place, c.audience].filter(Boolean).join(" · ")}</div>{c.description && <div className="or-note">{c.description}</div>}</div>
-                <div className="num or-times">{c.time}</div>
+                <div className="course-side">
+                  <div className="num or-times">{c.time}</div>
+                  {c.registration && (() => {
+                    const n = counts[c.id] || 0, full = !!c.capacity && n >= c.capacity, me = mine.includes(c.id);
+                    return <>
+                      <span className="small muted">{c.capacity ? t("{n} / {c} places", { n, c: c.capacity }) : t("{n} inscrit(s)", { n })}</span>
+                      <button className={"btn sm-text " + (me ? "ghost" : "")} disabled={busy === c.id || (full && !me)} onClick={() => toggle(c)}>
+                        {me ? t("Se désinscrire") : full ? t("Complet") : t("S'inscrire")}</button>
+                      {me && <span className="small status-paid">{t("Inscrit ✓")}</span>}
+                    </>;
+                  })()}
+                </div>
               </div>
             ))}
           </div>
