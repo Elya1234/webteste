@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { HDate } from "@hebcal/core";
 import { useSynagogue } from "../lib/synagogue";
 import { read, write } from "../lib/storage";
-import { clean, hm, todayIn, type CalItem } from "../lib/zmanim";
+import { clean, hm, localEvents, todayIn, type CalItem } from "../lib/zmanim";
 
 /* Calendrier juif du mois (Hebcal, en français) : fêtes, Roch Hodech, jeûnes, paracha, Chabbat, Omer. */
 const KIND: Record<string, string> = { holiday: "fete", roshchodesh: "rh", parashat: "par", candles: "nerot", havdalah: "nerot", omer: "omer", mevarchim: "rh" };
@@ -18,7 +18,7 @@ function useMonth(year: number, month: number) {
     fetch("https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&mf=on&ss=on&s=on&c=on&o=on&i=off&lg=fr&b=" + config.candleMinutes + hv +
       "&geonameid=" + config.geonameid + "&year=" + year + "&month=" + month)
       .then((r) => r.json()).then((j: { items?: CalItem[] }) => { write(key, j.items || []); setItems(j.items || []); })
-      .catch(() => { /* hors connexion : copie locale, sinon dates hébraïques seules */ });
+      .catch(() => { if (!read(key)) setItems(localEvents(config, new Date(year, month - 1, 1), new Date(year, month, 0))); }); // hors connexion : calcul sur l'appareil
   }, [key, year, month, config.candleMinutes, config.geonameid, config.havdalah]);
   return items;
 }

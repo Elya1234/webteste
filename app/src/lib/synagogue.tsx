@@ -42,7 +42,12 @@ export function SynagogueProvider({ children }: { children: ReactNode }) {
     let alive = true;
     const cached = read<Bundle>(key);
     if (cached) setBundle(cached);
-    const run = () => buildBundle(config, cached?.location.tzid).then((b) => { if (!alive) return; write(key, b); setBundle(b); setOffline(false); })
+    const run = () => buildBundle(config, cached?.location.tzid).then((b) => {
+      if (!alive) return;
+      // calcul de secours : on garde une copie Hebcal encore valable plutôt que de la remplacer
+      if (!b.local || !cached || cached.local) { write(key, b); setBundle(b); } else if (!cached.days[todayIn(cached.location.tzid)]) setBundle(b);
+      setOffline(!!b.local);
+    })
       .catch(() => alive && setOffline(true));
     run();
     const id = setInterval(run, 6 * 3600 * 1000);

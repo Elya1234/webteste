@@ -1,13 +1,14 @@
 /* Calculs repris de l'écran TV (synagogue-display-theme/assets/synagogue-display.js) :
  * zmanim Hebcal (31 jours en une requête), calendrier (Chabbat, paracha, fêtes), calendrier des offices. */
-import { HDate } from "@hebcal/core";
+import { GeoLocation, HDate, HebrewCalendar, Location, Zmanim } from "@hebcal/core";
+import { read, write } from "./storage";
 import type { SynaConfig } from "../config";
 
 const BASE = "https://www.hebcal.com";
 
 export type Times = Record<string, string>;
 export type CalItem = { title: string; date: string; category: string; hebrew?: string };
-export type Bundle = { generatedAt: string; location: { tzid: string; city: string; country: string }; days: Record<string, Times>; calendar: CalItem[] };
+export type Bundle = { generatedAt: string; location: { tzid: string; city: string; country: string }; days: Record<string, Times>; calendar: CalItem[]; local?: boolean };
 
 /* ───────── Catalogue des Zmanim ───────── */
 const addMin = (iso: string | undefined, m: number) => (iso ? new Date(new Date(iso).getTime() + m * 60000).toISOString() : null);
@@ -100,11 +101,64 @@ async function getJson<T>(url: string, tries = 3): Promise<T> {
 
 export const bundleKey = (c: SynaConfig) => "app.bundle.v1." + [c.geonameid, c.candleMinutes, c.havdalah, c.elevation].join("|");
 
+/* Secours sans Hebcal : les mêmes calculs (bibliothèque @hebcal/core) faits sur l'appareil, à partir de la
+ * position de la synagogue enregistrée lors du dernier accès réussi. Les écrans ne restent jamais vides. */
+type Loc = Bundle["location"] & { latitude: number; longitude: number };
+const PARIS: Loc = { tzid: "Europe/Paris", city: "Paris", country: "France", latitude: 48.85341, longitude: 2.3488 };
+const locKey = (c: SynaConfig) => "app.loc." + c.geonameid;
+const LOCAL_KEYS: Record<string, (z: Zmanim) => Date> = {
+  alotHaShachar: (z) => z.alotHaShachar(), alosBaalHatanya: (z) => z.alosBaalHatanya(), misheyakir: (z) => z.misheyakir(), misheyakirMachmir: (z) => z.misheyakirMachmir(),
+  sunrise: (z) => z.sunrise(), sunset: (z) => z.sunset(), chatzot: (z) => z.chatzot(), chatzotNight: (z) => z.chatzotNight(),
+  sofZmanShma: (z) => z.sofZmanShma(), sofZmanShmaMGA: (z) => z.sofZmanShmaMGA(), sofZmanShmaMGA16Point1: (z) => z.sofZmanShmaMGA16Point1(),
+  sofZmanShmaMGA19Point8: (z) => z.sofZmanShmaMGA19Point8(), sofZmanShmaBaalHatanya: (z) => z.sofZmanShmaBaalHatanya(),
+  sofZmanTfilla: (z) => z.sofZmanTfilla(), sofZmanTfillaMGA: (z) => z.sofZmanTfillaMGA(), sofZmanTfillaMGA16Point1: (z) => z.sofZmanTfillaMGA16Point1(),
+  sofZmanTfillaMGA19Point8: (z) => z.sofZmanTfillaMGA19Point8(), sofZmanTfilaBaalHatanya: (z) => z.sofZmanTfilaBaalHatanya(),
+  minchaGedola: (z) => z.minchaGedola(), minchaGedolaMGA: (z) => z.minchaGedolaMGA(), minchaKetana: (z) => z.minchaKetana(), minchaKetanaMGA: (z) => z.minchaKetanaMGA(),
+  plagHaMincha: (z) => z.plagHaMincha(), plagHaminchaBaalHatanya: (z) => z.plagHaminchaBaalHatanya(),
+  tzeit7083deg: (z) => z.tzeit(7.083), tzeit85deg: (z) => z.tzeit(8.5), tzeit42min: (z) => z.sunsetOffset(42, true), tzeit50min: (z) => z.sunsetOffset(50, true), tzeit72min: (z) => z.sunsetOffset(72, true)
+};
+const localYmd = (d: Date) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+
+/** Calendrier calculé sur l'appareil (titres en anglais / hébreu : la bibliothèque n'a pas le français). */
+export function localEvents(c: SynaConfig, start: Date, end: Date): CalItem[] {
+  const loc = read<Loc>(locKey(c)) || PARIS;
+  const hloc = new Location(loc.latitude, loc.longitude, false, loc.tzid, loc.city, "");
+  const ev = HebrewCalendar.calendar({ start, end, location: hloc, candlelighting: true, sedrot: true, omer: true,
+    candleLightingMins: c.candleMinutes, ...(c.havdalah ? { havdalahMins: Number(c.havdalah) } : {}) });
+  return ev.map((e) => {
+    const t = (e as unknown as { eventTime?: Date }).eventTime;
+    return { title: e.render("en"), hebrew: e.render("he-x-nonikud"), category: e.getCategories()[0], date: t ? t.toISOString() : localYmd(e.getDate().greg()) };
+  });
+}
+
+export function localBundle(c: SynaConfig): Bundle {
+  const loc = read<Loc>(locKey(c)) || PARIS;
+  const gl = new GeoLocation(loc.city, loc.latitude, loc.longitude, 0, loc.tzid);
+  const start = todayIn(loc.tzid);
+  const days: Record<string, Times> = {};
+  for (let i = -1; i <= 30; i++) {
+    const ymd = addDays(start, i), [y, m, d] = ymd.split("-").map(Number);
+    const z = new Zmanim(gl, new Date(y, m - 1, d), c.elevation);
+    const t: Times = {};
+    Object.entries(LOCAL_KEYS).forEach(([k, f]) => { const v = f(z); if (v && !isNaN(+v)) t[k] = v.toISOString(); });
+    days[ymd] = t;
+  }
+  const [y, m, d] = start.split("-").map(Number);
+  const calendar = localEvents(c, new Date(y, m - 1, d), new Date(y, m - 1, d + 37));
+  return { generatedAt: new Date().toISOString(), location: loc, days, calendar, local: true };
+}
+
 export async function buildBundle(c: SynaConfig, tzGuess = "Europe/Paris"): Promise<Bundle> {
+  try { return await hebcalBundle(c, tzGuess); }
+  catch (e) { if (read(locKey(c)) || c.geonameid === 2988507) return localBundle(c); throw e; }
+}
+
+async function hebcalBundle(c: SynaConfig, tzGuess: string): Promise<Bundle> {
   const loc = "geonameid=" + c.geonameid + (c.elevation ? "&ue=on" : "");
   const start = todayIn(tzGuess);
   const z = await getJson<{ location: Bundle["location"]; times: Record<string, Record<string, string>> }>(
     BASE + "/zmanim?cfg=json&" + loc + "&start=" + addDays(start, -1) + "&end=" + addDays(start, 30));
+  write(locKey(c), z.location);
   const days: Record<string, Times> = {};
   Object.keys(z.times || {}).forEach((key) => {
     Object.keys(z.times[key]).forEach((d) => { (days[d] = days[d] || {})[key] = z.times[key][d]; });

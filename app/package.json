@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "cap:sync": "npm run build && cap sync",
     "cap:android": "npm run build && cap sync android && cap open android",
-    "cap:ios": "npm run build && cap sync ios && cap open ios"
+    "cap:ios": "npm run build && cap sync ios && cap open ios",
+    "demo": "VITE_DEMO=1 vite build --outDir dist-demo --emptyOutDir && node demo/record.mjs dist-demo"
   },
   "dependencies": {
     "@capacitor/core": "^8.6.0",

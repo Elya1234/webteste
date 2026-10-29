@@ -1,3 +1,4 @@
+import "./demo-shim";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Capacitor } from "@capacitor/core";
@@ -17,6 +18,6 @@ createRoot(document.getElementById("root")!).render(
 );
 
 // Site / appli installée sur ordinateur : ouverture hors connexion. Dans l'appli iPhone/Android les fichiers sont déjà sur l'appareil.
-if ("serviceWorker" in navigator && !Capacitor.isNativePlatform() && import.meta.env.PROD) {
+if ("serviceWorker" in navigator && !Capacitor.isNativePlatform() && import.meta.env.PROD && import.meta.env.VITE_DEMO !== "1") {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
