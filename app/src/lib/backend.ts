@@ -123,3 +123,28 @@ export async function deleteAccount() {
   if (error) throw error;
   await supabase.auth.signOut();
 }
+
+/* ───────── Contenus de la synagogue : cours, vidéos, galerie (tables Supabase, sinon exemples) ───────── */
+export type Course = { id: string; title: string; rav: string; day: string; time: string; place: string; audience: string; description: string };
+export type Video = { id: string; title: string; rav: string; youtube_id: string; published_at: string };
+export type Photo = { id: string; url: string; caption: string; album: string };
+
+const DEMO_COURSES: Course[] = [
+  { id: "c1", title: "Guemara", rav: "Le Rav", day: "Dimanche", time: "09:30", place: "Grande salle", audience: "Hommes", description: "Étude suivie du traité de la semaine." },
+  { id: "c2", title: "Halakha au quotidien", rav: "Le Rav", day: "Lundi", time: "20:30", place: "Beth Hamidrach", audience: "Tous", description: "Les lois pratiques selon Maran." },
+  { id: "c3", title: "Paracha de la semaine", rav: "Le Rav", day: "Mercredi", time: "20:45", place: "Grande salle", audience: "Tous", description: "Lecture et commentaires." },
+  { id: "c4", title: "Cours pour les femmes", rav: "La Rabbanite", day: "Jeudi", time: "14:00", place: "Salle des fêtes", audience: "Femmes", description: "Hilkhot Chabbat et Tsniout." },
+  { id: "c5", title: "Chiour avant Minha", rav: "Le Rav", day: "Chabbat", time: "Avant Minha", place: "Grande salle", audience: "Tous", description: "" }
+];
+const DEMO_VIDEOS: Video[] = [];
+const DEMO_PHOTOS: Photo[] = [{ id: "g1", url: "synagogue-bg.jpg", caption: "La synagogue", album: "La synagogue" }];
+
+async function listTable<T>(table: string, order: string, demo: T[], asc = true): Promise<T[]> {
+  if (!supabase) return demo;
+  const { data, error } = await supabase.from(table).select("*").order(order, { ascending: asc });
+  if (error) throw error;
+  return data as T[];
+}
+export const listCourses = () => listTable<Course>("courses", "position", DEMO_COURSES);
+export const listVideos = () => listTable<Video>("videos", "published_at", DEMO_VIDEOS, false);
+export const listPhotos = () => listTable<Photo>("gallery", "created_at", DEMO_PHOTOS, false);

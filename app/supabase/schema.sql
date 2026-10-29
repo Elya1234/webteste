@@ -100,3 +100,32 @@ insert into public.products (ref, name, description, category, price_cents, stoc
   ('KIP-030', 'Kippa brodée', 'Velours, broderie dorée.', 'Objets', 1200, 30, null),
   ('BOU-040', 'Bougies de Chabbat (boîte de 72)', 'Durée 3 h 30.', 'Objets', 800, 40, null)
 on conflict (ref) do nothing;
+
+-- ───────── Contenus : cours, vidéos, galerie (lecture publique, modification par les administrateurs) ─────────
+create table if not exists public.courses (
+  id uuid primary key default gen_random_uuid(),
+  title text not null, rav text not null default '', day text not null default '', time text not null default '',
+  place text not null default '', audience text not null default 'Tous', description text not null default '',
+  position integer not null default 0
+);
+create table if not exists public.videos (
+  id uuid primary key default gen_random_uuid(),
+  title text not null, rav text not null default '',
+  youtube_id text not null,                 -- la fin du lien YouTube : youtube.com/watch?v=XXXXXXXXXXX
+  published_at date not null default current_date
+);
+create table if not exists public.gallery (
+  id uuid primary key default gen_random_uuid(),
+  url text not null,                        -- photo envoyée dans Supabase → Storage (dossier public « galerie »)
+  caption text not null default '', album text not null default 'La synagogue',
+  created_at timestamptz not null default now()
+);
+do $$ declare t text; begin
+  foreach t in array array['courses', 'videos', 'gallery'] loop
+    execute format('alter table public.%I enable row level security', t);
+    execute format('drop policy if exists "lecture publique" on public.%I', t);
+    execute format('create policy "lecture publique" on public.%I for select using (true)', t);
+    execute format('drop policy if exists "gestion admin" on public.%I', t);
+    execute format('create policy "gestion admin" on public.%I for all using (public.is_admin()) with check (public.is_admin())', t);
+  end loop;
+end $$;

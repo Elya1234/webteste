@@ -7,7 +7,15 @@ l'administration, l'application change aussi.
 | Onglet | Contenu |
 |---|---|
 | Accueil | Date (française + hébraïque), heure, prochain office avec compte à rebours, offices du jour, Chabbat (paracha, entrée, sortie), Roch Hodech, annonces, dédicace |
-| Horaires | 8 jours à l'avance : offices + zmanim de chaque jour |
+| Horaires | Offices des 15 prochains jours |
+| Menu | Photo de la synagogue, recherche, toutes les rubriques |
+| Siddour | Rite séfarade (Edot HaMizrah, Sefaria, domaine public), taille du texte réglable, lecture hors connexion une fois ouvert |
+| Calendrier | Calendrier juif du mois (Hebcal, en français) : fêtes, Roch Hodech, jeûnes, paracha, heures de Chabbat |
+| Zmanim | 30 jours à l'avance |
+| Cours à la synagogue | Programme par jour (table `courses`) |
+| Halakha Yomit / Daf Hayomi | Lecture du jour (Sefaria) : texte original + traduction anglaise |
+| Cours en vidéo | Vidéos YouTube (table `videos`, mettre la fin du lien) |
+| Galerie | Photos par album (table `gallery`) |
 | Boutique | Articles avec **référence**, catégorie, recherche, **commentaire demandé à l'achat** pour certains articles (dédicace, plaque…), panier |
 | Dons | Motif (don, cotisation, kibboud, neder, hazkara…), montant, dédicace |
 | Compte | Création de compte, connexion, mot de passe oublié, profil, historique des commandes et dons, suppression du compte |
