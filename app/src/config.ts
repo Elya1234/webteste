@@ -143,4 +143,9 @@ export const DEFAULT_CONFIG: SynaConfig = {
 
 export const REMOTE_URL: string = import.meta.env.VITE_REMOTE_URL ??
   "https://script.google.com/macros/s/AKfycbxfsUIHwUQCGC3oQvioq3IJFXLBZQHobTr0K2SOBB-LliZ7ZisnSNGuMlHQnEep_Lswdw/exec";
-export const SCHEDULE_URL: string = import.meta.env.VITE_SCHEDULE_URL || "synagogue-horaires.json";
+/* Feuille des horaires du mois : la version en ligne (la même que l'écran TV, mise à jour chaque mois),
+ * puis la copie intégrée à l'application si Internet ne répond pas. */
+export const SCHEDULE_URLS: string[] = [
+  import.meta.env.VITE_SCHEDULE_URL || "https://raw.githubusercontent.com/Elya1234/webteste/main/synagogue-display-theme/assets/synagogue-horaires.json",
+  "synagogue-horaires.json"
+];

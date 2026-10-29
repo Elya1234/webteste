@@ -1,7 +1,7 @@
 /* Données de la synagogue pour toute l'application : réglages partagés avec les écrans TV,
  * zmanim et calendrier Hebcal, calendrier des offices. Tout est gardé sur l'appareil pour marcher hors connexion. */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { DEFAULT_CONFIG, REMOTE_URL, SCHEDULE_URL, type SynaConfig } from "../config";
+import { DEFAULT_CONFIG, REMOTE_URL, SCHEDULE_URLS, type SynaConfig } from "../config";
 import { buildBundle, bundleKey, todayIn, type Bundle, type SchedDay, type Schedule } from "./zmanim";
 import { read, write } from "./storage";
 
@@ -58,13 +58,19 @@ export function SynagogueProvider({ children }: { children: ReactNode }) {
 
   // Calendrier des offices
   useEffect(() => {
-    fetch(SCHEDULE_URL, { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+    const get = (u: string) => fetch(u, { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); });
+    get(SCHEDULE_URLS[0] + (SCHEDULE_URLS[0].includes("?") ? "&" : "?") + "t=" + Date.now()).catch(() => get(SCHEDULE_URLS[1]))
       .then((j: { source?: string; days?: SchedDay[] }) => {
+        // la copie intégrée ne remplace jamais une feuille plus récente déjà reçue
+        const cached = read<Schedule>(K_SCHED);
+        const last = (s: { days?: SchedDay[] } | Schedule | null) => (s && "byDate" in s ? Object.keys(s.byDate).sort().pop() : s?.days?.map((d) => d.date).sort().pop()) || "";
+        if (cached && last(cached) > last(j)) return;
         const byDate: Record<string, SchedDay> = {};
         (j.days || []).forEach((d) => { byDate[d.date] = d; });
         const s = { source: j.source, byDate }; write(K_SCHED, s); setSchedule(s);
       }).catch(() => { /* copie locale */ });
   }, [tick]);
+  useEffect(() => { const id = setInterval(() => setTick((t) => t + 1), 6 * 3600 * 1000); return () => clearInterval(id); }, []);
 
   // Changement de jour : on recharge tout
   useEffect(() => {

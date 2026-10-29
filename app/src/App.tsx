@@ -40,14 +40,12 @@ export default function App() {
   return (
     <div className="shell">
       <header className="topbar">
-        <div className="top-left">
-          <a className="brand" href="#/accueil">
-            <span className="logo serif">✡&#xFE0E;</span>
-            <span><span className="serif gold-text brand-name">{config.name}</span><span className="hebrew brand-he">{config.nameHe}</span></span>
-          </a>
-          {/* Menu (3 traits) à côté du Maguen David, encadré : toutes les rubriques sont là */}
-          <a className={"menu-btn" + (tab === "menu" ? " on" : "")} href="#/menu" aria-current={route === "menu" ? "page" : undefined}><Icon d={MENU_ICON} /><span>Menu</span></a>
-        </div>
+        {/* Menu (3 traits) à gauche ; Maguen David et nom de la synagogue au centre ; panier à droite */}
+        <a className={"menu-btn" + (tab === "menu" ? " on" : "")} href="#/menu" aria-current={route === "menu" ? "page" : undefined}><Icon d={MENU_ICON} /><span>Menu</span></a>
+        <a className="brand" href="#/accueil">
+          <span className="logo serif">✡&#xFE0E;</span>
+          <span><span className="serif gold-text brand-name">{config.name}</span><span className="hebrew brand-he">{config.nameHe}</span></span>
+        </a>
         <a className="cart-btn" href="#/panier" aria-label={"Panier, " + count + " article(s)"}>
           <Icon d={NAV[2].icon} />{count > 0 && <span className="badge">{count}</span>}
         </a>

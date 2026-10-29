@@ -84,3 +84,11 @@ Points de vigilance pour Apple / Google :
 - `src/pages/` : les 6 écrans
 - `supabase/` : base de données et fonctions de paiement
 - `android/`, `ios/` : projets natifs générés par Capacitor (`npx cap sync` après chaque `npm run build`)
+
+## Feuille des horaires du mois (écran TV + application)
+
+Une seule feuille pour tout : `synagogue-display-theme/assets/synagogue-horaires.json` sur la branche `main`.
+L'écran TV et l'application la lisent en ligne (adresse GitHub, actualisée en 5 minutes environ) et gardent une copie
+pour les coupures d'Internet. Chaque mois : envoyer le PDF de la feuille des horaires → il est converti dans ce fichier →
+enregistré sur `main` → les télévisions (toutes les 6 h, ou en rechargeant) et les téléphones (à l'ouverture) suivent seuls.
+Les réglages (offices de la semaine type, annonces, dédicace, ville) restent ceux de l'administration de l'écran.
