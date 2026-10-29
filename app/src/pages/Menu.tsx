@@ -21,20 +21,22 @@ export const LineIcon = ({ d, size = 22 }: { d: string; size?: number }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>
 );
 
-export default function Menu() {
+/** Liste des rubriques (page Menu et panneau qui s'ouvre avec le bouton ☰). */
+export function MenuContent({ onPick, autoFocus = false }: { onPick?: () => void; autoFocus?: boolean }) {
   const { config, bundle } = useSynagogue();
   const [q, setQ] = useState("");
-  const s = q.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-  const shown = ITEMS.filter((i) => !s || (i.label + " " + i.sub + " " + i.he).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(s));
+  const norm = (x: string) => x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const s = norm(q.trim());
+  const shown = ITEMS.filter((i) => !s || norm(i.label + " " + i.sub + " " + i.he).includes(s));
   return (
-    <div className="page narrow">
+    <>
       <section className="banner" style={{ backgroundImage: "linear-gradient(180deg, rgba(4,10,28,.25), rgba(4,10,28,.7)), url(synagogue-bg.jpg)" }}>
         <div className="banner-txt"><div className="serif gold-text banner-name">{config.name}</div><div>{config.cityLabel || bundle?.location.city || ""}</div></div>
       </section>
-      <input className="input" type="search" placeholder="Rechercher" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Rechercher une rubrique" />
+      <input id="menu-search" className="input" type="search" placeholder="Rechercher" value={q} autoFocus={autoFocus} onChange={(e) => setQ(e.target.value)} aria-label="Rechercher une rubrique" />
       <ul className="menu-list card">
         {shown.map((i) => (
-          <li key={i.r}><a href={"#/" + i.r}>
+          <li key={i.r}><a href={"#/" + i.r} onClick={onPick}>
             <span className="menu-ic"><LineIcon d={i.icon} /></span>
             <span className="menu-t"><b>{i.label} <span className="hebrew gold menu-he">{i.he}</span></b><span className="small muted">{i.sub}</span></span>
             <span className="gold" aria-hidden="true">›</span>
@@ -42,6 +44,10 @@ export default function Menu() {
         ))}
         {!shown.length && <li className="muted" style={{ padding: 16 }}>Aucune rubrique trouvée.</li>}
       </ul>
-    </div>
+    </>
   );
+}
+
+export default function Menu() {
+  return <div className="page narrow"><MenuContent /></div>;
 }

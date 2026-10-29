@@ -3,7 +3,8 @@ import { useSynagogue } from "./lib/synagogue";
 import { useCart } from "./lib/cart";
 import Home from "./pages/Home";
 import Horaires, { Zmanim } from "./pages/Horaires";
-import Menu, { ITEMS } from "./pages/Menu";
+import { useEffect, useState } from "react";
+import Menu, { ITEMS, MenuContent } from "./pages/Menu";
 import Siddour from "./pages/Siddour";
 import Calendrier from "./pages/Calendrier";
 import Etude from "./pages/Etude";
@@ -22,10 +23,21 @@ const NAV: { r: Route; label: string; icon: string }[] = [
 // rubriques ouvertes depuis le Menu : petit retour en haut de page (le Siddour a son propre fil d'Ariane)
 const BACK_TO_MENU: Route[] = ["calendrier", "zmanim", "cours", "halakha", "daf", "videos", "galerie", "dons"];
 const MENU_ICON = "M4 6h16M4 12h16M4 18h16";
+const CLOSE_ICON = "M6 6l12 12M18 6 6 18";
 const Icon = ({ d }: { d: string }) => <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>;
 
 export default function App() {
   const { route, params } = useRoute();
+  // ☰ : un toucher ouvre le menu, un deuxième le ferme (aussi : choisir une rubrique, toucher à côté, touche Échap)
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => { setMenuOpen(false); }, [route, params.toString()]);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", k);
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", k); document.body.style.overflow = ""; };
+  }, [menuOpen]);
   const { config } = useSynagogue();
   const lines = useCart();
   const count = lines.reduce((s, l) => s + l.qty, 0);
@@ -41,7 +53,9 @@ export default function App() {
     <div className="shell">
       <header className="topbar">
         {/* Menu (3 traits) à gauche ; Maguen David et nom de la synagogue au centre ; panier à droite */}
-        <a className={"menu-btn" + (tab === "menu" ? " on" : "")} href="#/menu" aria-current={route === "menu" ? "page" : undefined}><Icon d={MENU_ICON} /><span>Menu</span></a>
+        <button type="button" className={"menu-btn" + (menuOpen || tab === "menu" ? " on" : "")} aria-expanded={menuOpen} aria-controls="menu-panel" onClick={() => setMenuOpen((o) => !o)}>
+          <Icon d={menuOpen ? CLOSE_ICON : MENU_ICON} /><span>{menuOpen ? "Fermer" : "Menu"}</span>
+        </button>
         <a className="brand" href="#/accueil">
           <span className="logo serif">✡&#xFE0E;</span>
           <span><span className="serif gold-text brand-name">{config.name}</span><span className="hebrew brand-he">{config.nameHe}</span></span>
@@ -57,6 +71,10 @@ export default function App() {
           </a>
         ))}
       </nav>
+      {menuOpen && <div className="drawer-bg" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
+      <aside id="menu-panel" className={"drawer" + (menuOpen ? " open" : "")} aria-label="Menu" aria-hidden={!menuOpen} inert={!menuOpen}>
+        {menuOpen && <MenuContent onPick={() => setMenuOpen(false)} />}
+      </aside>
       <main className="main">
         {BACK_TO_MENU.includes(route) && <nav className="page back-bar"><a className="crumbs" href="#/menu"><span className="gold">‹ Menu</span></a></nav>}
         {page}
