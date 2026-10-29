@@ -129,3 +129,36 @@ do $$ declare t text; begin
     execute format('create policy "gestion admin" on public.%I for all using (public.is_admin()) with check (public.is_admin())', t);
   end loop;
 end $$;
+
+-- ───────── Espace administrateur : balises des membres et messages ─────────
+alter table public.profiles add column if not exists tags text[] not null default '{}';   -- balises (ex. « Cotisant », « Conseil », « Femmes »)
+alter table public.profiles add column if not exists admin_note text not null default '';
+-- un membre ne peut pas changer ses propres balises ni sa note
+drop policy if exists "profil: modifier soi-même" on public.profiles;
+create policy "profil: modifier soi-même" on public.profiles for update using (id = auth.uid()) with check (
+  id = auth.uid()
+  and is_admin = (select p.is_admin from public.profiles p where p.id = auth.uid())
+  and tags = (select p.tags from public.profiles p where p.id = auth.uid())
+  and admin_note = (select p.admin_note from public.profiles p where p.id = auth.uid()));
+
+create table if not exists public.messages (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  title text not null, body text not null,
+  target text not null default 'Tous',     -- résumé lisible : « Tous », « Balise : Cotisant », « 3 membres »
+  sent_by text not null default 'Administration'
+);
+create table if not exists public.message_recipients (
+  message_id uuid not null references public.messages on delete cascade,
+  user_id uuid not null references auth.users on delete cascade,
+  read_at timestamptz,
+  primary key (message_id, user_id)
+);
+alter table public.messages enable row level security;
+alter table public.message_recipients enable row level security;
+drop policy if exists "messages: reçus" on public.messages;
+create policy "messages: reçus" on public.messages for select using (exists (select 1 from public.message_recipients r where r.message_id = id and r.user_id = auth.uid()));
+drop policy if exists "destinataires: moi" on public.message_recipients;
+create policy "destinataires: moi" on public.message_recipients for select using (user_id = auth.uid());
+drop policy if exists "destinataires: marquer lu" on public.message_recipients;
+create policy "destinataires: marquer lu" on public.message_recipients for update using (user_id = auth.uid()) with check (user_id = auth.uid());

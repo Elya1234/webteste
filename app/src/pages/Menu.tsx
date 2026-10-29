@@ -44,6 +44,7 @@ export function MenuContent({ onPick, autoFocus = false }: { onPick?: () => void
         ))}
         {!shown.length && <li className="muted" style={{ padding: 16 }}>Aucune rubrique trouvée.</li>}
       </ul>
+      <a className="admin-link small" href="#/admin" onClick={onPick}>Espace administrateur</a>
     </>
   );
 }

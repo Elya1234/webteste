@@ -148,3 +148,19 @@ async function listTable<T>(table: string, order: string, demo: T[], asc = true)
 export const listCourses = () => listTable<Course>("courses", "position", DEMO_COURSES);
 export const listVideos = () => listTable<Video>("videos", "published_at", DEMO_VIDEOS, false);
 export const listPhotos = () => listTable<Photo>("gallery", "created_at", DEMO_PHOTOS, false);
+
+/* ───────── Messages reçus de l'administration ───────── */
+export type InboxMessage = { id: string; created_at: string; title: string; body: string; read_at: string | null };
+export async function listInbox(): Promise<InboxMessage[]> {
+  if (!supabase) return read<InboxMessage[]>("app.demo.inbox") || [];
+  const { data, error } = await supabase.from("message_recipients").select("read_at, messages(id, created_at, title, body)").order("message_id");
+  if (error) throw error;
+  type Row = { read_at: string | null; messages: { id: string; created_at: string; title: string; body: string } | null };
+  return ((data || []) as unknown as Row[]).filter((r) => r.messages).map((r) => ({ ...r.messages!, read_at: r.read_at }))
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+export async function markRead(id: string) {
+  if (!supabase) { write("app.demo.inbox", (read<InboxMessage[]>("app.demo.inbox") || []).map((m) => (m.id === id ? { ...m, read_at: m.read_at || new Date().toISOString() } : m))); return; }
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) await supabase.from("message_recipients").update({ read_at: new Date().toISOString() }).eq("message_id", id).eq("user_id", user.id).is("read_at", null);
+}

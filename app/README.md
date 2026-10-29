@@ -44,6 +44,8 @@ aucun paiement n'est encaissé.
    npx supabase secrets set STRIPE_SECRET_KEY=sk_live_… STRIPE_WEBHOOK_SECRET=whsec_… APP_RETURN_URLS=https://app.exemple.fr/
    npx supabase functions deploy checkout
    npx supabase functions deploy stripe-webhook --no-verify-jwt
+   npx supabase secrets set ADMIN_TOKEN_SECRET=<un long texte au hasard> REMOTE_URL=<adresse de la base Google de l'écran>
+   npx supabase functions deploy admin --no-verify-jwt
    ```
    Dans Stripe → Développeurs → Webhooks : ajouter `https://<ref>.supabase.co/functions/v1/stripe-webhook`
    avec les événements `checkout.session.completed` et `checkout.session.expired`.
@@ -92,3 +94,14 @@ L'écran TV et l'application la lisent en ligne (adresse GitHub, actualisée en 
 pour les coupures d'Internet. Chaque mois : envoyer le PDF de la feuille des horaires → il est converti dans ce fichier →
 enregistré sur `main` → les télévisions (toutes les 6 h, ou en rechargeant) et les téléphones (à l'ouverture) suivent seuls.
 Les réglages (offices de la semaine type, annonces, dédicace, ville) restent ceux de l'administration de l'écran.
+
+## Espace administrateur (Menu › Espace administrateur, ou Compte › Espace administrateur)
+
+- Entrée avec **un code, sans e-mail** : le même code que l'administration de l'écran (vérifié par la base Google, blocage
+  après 10 essais faux). Pour un code propre à l'application : `npx supabase secrets set ADMIN_CODE=…`.
+- **Tableau de bord** : membres inscrits, dons du mois, total des dons, boutique, dernières activités, groupes.
+- **Membres** : recherche, filtre par balise, total donné par chacun, fiche avec l'historique complet (dons, dédicaces,
+  articles et commentaires), balises et note privée, sélection pour écrire à plusieurs, export Excel.
+- **Dons et achats** : tout, ou seulement les dons / la boutique, total payé, export Excel (comptabilité, reçus fiscaux).
+- **Messages** : à tous, à une ou plusieurs balises, ou aux membres cochés ; suivi « lu par » ; les membres les lisent dans
+  Compte › Messages.

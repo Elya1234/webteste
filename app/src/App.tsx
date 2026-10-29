@@ -13,6 +13,7 @@ import Boutique from "./pages/Boutique";
 import Panier from "./pages/Panier";
 import Dons from "./pages/Dons";
 import Compte from "./pages/Compte";
+import Admin from "./pages/Admin";
 
 const NAV: { r: Route; label: string; icon: string }[] = [
   { r: "accueil", label: "Accueil", icon: "M3 11 12 4l9 7v9h-6v-6H9v6H3z" },
@@ -44,7 +45,7 @@ export default function App() {
   const page = {
     accueil: <Home />, horaires: <Horaires />, boutique: <Boutique />, panier: <Panier />, dons: <Dons />, compte: <Compte params={params} />,
     menu: <Menu />, siddour: <Siddour params={params} />, calendrier: <Calendrier />, zmanim: <Zmanim />, cours: <Cours />,
-    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />
+    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />
   }[route];
   // les rubriques ouvertes depuis le Menu gardent l'onglet Menu allumé
   const tab = NAV.some((n) => n.r === route) ? route : route === "panier" ? "boutique" : ITEMS.some((i) => i.r === route) ? "menu" : route;

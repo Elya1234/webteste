@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 export const ROUTES = ["accueil", "horaires", "boutique", "panier", "dons", "compte", "menu",
-  "siddour", "calendrier", "zmanim", "cours", "halakha", "daf", "videos", "galerie"] as const;
+  "siddour", "calendrier", "zmanim", "cours", "halakha", "daf", "videos", "galerie", "admin"] as const;
 export type Route = (typeof ROUTES)[number];
 
 function parse(): { route: Route; params: URLSearchParams } {

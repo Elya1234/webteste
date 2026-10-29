@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { deleteAccount, DEMO, euros, listOrders, resetPassword, signIn, signOut, signUp, updateProfile, type Order, type Profile } from "../lib/backend";
+import { deleteAccount, DEMO, euros, listInbox, listOrders, markRead, resetPassword, signIn, signOut, signUp, updateProfile, type InboxMessage, type Order, type Profile } from "../lib/backend";
 import { useAuth } from "../lib/auth";
 import { go, type Route } from "../lib/router";
 
@@ -84,6 +84,7 @@ function Account({ profile }: { profile: Profile }) {
         <label className="field"><span>Téléphone</span><input className="input" type="tel" value={p.phone} onChange={set("phone")} /></label>
         <div className="row-end">{saved && <span className="small gold">Enregistré</span>}<button className="btn">Enregistrer</button></div>
       </form>
+      <Inbox />
       <section className="card">
         <h2 className="serif gold-text">Mes commandes et dons</h2>
         {!orders ? <div className="muted">Chargement…</div> : !orders.length ? <div className="muted">Rien pour le moment.</div> : (
@@ -101,6 +102,30 @@ function Account({ profile }: { profile: Profile }) {
   );
 }
 
+function Inbox() {
+  const [msgs, setMsgs] = useState<InboxMessage[] | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  useEffect(() => { listInbox().then(setMsgs, () => setMsgs([])); }, []);
+  const unread = (msgs || []).filter((m) => !m.read_at).length;
+  function toggle(m: InboxMessage) {
+    setOpen(open === m.id ? null : m.id);
+    if (!m.read_at) { markRead(m.id); setMsgs((l) => (l || []).map((x) => (x.id === m.id ? { ...x, read_at: new Date().toISOString() } : x))); }
+  }
+  return (
+    <section className="card">
+      <div className="card-head"><h2 className="serif gold-text">Messages</h2>{unread > 0 && <span className="badge-inline">{unread} nouveau(x)</span>}</div>
+      {!msgs ? <div className="muted">Chargement…</div> : !msgs.length ? <div className="muted">Aucun message de la synagogue pour le moment.</div> : (
+        <ul className="inbox">{msgs.map((m) => (
+          <li key={m.id} className={m.read_at ? "" : "unread"}>
+            <button onClick={() => toggle(m)} aria-expanded={open === m.id}><b>{m.title}</b><span className="small muted">{new Date(m.created_at).toLocaleDateString("fr-FR")}</span></button>
+            {open === m.id && <p className="msg-body">{m.body}</p>}
+          </li>
+        ))}</ul>
+      )}
+    </section>
+  );
+}
+
 export default function Compte({ params }: { params: URLSearchParams }) {
   const { profile, loading } = useAuth();
   const suite = params.get("suite") as Route | null;
@@ -110,6 +135,7 @@ export default function Compte({ params }: { params: URLSearchParams }) {
       {paid === "ok" && <div className="card ok">Merci ! Votre paiement est bien enregistré. Tizkou lemitsvot.</div>}
       {paid === "annule" && <div className="card">Paiement annulé : rien n'a été prélevé.</div>}
       {loading ? <div className="card muted">Chargement…</div> : profile ? <Account profile={profile} /> : <AuthForm after={suite} />}
+      <a className="admin-link small" href="#/admin">Espace administrateur</a>
     </div>
   );
 }
