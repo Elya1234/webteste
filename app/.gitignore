@@ -1,0 +1,6 @@
+node_modules
+dist
+.env
+ios/App/Pods
+android/.gradle
+android/app/build
