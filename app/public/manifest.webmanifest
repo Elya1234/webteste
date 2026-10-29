@@ -1,0 +1,15 @@
+{
+  "name": "Beth Chalom",
+  "short_name": "Beth Chalom",
+  "description": "Horaires des offices, zmanim, Chabbat, boutique et dons de la synagogue.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050b1f",
+  "theme_color": "#050b1f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
