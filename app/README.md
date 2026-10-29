@@ -129,5 +129,5 @@ Les réglages (offices de la semaine type, annonces, dédicace, ville) restent c
 
 ## Langues
 
-Français et anglais (Menu ou Compte › Français / English ; par défaut la langue du téléphone). Les textes sont dans
+Français et anglais (Menu ou Compte › Français / English ; toujours en français au départ). Les textes sont dans
 `src/lib/i18n.ts` : le français sert de clé, la traduction anglaise à côté. L'espace administrateur reste en français.

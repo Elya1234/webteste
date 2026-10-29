@@ -4,8 +4,8 @@ import { read, write } from "./storage";
 
 export type Lang = "fr" | "en";
 const K = "app.lang";
-const device = (): Lang => (typeof navigator !== "undefined" && /^fr|^he/i.test(navigator.language || "fr") ? "fr" : "en");
-let lang: Lang = read<Lang>(K) || device();
+// toujours en français au départ ; l'anglais seulement si la personne le choisit (Menu ou Compte › English)
+let lang: Lang = read<Lang>(K) || "fr";
 const subs = new Set<() => void>();
 
 export const getLang = () => lang;
