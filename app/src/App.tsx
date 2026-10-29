@@ -19,6 +19,8 @@ const NAV: { r: Route; label: string; icon: string }[] = [
   { r: "boutique", label: "Boutique", icon: "M5 8h14l-1.2 12H6.2zM9 8V6a3 3 0 0 1 6 0v2" },
   { r: "compte", label: "Compte", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9a8 8 0 0 1 16 0" }
 ];
+// rubriques ouvertes depuis le Menu : petit retour en haut de page (le Siddour a son propre fil d'Ariane)
+const BACK_TO_MENU: Route[] = ["calendrier", "zmanim", "cours", "halakha", "daf", "videos", "galerie", "dons"];
 const MENU_ICON = "M4 6h16M4 12h16M4 18h16";
 const Icon = ({ d }: { d: string }) => <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>;
 
@@ -57,7 +59,10 @@ export default function App() {
           </a>
         ))}
       </nav>
-      <main className="main">{page}</main>
+      <main className="main">
+        {BACK_TO_MENU.includes(route) && <nav className="page back-bar"><a className="crumbs" href="#/menu"><span className="gold">‹ Menu</span></a></nav>}
+        {page}
+      </main>
     </div>
   );
 }

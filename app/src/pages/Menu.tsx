@@ -36,8 +36,8 @@ export default function Menu() {
         {shown.map((i) => (
           <li key={i.r}><a href={"#/" + i.r}>
             <span className="menu-ic"><LineIcon d={i.icon} /></span>
-            <span className="menu-t"><b>{i.label}</b><span className="small muted">{i.sub}</span></span>
-            <span className="hebrew muted small">{i.he}</span>
+            <span className="menu-t"><b>{i.label} <span className="hebrew gold menu-he">{i.he}</span></b><span className="small muted">{i.sub}</span></span>
+            <span className="gold" aria-hidden="true">›</span>
           </a></li>
         ))}
         {!shown.length && <li className="muted" style={{ padding: 16 }}>Aucune rubrique trouvée.</li>}

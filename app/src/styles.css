@@ -172,13 +172,7 @@ textarea.input { resize: vertical; }
 .cal-events li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(217,191,140,.12); }
 
 /* Siddour et textes d'étude */
-.sid-list, .sid-sub { list-style: none; margin: 0; padding: 0; }
-.sid-sec { width: 100%; display: grid; grid-template-columns: 1fr auto 20px; align-items: center; gap: 10px; padding: 12px 4px; min-height: 52px;
-  border: 0; border-bottom: 1px solid rgba(217,191,140,.12); background: none; cursor: pointer; text-align: right; }
-.sid-he { font-size: 1.25rem; text-align: right; }
-.sid-sub a { display: flex; justify-content: space-between; flex-direction: row-reverse; gap: 10px; padding: 10px 14px; min-height: 46px; border-bottom: 1px solid rgba(217,191,140,.08); background: rgba(2,5,15,.3); }
-.sid-sub .hebrew { font-size: 1.1rem; }
-.reader-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.reader-bar { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .sid-text { line-height: 1.9; text-align: justify; } .sid-text p { margin: 0 0 .7em; }
 .sid-text small { font-size: .7em; color: var(--muted); } .sid-text big { font-size: 1.1em; color: var(--gold-hi); }
 .study-ref { margin-bottom: 6px; }
@@ -195,3 +189,45 @@ textarea.input { resize: vertical; }
 .gallery img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .lightbox { align-items: center; } .lightbox figure { margin: 0; max-width: 100%; text-align: center; }
 .lightbox img { max-width: 100%; max-height: 80vh; border-radius: 12px; } .lightbox figcaption { margin-top: 8px; }
+
+/* ───────── Finitions : entrée des pages, titres, fil d'Ariane ───────── */
+@media (prefers-reduced-motion: no-preference) {
+  .page { animation: page-in .28s ease-out both; }
+  @keyframes page-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .card, .btn, .chip, .menu-list a, .tile-sq, .nav a { transition: background-color .18s, border-color .18s, transform .18s, box-shadow .18s; }
+  a.card:active, .tile-sq:active, .btn:active { transform: scale(.98); }
+}
+@media (hover: hover) { a.card:hover, .tile-sq:hover { border-color: rgba(217,191,140,.55); } .menu-list a:hover { background: rgba(217,191,140,.06); } }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: .9rem; color: var(--muted); }
+.crumbs a { color: var(--gold); min-height: 32px; display: inline-flex; align-items: center; }
+.crumb-sep { margin: 0 6px; opacity: .6; }
+.page-head { display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
+.page-head h1 { margin: 0; font-size: clamp(1.7rem, 6vw, 2.2rem); font-weight: 600; line-height: 1.15; text-wrap: balance; }
+.page-head p { margin: 0; }
+.head-he { font-size: 1.2rem; text-align: left; }
+.page-head .hebrew, .tile-sq .hebrew, .pl-t .hebrew, .now-card .hebrew, .menu-t .hebrew { text-align: left; }
+
+/* Siddour : rubriques et parties en carrés, prières en liste, tout aligné à gauche */
+.now-card { display: grid; gap: 2px; text-align: left; border-color: rgba(217,191,140,.55);
+  background: linear-gradient(135deg, rgba(217,191,140,.16), rgba(10,22,51,.6)); }
+.now-card b { font-size: 1.5rem; font-weight: 600; } .now-card .hebrew { font-size: 1.15rem; }
+.tiles-sq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 700px) { .tiles-sq { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tile-sq { aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 4px; padding: 16px; text-align: left; min-width: 0; overflow: hidden; }
+.tile-sq b { font-size: 1.1rem; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.tile-sq .hebrew { font-size: 1.05rem; }
+.tile-ic { margin-bottom: auto; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; color: var(--gold); background: rgba(217,191,140,.1); border: 1px solid var(--line); }
+.prayer-list { list-style: none; margin: 0; padding: 4px 0; }
+.prayer-list li + li { border-top: 1px solid rgba(217,191,140,.12); }
+.prayer-list a { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 12px; padding: 12px 16px; min-height: 60px; }
+.pl-n { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: .8rem; border: 1px solid var(--line); color: var(--gold); }
+.pl-t { display: flex; flex-direction: column; min-width: 0; } .pl-t b { font-weight: 600; } .pl-t .hebrew { font-size: 1.05rem; }
+.zoom { display: flex; gap: 8px; flex: none; }
+.reader { padding: 22px 20px; }
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pager-btn { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left; cursor: pointer; color: var(--ivory); padding: 14px; min-width: 0; }
+.pager-btn.right { align-items: flex-end; text-align: right; }
+.pager-btn:disabled { opacity: .4; cursor: default; }
+.pager-btn b { font-weight: 600; overflow-wrap: anywhere; }
+.back-bar { margin-bottom: 8px; }
+.menu-he { font-weight: 400; font-size: .95rem; margin-inline-start: 6px; }
