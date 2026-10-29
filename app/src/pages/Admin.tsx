@@ -4,12 +4,14 @@ import { cancelSubscription, listSubscriptions, refundOrder, adminLogin, adminLo
   type AdminOrder, type Member, type Outgoing, type SentMessage, type Thread } from "../lib/admin";
 import { METHOD, type ChatMessage, type Subscription } from "../lib/backend";
 import { ChatThread } from "./Messages";
+import AdminContenus from "./AdminContenus";
+import { formatPhone } from "../lib/validate";
 import { PURPOSES } from "./Dons";
 import { go } from "../lib/router";
 
 /* Espace administrateur : tableau de bord, membres (balises, historique), dons et achats, messages. */
-type Tab = "tableau" | "membres" | "dons" | "messages";
-const TABS: [Tab, string][] = [["tableau", "Tableau de bord"], ["membres", "Membres"], ["dons", "Paiements"], ["messages", "Messages"]];
+type Tab = "tableau" | "membres" | "dons" | "messages" | "contenus";
+const TABS: [Tab, string][] = [["tableau", "Tableau de bord"], ["membres", "Membres"], ["dons", "Paiements"], ["messages", "Messages"], ["contenus", "Contenus"]];
 const fullName = (m?: Member) => (m ? [m.first_name, m.last_name].filter(Boolean).join(" ") || m.email : "Compte supprimé");
 const REMINDER_TEXT = "Bonjour, petit rappel amical : votre cotisation annuelle n'a pas encore été réglée. Vous pouvez la payer directement dans l'application avec le bouton ci-dessous. Merci pour votre soutien !";
 const dateFr = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
@@ -46,7 +48,7 @@ function Login({ onOk }: { onOk: () => void }) {
         </label>
         {err && <p className="error">{err}</p>}
         <button className="btn full" disabled={busy || !code}>{busy ? "Vérification…" : "Entrer"}</button>
-        {DEMO && <p className="small muted">Démonstration : les membres et les dons affichés sont des exemples.</p>}
+        {DEMO && <p className="small muted">Démonstration : vérification du code par la base de l'écran.</p>}
       </form>
     </div>
   );
@@ -60,7 +62,11 @@ function Dashboard({ tab, onLogout }: { tab: Tab; onLogout: () => void }) {
   const [open, setOpen] = useState<Member | null>(null);
   const reload = () => Promise.all([listMembers(), listAllOrders()]).then(([m, o]) => { setMembers(m); setOrders(o); })
     .catch((e) => { setErr(e.message); if (!isAdmin()) onLogout(); });
-  useEffect(() => { reload(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { reload(); const id = setInterval(reload, 60000); return () => clearInterval(id); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // paiements arrivés depuis la dernière visite de l'administration (sur cet appareil)
+  const [seen, setSeen] = useState(() => { try { return localStorage.getItem("app.admin.seen") || new Date(Date.now() - 30 * 86400000).toISOString(); } catch { return new Date().toISOString(); } });
+  const fresh = (orders || []).filter((o) => (o.status === "paid" || o.status === "processing") && o.created_at > seen);
+  const markSeen = () => { const n = new Date().toISOString(); try { localStorage.setItem("app.admin.seen", n); } catch { /* mode privé */ } setSeen(n); };
   const byId = useMemo(() => new Map((members || []).map((m) => [m.id, m])), [members]);
   const allTags = useMemo(() => Array.from(new Set((members || []).flatMap((m) => m.tags))).sort((a, b) => a.localeCompare(b, "fr")), [members]);
   const [thread, setThread] = useState<string | null>(null);
@@ -71,17 +77,24 @@ function Dashboard({ tab, onLogout }: { tab: Tab; onLogout: () => void }) {
   return (
     <div className="page admin">
       <header className="admin-head">
-        <div className="page-head"><h1 className="serif gold-text">Administration</h1><span className="muted small">{DEMO ? "Démonstration · données d'exemple" : "Connecté pour 12 heures"}</span></div>
+        <div className="page-head"><h1 className="serif gold-text">Administration</h1><span className="muted small">{DEMO ? "Démonstration : seules vos propres actions apparaissent" : "Connecté pour 12 heures"}</span></div>
         <button className="btn ghost" onClick={onLogout}>Se déconnecter</button>
       </header>
       <nav className="admin-tabs" role="tablist">
-        {TABS.map(([id, label]) => <a key={id} role="tab" aria-selected={tab === id} className={tab === id ? "on" : ""} href={"#/admin?tab=" + id}>{label}</a>)}
+        {TABS.map(([id, label]) => <a key={id} role="tab" aria-selected={tab === id} className={tab === id ? "on" : ""} href={"#/admin?tab=" + id}>{label}{id === "dons" && fresh.length > 0 && <span className="badge-inline tab-badge">{fresh.length}</span>}</a>)}
       </nav>
       {err && <div className="card error">{err}</div>}
       {!members || !orders ? <div className="card muted">Chargement…</div> : (
         <>
+          {tab === "tableau" && fresh.length > 0 && (
+            <section className="card notif">
+              <div className="card-head"><h2 className="serif gold-text">{fresh.length} nouveau{fresh.length > 1 ? "x" : ""} paiement{fresh.length > 1 ? "s" : ""}</h2><button className="btn ghost" onClick={markSeen}>Marquer comme vus</button></div>
+              <OrderList orders={fresh} byId={byId} />
+            </section>
+          )}
           {tab === "tableau" && <Overview members={members} orders={orders} byId={byId} allTags={allTags} />}
           {tab === "membres" && <Members members={members} allTags={allTags} onOpen={setOpen} onWrite={write} onRemind={remind} />}
+          {tab === "contenus" && <AdminContenus />}
           {tab === "dons" && <Orders orders={orders} byId={byId} onChanged={reload} />}
           {tab === "messages" && <Messages members={members} byId={byId} allTags={allTags} draft={compose} clearDraft={() => setCompose(null)} thread={thread} setThread={setThread} />}
         </>
@@ -172,7 +185,7 @@ function Members({ members, allTags, onOpen, onWrite, onRemind }: { members: Mem
             <input type="checkbox" aria-label={"Sélectionner " + fullName(m)} checked={sel.has(m.id)} onChange={() => toggle(m.id)} />
             <button className="member-row" onClick={() => onOpen(m)}>
               <span className="avatar" aria-hidden="true">{(m.first_name[0] || m.email[0] || "?").toUpperCase()}</span>
-              <span className="member-main"><b>{fullName(m)}</b><span className="small muted">{m.email}{m.phone && " · " + m.phone}</span>
+              <span className="member-main"><b>{fullName(m)}</b><span className="small muted">{m.email}{m.phone && " · " + formatPhone(m.phone)}</span>
                 {m.tags.length > 0 && <span className="tag-row">{m.tags.map((t) => <span key={t} className="tag">{t}</span>)}</span>}</span>
               <span className="member-sum"><b className="num">{euros(m.donated_cents)}</b><span className="small muted">{m.last_at ? "dernier " + dateFr(m.last_at) : "aucun don"}</span></span>
             </button>
@@ -195,7 +208,7 @@ function MemberSheet({ member, allTags, orders, onClose, onSaved, onWrite, onRem
     <div className="sheet-bg" onClick={onClose}>
       <div className="sheet card member-sheet" role="dialog" aria-label={fullName(member)} onClick={(e) => e.stopPropagation()}>
         <div className="card-head"><h2 className="serif gold-text">{fullName(member)}</h2><button className="btn ghost sm" aria-label="Fermer" onClick={onClose}>✕</button></div>
-        <div className="small muted">{member.email}{member.phone && " · " + member.phone} · inscrit le {dateFr(member.created_at)}</div>
+        <div className="small muted">{member.email}{member.phone && " · " + formatPhone(member.phone)} · inscrit le {dateFr(member.created_at)}</div>
         <div className="stats two">
           <Stat label="Total des dons" value={euros(member.donated_cents)} />
           <Stat label="Boutique" value={euros(member.spent_cents)} />
@@ -401,7 +414,7 @@ function Conversations({ members, byId, open, setOpen }: { members: Member[]; by
         {!open ? <p className="muted">Choisissez une conversation pour lire et répondre.</p> : (
           <>
             <div className="card-head"><div><button className="link conv-back" onClick={() => setOpen(null)}>‹ Conversations</button><h2 className="serif gold-text">{fullName(member)}</h2>
-              <div className="small muted">{member?.email}{member?.phone && " · " + member.phone}</div></div></div>
+              <div className="small muted">{member?.email}{member?.phone && " · " + formatPhone(member.phone)}</div></div></div>
             {!msgs ? <div className="muted">Chargement…</div> :
               <ChatThread messages={msgs} side="admin" onSend={async (t) => { await replyTo(open, t); await loadMsgs(open); loadThreads(); }} />}
           </>

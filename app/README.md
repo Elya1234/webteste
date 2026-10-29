@@ -131,3 +131,29 @@ Les réglages (offices de la semaine type, annonces, dédicace, ville) restent c
 
 Français et anglais (Menu ou Compte › Français / English ; toujours en français au départ). Les textes sont dans
 `src/lib/i18n.ts` : le français sert de clé, la traduction anglaise à côté. L'espace administrateur reste en français.
+
+## Sécurité
+
+- **Mot de passe** : 10 caractères minimum, minuscule + majuscule + chiffre, ni le nom ni l'e-mail, pas de mot trop courant
+  (jauge et règles affichées pendant la saisie). À régler aussi côté serveur, dans Supabase › Authentication › Policies :
+  longueur minimale 10, « lowercase, uppercase letters and digits », **Leaked password protection** activée,
+  **Confirm email** activé. Supabase limite aussi le nombre d'essais de connexion.
+- **Téléphone** : France (+33, 9 chiffres après l'indicatif) ou États-Unis / Canada (+1, 10 chiffres), enregistré au format
+  international ; refusé par la base s'il est mal formé (contrainte SQL `profiles_phone_format`).
+- **Administration** : code vérifié par le serveur, blocage après 10 codes faux en 10 minutes, session de 12 h.
+- **Paiement** : carte saisie chez Stripe uniquement ; prix recalculés par le serveur ; webhook signé.
+- **Données** : chaque membre ne lit que son profil, ses commandes, ses messages (règles RLS de `schema.sql`) ;
+  photos envoyées par lien signé dans le dossier `media`.
+
+## Reçus et notifications
+
+- Après chaque paiement, le membre reçoit : le reçu Stripe par e-mail, un message de confirmation dans sa conversation,
+  et un **reçu** consultable, imprimable et enregistrable en PDF dans Compte › Mes commandes et dons.
+- L'administration voit les **nouveaux paiements** en tête du tableau de bord (pastille sur l'onglet Paiements) et peut
+  recevoir un **e-mail à chaque paiement** : `npx supabase secrets set RESEND_API_KEY=… ADMIN_EMAIL=… MAIL_FROM="Synagogue <contact@…>"`
+  (compte gratuit sur resend.com). Stripe peut aussi envoyer ses propres alertes (Stripe › Paramètres › Notifications).
+
+## Contenus
+
+Aucun exemple : la boutique, les cours, les vidéos et la galerie se remplissent dans Administration › Contenus
+(+ Ajouter, Modifier, Supprimer ; photos envoyées depuis le téléphone, réduites automatiquement).

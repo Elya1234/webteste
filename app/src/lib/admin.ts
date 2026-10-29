@@ -2,7 +2,7 @@
  * - Avec Supabase : tout passe par la fonction serveur « admin », qui vérifie le code et renvoie un jeton de 12 h.
  * - Sans (démonstration) : le code est vérifié par la base Google de l'écran, les données sont des exemples gardés sur l'appareil. */
 import { REMOTE_URL } from "../config";
-import { DEMO, demoChat, saveDemoChat, supabase, K_DEMO_ORDERS, K_DEMO_SUBS, type ChatMessage, type Order, type Profile, type Subscription } from "./backend";
+import { DEMO, demoChat, demoContent, saveDemoChat, saveDemoContent, supabase, K_DEMO_ORDERS, K_DEMO_SUBS, type ContentTable, type ChatMessage, type Order, type Profile, type Subscription } from "./backend";
 import { read, write } from "./storage";
 
 export type Member = { id: string; email: string; created_at: string; first_name: string; last_name: string; phone: string;
@@ -41,45 +41,12 @@ export async function adminLogin(code: string) {
   ss.set("demo");
 }
 
-/* ───────── Exemples pour la démonstration (aucune vraie personne) ───────── */
-const K_DEMO = "app.admin.demo.v1";
+/* ───────── Démonstration : aucune donnée inventée ─────────
+ * Seul le compte créé sur cet appareil apparaît, avec ses vrais paiements et messages de démonstration. */
+const K_DEMO = "app.admin.demo.v2";
 type DemoDb = { members: Member[]; orders: AdminOrder[]; messages: SentMessage[] };
 function demoDb(): DemoDb {
-  const saved = read<DemoDb>(K_DEMO);
-  if (saved) return saved;
-  const d = (n: number) => new Date(Date.now() - n * 86400000).toISOString();
-  const m = (id: string, first: string, last: string, tags: string[], days: number): Member =>
-    ({ id, email: (first + "." + last).toLowerCase().replace(/[^a-z.]/g, "") + "@exemple.fr", created_at: d(days), first_name: first, last_name: last,
-       phone: "06 00 00 00 " + id.slice(1).padStart(2, "0"), tags, note: "", donated_cents: 0, spent_cents: 0, last_at: null });
-  const members = [
-    m("m1", "David", "Exemple", ["Cotisant", "Conseil"], 210), m("m2", "Sarah", "Exemple", ["Cotisant", "Femmes"], 180),
-    m("m3", "Yossef", "Exemple", ["Cotisant"], 150), m("m4", "Rivka", "Exemple", ["Femmes"], 95), m("m5", "Moché", "Exemple", ["Jeunes"], 60),
-    m("m6", "Esther", "Exemple", [], 30), m("m7", "Aharon", "Exemple", ["Conseil"], 12), m("m8", "Léa", "Exemple", ["Jeunes", "Femmes"], 3)
-  ];
-  const o = (id: string, user: string, kind: "shop" | "donation", cents: number, label: string, days: number, extra: Partial<AdminOrder> = {}): AdminOrder =>
-    ({ id, user_id: user, kind, total_cents: cents, label, status: "paid", created_at: d(days), payment_method: "card", refunded_cents: 0, ...extra });
-  const orders: AdminOrder[] = [
-    o("o1", "m1", "donation", 36000, "Cotisation annuelle", 200, { purpose: "Cotisation annuelle" }),
-    o("o2", "m1", "donation", 18000, "Kibboud / Mitsva (montée à la Torah)", 40, { purpose: "Kibboud", dedication: "Leilouy Nichmat de mon père" }),
-    o("o3", "m2", "donation", 36000, "Cotisation annuelle", 170, { purpose: "Cotisation annuelle" }),
-    o("o4", "m2", "shop", 3600, "1 article(s)", 25, { order_items: [{ ref: "DED-010", name: "Dédicace d'un livre de la synagogue", qty: 1, unit_cents: 3600, comment: "Refoua Chelema" }] }),
-    o("o5", "m3", "donation", 5400, "Hazkara / Leilouy Nichmat", 14, { purpose: "Hazkara", dedication: "Leilouy Nichmat" }),
-    o("o6", "m4", "shop", 3700, "2 article(s)", 9, { order_items: [{ ref: "SID-001", name: "Siddour Patah Eliyahou", qty: 1, unit_cents: 2500, comment: "" }, { ref: "KIP-030", name: "Kippa brodée", qty: 1, unit_cents: 1200, comment: "" }] }),
-    o("o7", "m5", "donation", 1800, "Don général", 5, { purpose: "Don général" }),
-    o("o8", "m7", "donation", 10000, "Neder", 2, { purpose: "Neder", payment_method: "apple_pay" }),
-    o("o9", "m2", "donation", 3600, "Don général (mensuel)", 1, { purpose: "Don général", stripe_subscription_id: "sub_ex1", payment_method: "sepa_debit" }),
-    o("o10", "m5", "donation", 5000, "Don général", 0, { purpose: "Don général", status: "processing", payment_method: "sepa_debit" })
-  ];
-  const messages: SentMessage[] = [{ id: "s1", created_at: d(6), title: "Horaires de Souccot", body: "Les horaires des offices de Souccot sont disponibles dans l'application.", target: "Tous", sent: 8, read: 6 }];
-  const db = { members, orders, messages };
-  write(K_DEMO, db);
-  saveDemoChat({ ...demoChat(),
-    m3: [{ id: "x1", user_id: "m3", from_admin: false, kind: "text", body: "Bonjour, est-ce qu'il y aura un cours vendredi matin ?", created_at: d(1), read_at: null }],
-    m6: [{ id: "x2", user_id: "m6", from_admin: true, kind: "reminder", title: "Cotisation annuelle", body: "Bonjour Esther, petit rappel : la cotisation annuelle n'a pas encore été réglée. Vous pouvez la payer directement dans l'application. Merci !",
-      amount_cents: 36000, purpose: "Cotisation annuelle", created_at: d(3), read_at: d(2) },
-      { id: "x3", user_id: "m6", from_admin: false, kind: "text", body: "Merci, je m'en occupe cette semaine.", created_at: d(2), read_at: d(2) }]
-  }); // exemples ajoutés une seule fois, avec la création des données de démonstration
-  return db;
+  return read<DemoDb>(K_DEMO) || { members: [], orders: [], messages: [] };
 }
 function withTotals(db: DemoDb): Member[] {
   return db.members.map((mb) => {
@@ -177,14 +144,42 @@ export async function refundOrder(id: string, amount_cents?: number) {
 }
 export async function listSubscriptions(): Promise<Subscription[]> {
   if (!DEMO) return (await call<{ subscriptions: Subscription[] }>("subscriptions")).subscriptions;
-  const ex: Subscription[] = [{ id: "sub_ex1", user_id: "m2", amount_cents: 3600, purpose: "Don général", status: "active", created_at: new Date(Date.now() - 31 * 86400000).toISOString() },
-    { id: "sub_ex2", user_id: "m1", amount_cents: 1800, purpose: "Kiddouch / Séouda", status: "active", created_at: new Date(Date.now() - 90 * 86400000).toISOString() }];
   const canceled = read<string[]>(K_SUBS_CANCELED) || [];
-  return [...(read<Subscription[]>(K_DEMO_SUBS) || []), ...ex].map((x) => (canceled.includes(x.id) ? { ...x, status: "canceled" } : x));
+  return (read<Subscription[]>(K_DEMO_SUBS) || []).map((x) => (canceled.includes(x.id) ? { ...x, status: "canceled" } : x));
 }
 const K_SUBS_CANCELED = "app.admin.demo.subscanceled";
 export async function cancelSubscription(id: string) {
   if (!DEMO) { await call("cancelSub", { id }); return; }
   write(K_SUBS_CANCELED, [...(read<string[]>(K_SUBS_CANCELED) || []), id]);
   write(K_DEMO_SUBS, (read<Subscription[]>(K_DEMO_SUBS) || []).map((x) => (x.id === id ? { ...x, status: "canceled", canceled_at: new Date().toISOString() } : x)));
+}
+
+/* ───────── Contenus : boutique, cours, vidéos, galerie ───────── */
+export type ContentRow = Record<string, unknown> & { id?: string };
+export async function saveContent(table: ContentTable, row: ContentRow): Promise<void> {
+  if (!DEMO) { await call("saveContent", { table, row }); return; }
+  const rows = demoContent<ContentRow>(table);
+  const id = row.id || table.slice(0, 1) + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const next = { ...row, id, ...(row.id ? {} : { created_at: new Date().toISOString() }) };
+  saveDemoContent(table, row.id ? rows.map((r) => (r.id === row.id ? { ...r, ...next } : r)) : [...rows, next]);
+}
+export async function deleteContent(table: ContentTable, id: string) {
+  if (!DEMO) { await call("deleteContent", { table, id }); return; }
+  saveDemoContent(table, demoContent<ContentRow>(table).filter((r) => r.id !== id));
+}
+
+/** Photo : réduite à 1600 px (JPEG) sur l'appareil, puis envoyée (Supabase Storage) ; démonstration : gardée sur l'appareil. */
+export async function uploadImage(file: File): Promise<string> {
+  if (!/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.type) || file.size > 15 * 1024 * 1024) throw new Error("Photo JPEG, PNG ou WebP de moins de 15 Mo.");
+  const bmp = await createImageBitmap(file);
+  const scale = Math.min(1, (DEMO ? 1000 : 1600) / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+  c.getContext("2d")!.drawImage(bmp, 0, 0, c.width, c.height);
+  if (DEMO) return c.toDataURL("image/jpeg", 0.78);
+  const blob: Blob = await new Promise((r) => c.toBlob((b) => r(b!), "image/jpeg", 0.85));
+  const { path, token, publicUrl } = await call<{ path: string; token: string; publicUrl: string }>("uploadUrl", { name: file.name });
+  const { error } = await supabase!.storage.from("media").uploadToSignedUrl(path, token, blob, { contentType: "image/jpeg" });
+  if (error) throw new Error("Envoi de la photo impossible. Réessayez.");
+  return publicUrl;
 }

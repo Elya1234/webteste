@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { LangSwitch } from "../components-lang";
 import { demoCancelSubscription, listMySubscriptions, METHOD, openPaymentPortal, type Subscription, deleteAccount, DEMO, euros, listOrders, resetPassword, signIn, signOut, signUp, unreadCount, updateProfile, type Order, type Profile } from "../lib/backend";
 import { useAuth } from "../lib/auth";
+import { PasswordField, PhoneField } from "../components-forms";
+import { checkPassword, countryOf, localPart, normalizePhone, type Country } from "../lib/validate";
 import { go, type Route } from "../lib/router";
 
 export const STATUS: Record<Order["status"], string> = { pending: "En attente", processing: "Prélèvement en cours", paid: "Payé", failed: "Échoué", cancelled: "Annulé", refunded: "Remboursé" };
@@ -11,22 +13,32 @@ export const STATUS: Record<Order["status"], string> = { pending: "En attente", 
 function AuthForm({ after }: { after: Route | null }) {
   const { refresh } = useAuth();
   const [mode, setMode] = useState<"in" | "up">("up");
-  const [f, setF] = useState({ email: "", password: "", first_name: "", last_name: "", phone: "" });
+  const [f, setF] = useState({ email: "", password: "", first_name: "", last_name: "" });
+  const [phone, setPhone] = useState<{ country: Country; raw: string }>({ country: "FR", raw: "" });
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
 
   async function submit(e: React.FormEvent) {
-    e.preventDefault(); setBusy(true); setMsg(t(""));
+    e.preventDefault(); setMsg("");
+    const e164 = phone.raw.trim() ? normalizePhone(phone.country, phone.raw) : "";
+    if (mode === "up") {
+      if (e164 === null) { setMsg(t("Vérifiez le numéro de téléphone.")); return; }
+      if (!checkPassword(f.password, [f.email, f.first_name, f.last_name]).ok) { setMsg(t("Le mot de passe ne respecte pas les règles ci-dessous.")); return; }
+    }
+    setBusy(true);
     try {
       if (mode === "up") {
-        const r = await signUp(f.email.trim(), f.password, { first_name: f.first_name.trim(), last_name: f.last_name.trim(), phone: f.phone.trim() });
+        const r = await signUp(f.email.trim(), f.password, { first_name: f.first_name.trim(), last_name: f.last_name.trim(), phone: e164 || "" });
         if (r.needsConfirmation) { setMsg(t("Compte créé. Ouvrez l'e-mail reçu pour le confirmer, puis connectez-vous.")); setMode("in"); setBusy(false); return; }
       } else await signIn(f.email.trim(), f.password);
       await refresh();
       if (after) go(after);
     } catch (err) {
-      setMsg(/Invalid login/i.test(String(err)) ? t("E-mail ou mot de passe incorrect.") : /registered/i.test(String(err)) ? t("Un compte existe déjà avec cet e-mail : connectez-vous.") : t("Une erreur est survenue. Réessayez."));
+      const m = String(err);
+      setMsg(/Invalid login/i.test(m) ? t("E-mail ou mot de passe incorrect.") : /registered/i.test(m) ? t("Un compte existe déjà avec cet e-mail : connectez-vous.")
+        : /too_many|rate limit/i.test(m) ? t("Trop d'essais. Réessayez dans quelques minutes.") : /not confirmed/i.test(m) ? t("Confirmez votre adresse e-mail avant de vous connecter.")
+        : /weak_password|weak|Password should/i.test(m) ? t("Le mot de passe ne respecte pas les règles ci-dessous.") : /bad_phone/.test(m) ? t("Vérifiez le numéro de téléphone.") : t("Une erreur est survenue. Réessayez."));
     }
     setBusy(false);
   }
@@ -45,13 +57,13 @@ function AuthForm({ after }: { after: Route | null }) {
       {after && <p className="small muted">{t("Connectez-vous pour continuer vers le paiement.")}</p>}
       {mode === "up" && (
         <div className="grid-2 tight">
-          <label className="field"><span>{t("Prénom")}</span><input className="input" required autoComplete="given-name" value={f.first_name} onChange={set("first_name")} /></label>
-          <label className="field"><span>{t("Nom")}</span><input className="input" required autoComplete="family-name" value={f.last_name} onChange={set("last_name")} /></label>
+          <label className="field"><span>{t("Prénom")}</span><input className="input" required autoComplete="given-name" maxLength={60} value={f.first_name} onChange={set("first_name")} /></label>
+          <label className="field"><span>{t("Nom")}</span><input className="input" required autoComplete="family-name" maxLength={60} value={f.last_name} onChange={set("last_name")} /></label>
         </div>
       )}
-      <label className="field"><span>{t("E-mail")}</span><input className="input" type="email" required autoComplete="email" value={f.email} onChange={set("email")} /></label>
-      {mode === "up" && <label className="field"><span>{t("Téléphone (facultatif)")}</span><input className="input" type="tel" autoComplete="tel" value={f.phone} onChange={set("phone")} /></label>}
-      <label className="field"><span>{t("Mot de passe")}</span><input className="input" type="password" required minLength={8} autoComplete={mode === "up" ? "new-password" : "current-password"} value={f.password} onChange={set("password")} /></label>
+      <label className="field"><span>{t("E-mail")}</span><input className="input" type="email" required autoComplete="email" maxLength={254} value={f.email} onChange={set("email")} /></label>
+      {mode === "up" && <PhoneField id="signup-phone" value={phone} onChange={(v) => { setPhone(v); setMsg(""); }} />}
+      <PasswordField id={mode === "up" ? "signup-password" : "signin-password"} value={f.password} onChange={(v) => { setF({ ...f, password: v }); setMsg(""); }} isNew={mode === "up"} personal={[f.email, f.first_name, f.last_name]} />
       {msg && <p className="small">{msg}</p>}
       <button className="btn full" disabled={busy}>{busy ? "…" : mode === "up" ? t("Créer mon compte") : t("Se connecter")}</button>
       {mode === "in" && <button type="button" className="link" onClick={forgot}>{t("Mot de passe oublié ?")}</button>}
@@ -66,6 +78,8 @@ function Account({ profile }: { profile: Profile }) {
   const [p, setP] = useState(profile);
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [saved, setSaved] = useState(false);
+  const [pErr, setPErr] = useState("");
+  const [phone, setPhone] = useState<{ country: Country; raw: string }>(() => ({ country: countryOf(profile.phone || ""), raw: profile.phone ? localPart(profile.phone) : "" }));
   useEffect(() => {
     // au retour du paiement (navigateur → appli), la liste se met à jour
     const load = () => listOrders().then(setOrders, () => setOrders([]));
@@ -78,14 +92,20 @@ function Account({ profile }: { profile: Profile }) {
 
   return (
     <>
-      <form className="card" onSubmit={(e) => { e.preventDefault(); updateProfile(p).then(() => { setSaved(true); refresh(); }); }}>
+      <form className="card" onSubmit={(e) => {
+        e.preventDefault(); setPErr("");
+        const e164 = phone.raw.trim() ? normalizePhone(phone.country, phone.raw) : "";
+        if (e164 === null) { setPErr(t("Vérifiez le numéro de téléphone.")); return; }
+        updateProfile({ ...p, first_name: p.first_name.trim(), last_name: p.last_name.trim(), phone: e164 }).then(() => { setSaved(true); refresh(); }, () => setPErr(t("Une erreur est survenue. Réessayez.")));
+      }}>
         <h2 className="serif gold-text">{t("Mon compte")}</h2>
         <div className="small muted">{p.email}</div>
         <div className="grid-2 tight">
-          <label className="field"><span>{t("Prénom")}</span><input className="input" value={p.first_name} onChange={set("first_name")} /></label>
-          <label className="field"><span>{t("Nom")}</span><input className="input" value={p.last_name} onChange={set("last_name")} /></label>
+          <label className="field"><span>{t("Prénom")}</span><input className="input" required maxLength={60} value={p.first_name} onChange={set("first_name")} /></label>
+          <label className="field"><span>{t("Nom")}</span><input className="input" required maxLength={60} value={p.last_name} onChange={set("last_name")} /></label>
         </div>
-        <label className="field"><span>{t("Téléphone")}</span><input className="input" type="tel" value={p.phone} onChange={set("phone")} /></label>
+        <PhoneField id="profile-phone" value={phone} onChange={(v) => { setPhone(v); setSaved(false); }} />
+        {pErr && <p className="error small">{pErr}</p>}
         <div className="row-end">{saved && <span className="small gold">{t("Enregistré")}</span>}<button className="btn">{t("Enregistrer")}</button></div>
       </form>
       <Inbox />
@@ -95,7 +115,7 @@ function Account({ profile }: { profile: Profile }) {
         {!orders ? <div className="muted">{t("Chargement…")}</div> : !orders.length ? <div className="muted">{t("Rien pour le moment.")}</div> : (
           <ul className="orders">{orders.map((o) => (
             <li key={o.id}><div><b>{o.kind === "donation" ? t("Don · ") : t("Boutique · ")}{o.label}</b><div className="small muted">{new Date(o.created_at).toLocaleDateString(loc())} · n° {o.id.slice(0, 8)}{o.payment_method && " · " + t(METHOD[o.payment_method] || o.payment_method)}</div>
-              {o.receipt_url && <a className="small gold" href={o.receipt_url} target="_blank" rel="noreferrer">{t("Reçu")} ›</a>}</div>
+              {(o.status === "paid" || o.status === "processing" || o.status === "refunded") && <a className="small gold" href={"#/recu?id=" + encodeURIComponent(o.id)}>{t("Reçu")} ›</a>}</div>
               <div className="right"><b className="num">{euros(o.total_cents)}</b><div className={"small status-" + o.status}>{t(STATUS[o.status])}</div>{!!o.refunded_cents && o.status !== "refunded" && <div className="small muted">{t("Remboursé")} {euros(o.refunded_cents)}</div>}</div></li>
           ))}</ul>
         )}

@@ -91,11 +91,19 @@ drop policy if exists "lignes: les miennes" on public.order_items;
 create policy "lignes: les miennes" on public.order_items for select using (
   exists (select 1 from public.orders o where o.id = order_id and (o.user_id = auth.uid() or public.is_admin())));
 
--- Profil créé automatiquement à l'inscription
+-- Téléphone : vide, ou numéro français (+33 et 9 chiffres) ou nord-américain (+1 et 10 chiffres). Vérifié ici, côté serveur.
+alter table public.profiles drop constraint if exists profiles_phone_format;
+alter table public.profiles add constraint profiles_phone_format check (phone = '' or phone ~ '^\+(33[1-9][0-9]{8}|1[2-9][0-9]{2}[2-9][0-9]{6})$');
+alter table public.profiles drop constraint if exists profiles_names_length;
+alter table public.profiles add constraint profiles_names_length check (length(first_name) <= 60 and length(last_name) <= 60);
+
+-- Profil créé automatiquement à l'inscription (un numéro mal formé est ignoré plutôt que d'empêcher l'inscription)
 create or replace function public.handle_new_user() returns trigger language plpgsql security definer set search_path = public as $$
+declare ph text := coalesce(new.raw_user_meta_data->>'phone', '');
 begin
+  if ph !~ '^\+(33[1-9][0-9]{8}|1[2-9][0-9]{2}[2-9][0-9]{6})$' then ph := ''; end if;
   insert into public.profiles (id, first_name, last_name, phone)
-  values (new.id, coalesce(new.raw_user_meta_data->>'first_name', ''), coalesce(new.raw_user_meta_data->>'last_name', ''), coalesce(new.raw_user_meta_data->>'phone', ''));
+  values (new.id, left(coalesce(new.raw_user_meta_data->>'first_name', ''), 60), left(coalesce(new.raw_user_meta_data->>'last_name', ''), 60), ph);
   return new;
 end $$;
 drop trigger if exists on_auth_user_created on auth.users;
@@ -110,15 +118,7 @@ end $$;
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
 
--- Articles de départ (à modifier ensuite dans Supabase → Table Editor → products)
-insert into public.products (ref, name, description, category, price_cents, stock, comment_label) values
-  ('SID-001', 'Siddour Patah Eliyahou', 'Rite séfarade, traduction et phonétique.', 'Livres', 2500, 12, null),
-  ('MAH-002', 'Mahzor Roch Hachana – Kippour', 'Édition complète, 2 volumes.', 'Livres', 4500, 6, null),
-  ('DED-010', 'Dédicace d''un livre de la synagogue', 'Une étiquette à votre nom (ou à la mémoire d''un proche) est collée dans un livre.', 'Dédicaces', 3600, null, 'Nom à inscrire (Leilouy Nichmat, Refoua Chelema…)'),
-  ('PLQ-020', 'Plaque commémorative', 'Plaque gravée posée au mur du souvenir.', 'Dédicaces', 18000, null, 'Texte de la plaque (nom, nom du père / de la mère, date)'),
-  ('KIP-030', 'Kippa brodée', 'Velours, broderie dorée.', 'Objets', 1200, 30, null),
-  ('BOU-040', 'Bougies de Chabbat (boîte de 72)', 'Durée 3 h 30.', 'Objets', 800, 40, null)
-on conflict (ref) do nothing;
+-- Aucun article de départ : la boutique se remplit depuis l'application (Administration › Contenus).
 
 -- ───────── Contenus : cours, vidéos, galerie (lecture publique, modification par les administrateurs) ─────────
 create table if not exists public.courses (
@@ -197,3 +197,12 @@ create or replace function public.mark_chat_read() returns void language sql sec
 $$;
 revoke all on function public.mark_chat_read() from public, anon;
 grant execute on function public.mark_chat_read() to authenticated;
+
+-- Essais de code administrateur (blocage après 10 essais faux en 10 minutes) ; lisible seulement par le serveur
+create table if not exists public.admin_attempts (id bigint generated always as identity primary key, at timestamptz not null default now());
+alter table public.admin_attempts enable row level security;
+
+-- Photos (boutique, galerie) : dossier public « media », envoi seulement par le serveur (lien signé)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('media', 'media', true, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do nothing;

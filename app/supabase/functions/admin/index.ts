@@ -25,13 +25,22 @@ async function validToken(t: string) {
 }
 async function checkCode(code: string) {
   const own = Deno.env.get("ADMIN_CODE");
-  if (own) return code === own;
+  if (own) {
+    // 10 essais faux en 10 minutes → blocage (même règle que la base Google de l'écran)
+    const since = new Date(Date.now() - 10 * 60000).toISOString();
+    const { count } = await admin.from("admin_attempts").select("*", { count: "exact", head: true }).gte("at", since);
+    if ((count || 0) >= 10) return false;
+    const good = code.length === own.length && crypto.subtle.timingSafeEqual
+      ? crypto.subtle.timingSafeEqual(enc.encode(code), enc.encode(own)) : code === own;
+    if (!good) await admin.from("admin_attempts").insert({});
+    return good;
+  }
   const r = await fetch(Deno.env.get("REMOTE_URL")!, { method: "POST", body: JSON.stringify({ action: "check", code }) });
   const j = await r.json().catch(() => ({}));
   return j.ok === true;
 }
 
-type Body = { action: string; code?: string; token?: string; id?: string; tags?: string[]; note?: string; body?: string; amount_cents?: number;
+type Body = { action: string; table?: string; row?: Record<string, unknown>; name?: string; code?: string; token?: string; id?: string; tags?: string[]; note?: string; body?: string; amount_cents?: number;
   message?: { title: string; body: string; to: "all" | "tags" | "users"; tags?: string[]; user_ids?: string[];
     kind?: "broadcast" | "reminder"; amount_cents?: number; purpose?: string } };
 
@@ -121,6 +130,36 @@ Deno.serve(async (req) => {
     const { error } = await admin.from("chat_messages").insert({ user_id: b.id, from_admin: true, kind: "text", body });
     return error ? json({ error: error.message }, 500) : json({ ok: true });
   }
+  // ───────── contenus : boutique, cours, vidéos, galerie (champs autorisés seulement) ─────────
+  const FIELDS: Record<string, string[]> = {
+    products: ["ref", "name", "description", "category", "price_cents", "image_url", "stock", "comment_label", "active"],
+    courses: ["title", "rav", "day", "time", "place", "audience", "description", "position"],
+    videos: ["title", "rav", "youtube_id", "published_at"],
+    gallery: ["url", "caption", "album"]
+  };
+  if ((b.action === "saveContent" || b.action === "deleteContent") && !(b.table && FIELDS[b.table])) return json({ error: "Table inconnue" }, 400);
+  if (b.action === "saveContent" && b.row) {
+    const row: Record<string, unknown> = {};
+    for (const k of FIELDS[b.table!]) if (k in b.row) row[k] = typeof b.row[k] === "string" ? String(b.row[k]).slice(0, 2000) : b.row[k];
+    if (b.table === "products" && !(Number(row.price_cents) > 0)) return json({ error: "Prix invalide." }, 400);
+    if (b.table === "videos" && !/^[\w-]{11}$/.test(String(row.youtube_id || ""))) return json({ error: "Lien YouTube invalide." }, 400);
+    const id = b.row.id ? String(b.row.id) : null;
+    const { error } = id ? await admin.from(b.table!).update(row).eq("id", id) : await admin.from(b.table!).insert(row);
+    return error ? json({ error: /duplicate/.test(error.message) ? "Cette référence existe déjà." : error.message }, 400) : json({ ok: true });
+  }
+  if (b.action === "deleteContent" && b.id) {
+    const { error } = b.table === "products"
+      ? await admin.from("products").update({ active: false }).eq("id", b.id) // un article déjà vendu reste dans l'historique
+      : await admin.from(b.table!).delete().eq("id", b.id);
+    return error ? json({ error: error.message }, 500) : json({ ok: true });
+  }
+  if (b.action === "uploadUrl") {
+    const path = new Date().toISOString().slice(0, 7) + "/" + crypto.randomUUID() + ".jpg";
+    const { data, error } = await admin.storage.from("media").createSignedUploadUrl(path);
+    if (error || !data) return json({ error: "Envoi impossible." }, 500);
+    return json({ path, token: data.token, publicUrl: admin.storage.from("media").getPublicUrl(path).data.publicUrl });
+  }
+
   // ───────── paiements : remboursement, dons mensuels ─────────
   if (b.action === "refund" && b.id) {
     const { data: o } = await admin.from("orders").select("*").eq("id", b.id).single();

@@ -50,7 +50,7 @@ export default function Boutique() {
             </div>
           </article>
         ))}
-        {!shown.length && <div className="muted">{t("Aucun article trouvé.")}</div>}
+        {!shown.length && <div className="muted">{products.length ? t("Aucun article trouvé.") : t("La boutique sera bientôt ouverte.")}</div>}
       </div>
 
       {picked && (

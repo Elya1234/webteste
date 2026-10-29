@@ -65,7 +65,7 @@ export function Galerie() {
   return (
     <div className="page">
       <h2 className="serif gold-text">{t("Galerie")} <span className="hebrew">גלריה</span></h2>
-      {!v ? <Loading err={err} /> : albums.map((a) => (
+      {!v ? <Loading err={err} /> : !v.length ? <div className="card muted">{t("Les photos seront bientôt ajoutées ici.")}</div> : albums.map((a) => (
         <section key={a}>
           <h3 className="serif">{a}</h3>
           <div className="gallery">{v.filter((p) => p.album === a).map((p) => <button key={p.id} onClick={() => setOpen(p)}><img src={p.url} alt={p.caption} loading="lazy" /></button>)}</div>
