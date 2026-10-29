@@ -11,9 +11,10 @@ body { margin: 0; min-height: 100vh; color: var(--ivory); font: 16px/1.45 var(--
 /* Fond : la photo de la synagogue assombrie, comme sur l'écran TV (calque fixe : marche aussi sur iPhone) */
 body::before, body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 body::before { background: url("./assets/synagogue-bg.jpg") center / cover no-repeat; }
+/* mêmes réglages que l'écran TV (synagogue-display.css) : photo bien visible, assombrie en haut et en bas */
 body::after { background:
-  radial-gradient(1200px 700px at 15% -10%, rgba(28,58,138,.45), transparent 60%),
-  linear-gradient(180deg, rgba(4,10,28,.72) 0%, rgba(4,10,28,.55) 35%, rgba(4,10,28,.6) 70%, rgba(2,5,15,.85) 100%); }
+  radial-gradient(1100px 650px at 50% 45%, rgba(4,10,28,.08), rgba(4,10,28,.28) 75%),
+  linear-gradient(180deg, rgba(4,10,28,.5) 0%, rgba(4,10,28,.1) 28%, rgba(4,10,28,.12) 75%, rgba(2,5,15,.6) 100%); }
 h2, h3 { margin: 0 0 .6rem; font-weight: 600; }
 h2 { font-size: 1.6rem; } h3 { font-size: 1.25rem; }
 p { margin: .4rem 0; }
@@ -242,7 +243,7 @@ textarea.input { resize: vertical; }
 
 /* ───────── Relief : surfaces bombées, reflet en haut, ombre portée ───────── */
 :root { --relief: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(0,0,0,.45), 0 1px 0 rgba(217,191,140,.08), 0 10px 24px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.35); }
-.card { box-shadow: var(--relief); background: linear-gradient(180deg, rgba(22,38,80,.62) 0%, rgba(10,22,51,.62) 45%, rgba(5,11,31,.74) 100%); border-color: rgba(217,191,140,.28); }
+.card { box-shadow: var(--relief); background: linear-gradient(180deg, rgba(10,22,51,.5), rgba(5,11,31,.6)); border-color: rgba(217,191,140,.28); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .btn { box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 0 rgba(120,90,30,.35), 0 6px 14px rgba(0,0,0,.4); text-shadow: 0 1px 0 rgba(255,255,255,.35); }
 .btn.ghost { box-shadow: inset 0 1px 0 rgba(255,255,255,.1), inset 0 -1px 0 rgba(0,0,0,.4), 0 4px 10px rgba(0,0,0,.3); background: linear-gradient(180deg, rgba(28,48,96,.5), rgba(5,11,31,.5)); text-shadow: none; }
 .logo, .cart-btn, .menu-btn, .tile-ic, .menu-ic, .pl-n { box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.45), 0 4px 10px rgba(0,0,0,.35);
@@ -256,3 +257,15 @@ textarea.input { resize: vertical; }
 .topbar { box-shadow: 0 6px 20px rgba(0,0,0,.45), inset 0 -1px 0 rgba(217,191,140,.25); }
 .nav { box-shadow: 0 -6px 20px rgba(0,0,0,.45); }
 .nav a.on { background: linear-gradient(180deg, rgba(217,191,140,.16), rgba(217,191,140,.04)); box-shadow: inset 0 1px 0 rgba(255,255,255,.1); }
+
+/* Accueil : bandeau du jour, zmanim essentiels, pied de page */
+.today-band { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.today-band span { padding: 6px 12px; border-radius: 999px; font-size: .9rem; border: 1px solid rgba(217,191,140,.5); color: var(--gold-hi);
+  background: linear-gradient(180deg, rgba(240,220,174,.18), rgba(217,191,140,.05)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 3px 8px rgba(0,0,0,.3); }
+.zm-mini { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.zm-mini div { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.25); }
+.zm-mini b { font-size: 1.35rem; }
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.card-head a { color: var(--gold); font-size: .9rem; white-space: nowrap; }
+.site-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; font-size: .8rem; color: var(--muted); padding: 4px 2px; }

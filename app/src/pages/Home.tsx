@@ -1,5 +1,5 @@
 import { useNow, useSynagogue } from "../lib/synagogue";
-import { clean, frenchDate, hebrewDate, hm, nextOffice, nowParts, officeView, parashaName, todayIn, upcoming, wdName, weekdayIn, type OfficeGroup } from "../lib/zmanim";
+import { clean, frenchDate, hebrewDate, hm, nextOffice, nowParts, officeView, parashaName, resolveZman, todayIn, upcoming, wdName, weekdayIn, type OfficeGroup } from "../lib/zmanim";
 import { go } from "../lib/router";
 
 
@@ -40,6 +40,12 @@ export default function Home() {
   const view = officeView(config, schedule, today, wd === 6 ? "shabbat" : wd === 5 ? "friday" : "weekday");
   const next = nextOffice(view, nowSec);
   const remain = next ? next.min * 60 - nowSec : 0;
+  // fêtes, Roch Hodech, jeûnes, Omer du jour (les heures de bougies sont dans le cadre Chabbat)
+  const todayEvents = Array.from(new Set((bundle?.calendar || [])
+    .filter((i) => i.date.slice(0, 10) === today && !["candles", "havdalah", "parashat", "zmanim", "mevarchim"].includes(i.category))
+    .map((i) => clean(i.title))));
+  const ZM: [string, string, string, string][] = [["sunrise", "", "Hanetz", "הנץ"], ["shemaGRA", "gra", "Fin du Chema", "ק״ש"], ["sunset", "", "Chkia", "שקיעה"], ["tzeit", "deg8.5", "Tsét", "צאה״כ"]];
+  const zmMethod = (id: string, def: string) => config.zmanim.find((z) => z.id === id)?.method || def;
 
   return (
     <div className="page">
@@ -48,6 +54,7 @@ export default function Home() {
           <div className="serif hero-greg">{frenchDate(tz, now)}</div>
           <div className="hero-heb"><span className="gold">{hd.fr}</span> <span className="hebrew">{hd.he}</span></div>
         </div>
+        {todayEvents.length > 0 && <div className="today-band">{todayEvents.map((t) => <span key={t}>{t}</span>)}</div>}
         <div className="num gold-text hero-clock">{pad(np.h)}:{pad(np.m)}</div>
         {next && (
           <div className="next-box">
@@ -78,6 +85,13 @@ export default function Home() {
           </section>
 
           <section className="card">
+            <div className="card-head"><h2 className="serif gold-text">Zmanim <span className="hebrew">זמנים</span></h2><a href="#/zmanim">Tous ›</a></div>
+            <div className="zm-mini">
+              {ZM.map(([id, m, fr, he]) => <div key={id}><span className="small muted">{fr} · <span className="hebrew">{he}</span></span><b className="num gold-text">{hm(resolveZman(times, id, zmMethod(id, m)), tz)}</b></div>)}
+            </div>
+          </section>
+
+          <section className="card">
             <h2 className="serif gold-text">Annonces <span className="hebrew">הודעות</span></h2>
             {config.announcements.length
               ? <ul className="ann">{config.announcements.map((a, i) => <li key={i}>{a}</li>)}</ul>
@@ -98,6 +112,11 @@ export default function Home() {
           {config.dedicationNames && <div className="hebrew gold-text">{config.dedicationNames.split("\n").join(" ")}</div>}
         </section>
       )}
+      <footer className="site-foot">
+        <span>{config.footerLeft}</span>
+        <span>{bundle ? "Mis à jour le " + new Date(bundle.generatedAt).toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : ""}{offline ? " · hors connexion" : ""}</span>
+        <span>{config.footerRight}</span>
+      </footer>
     </div>
   );
 }
