@@ -2,7 +2,7 @@
  * - Avec Supabase : tout passe par la fonction serveur « admin », qui vérifie le code et renvoie un jeton de 12 h.
  * - Sans (démonstration) : le code est vérifié par la base Google de l'écran, les données sont des exemples gardés sur l'appareil. */
 import { REMOTE_URL } from "../config";
-import { DEMO, demoChat, demoContent, saveDemoChat, saveDemoContent, supabase, K_DEMO_ORDERS, K_DEMO_SUBS, type ContentTable, type ChatMessage, type Order, type Profile, type Subscription } from "./backend";
+import { saveDemoAssociation, type Association, DEMO, demoChat, demoContent, saveDemoChat, saveDemoContent, supabase, K_DEMO_ORDERS, K_DEMO_SUBS, type ContentTable, type ChatMessage, type Order, type Profile, type Subscription } from "./backend";
 import { read, write } from "./storage";
 
 export type Member = { id: string; email: string; created_at: string; first_name: string; last_name: string; phone: string;
@@ -182,4 +182,9 @@ export async function uploadImage(file: File): Promise<string> {
   const { error } = await supabase!.storage.from("media").uploadToSignedUrl(path, token, blob, { contentType: "image/jpeg" });
   if (error) throw new Error("Envoi de la photo impossible. Réessayez.");
   return publicUrl;
+}
+
+export async function saveAssociation(a: Association) {
+  if (!DEMO) { await call("saveAssociation", { row: a }); return; }
+  saveDemoAssociation(a);
 }

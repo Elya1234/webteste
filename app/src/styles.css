@@ -416,3 +416,19 @@ textarea.input { resize: vertical; }
 
 .admin-list li > .right, .admin-list li > b.num { flex: none; } .admin-list li > div:first-child { min-width: 0; overflow-wrap: anywhere; }
 @media (max-width: 520px) { .receipt-head { flex-direction: column; } .receipt-head .right, .receipt-head .hebrew { text-align: left; } }
+
+/* Reçu fiscal (modèle Cerfa 11580) */
+.cerfa { display: flex; flex-direction: column; gap: 14px; line-height: 1.5; }
+.cerfa h2 { font-size: 1.15rem; margin: 4px 0; } .cerfa h3 { font-size: .95rem; margin: 0 0 6px; color: var(--gold); font-weight: 600; }
+.cerfa section { border-top: 1px solid var(--line); padding-top: 10px; } .cerfa p { margin: 4px 0; }
+.cerfa-head { text-align: center; } .cerfa-no { margin-top: 6px; }
+.cerfa-list { list-style: none; margin: 4px 0; padding: 0; display: grid; gap: 4px; font-size: .9rem; }
+.cerfa-box { display: inline-grid; place-items: center; width: 16px; height: 16px; border: 1px solid currentColor; font-size: 11px; margin-right: 6px; vertical-align: -2px; }
+.cerfa-amount { font-size: 1.8rem; margin: 6px 0; }
+.cerfa-cols { display: grid; gap: 12px; } @media (min-width: 600px) { .cerfa-cols { grid-template-columns: repeat(3, 1fr); } }
+.cerfa-sign { border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 8px; }
+@media print { .cerfa h3 { color: #000; } .cerfa section, .cerfa-sign { border-color: #999; } }
+
+.legal h1 { font-size: 1.9rem; margin: 0 0 4px; } .legal h2 { font-size: 1.1rem; margin: 18px 0 6px; color: var(--gold-hi); font-weight: 600; }
+.legal p, .legal li { line-height: 1.6; } .legal ul { padding-left: 1.2rem; display: grid; gap: 6px; }
+.legal-links { display: flex; justify-content: center; gap: 18px; } .legal-links a { color: var(--muted); text-decoration: underline; padding: 6px; }

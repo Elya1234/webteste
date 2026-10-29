@@ -5,13 +5,14 @@ import { cancelSubscription, listSubscriptions, refundOrder, adminLogin, adminLo
 import { METHOD, type ChatMessage, type Subscription } from "../lib/backend";
 import { ChatThread } from "./Messages";
 import AdminContenus from "./AdminContenus";
+import AdminAssociation from "./AdminAssociation";
 import { formatPhone } from "../lib/validate";
 import { PURPOSES } from "./Dons";
 import { go } from "../lib/router";
 
 /* Espace administrateur : tableau de bord, membres (balises, historique), dons et achats, messages. */
-type Tab = "tableau" | "membres" | "dons" | "messages" | "contenus";
-const TABS: [Tab, string][] = [["tableau", "Tableau de bord"], ["membres", "Membres"], ["dons", "Paiements"], ["messages", "Messages"], ["contenus", "Contenus"]];
+type Tab = "tableau" | "membres" | "dons" | "messages" | "contenus" | "association";
+const TABS: [Tab, string][] = [["tableau", "Tableau de bord"], ["membres", "Membres"], ["dons", "Paiements"], ["messages", "Messages"], ["contenus", "Contenus"], ["association", "Association"]];
 const fullName = (m?: Member) => (m ? [m.first_name, m.last_name].filter(Boolean).join(" ") || m.email : "Compte supprimé");
 const REMINDER_TEXT = "Bonjour, petit rappel amical : votre cotisation annuelle n'a pas encore été réglée. Vous pouvez la payer directement dans l'application avec le bouton ci-dessous. Merci pour votre soutien !";
 const dateFr = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
@@ -95,6 +96,7 @@ function Dashboard({ tab, onLogout }: { tab: Tab; onLogout: () => void }) {
           {tab === "tableau" && <Overview members={members} orders={orders} byId={byId} allTags={allTags} />}
           {tab === "membres" && <Members members={members} allTags={allTags} onOpen={setOpen} onWrite={write} onRemind={remind} />}
           {tab === "contenus" && <AdminContenus />}
+          {tab === "association" && <AdminAssociation />}
           {tab === "dons" && <Orders orders={orders} byId={byId} onChanged={reload} />}
           {tab === "messages" && <Messages members={members} byId={byId} allTags={allTags} draft={compose} clearDraft={() => setCompose(null)} thread={thread} setThread={setThread} />}
         </>

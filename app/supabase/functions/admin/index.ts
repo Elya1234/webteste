@@ -160,6 +160,16 @@ Deno.serve(async (req) => {
     return json({ path, token: data.token, publicUrl: admin.storage.from("media").getPublicUrl(path).data.publicUrl });
   }
 
+  // ───────── fiche de l'association ─────────
+  if (b.action === "saveAssociation" && b.row) {
+    const keys = ["legal_name", "address", "postal_code", "city", "rna", "siret", "email", "phone", "object", "president", "tax_receipts", "category"];
+    const row: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    for (const k of keys) if (k in b.row) row[k] = k === "tax_receipts" ? !!b.row[k] : String(b.row[k] ?? "").slice(0, 400);
+    if (row.category && !["cultuelle", "interet_general", "utilite_publique"].includes(String(row.category))) delete row.category;
+    const { error } = await admin.from("association").update(row).eq("id", 1);
+    return error ? json({ error: error.message }, 500) : json({ ok: true });
+  }
+
   // ───────── paiements : remboursement, dons mensuels ─────────
   if (b.action === "refund" && b.id) {
     const { data: o } = await admin.from("orders").select("*").eq("id", b.id).single();

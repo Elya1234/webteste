@@ -157,3 +157,13 @@ Français et anglais (Menu ou Compte › Français / English ; toujours en fran�
 
 Aucun exemple : la boutique, les cours, les vidéos et la galerie se remplissent dans Administration › Contenus
 (+ Ajouter, Modifier, Supprimer ; photos envoyées depuis le téléphone, réduites automatiquement).
+
+## Association, reçus fiscaux, pages légales, icônes
+
+- **Administration › Association** : nom officiel, adresse, RNA / SIRET, objet, contact, président(e), type d'organisme,
+  « peut délivrer des reçus fiscaux ». Ces informations remplissent les reçus, les reçus fiscaux et les pages légales.
+- **Reçu fiscal** (modèle Cerfa n° 11580, art. 200 du CGI) : bouton « Reçu fiscal » sur le reçu de chaque don payé,
+  si l'option est activée et l'adresse du donateur renseignée ; numéro d'ordre à la suite attribué par le serveur,
+  montant en toutes lettres, imprimable / PDF.
+- **Confidentialité** et **Conditions de vente et de don** : Menu et Compte (exigées par l'App Store et le Play Store).
+- **Icônes** : `resources/icon.png` (1024 px) ; pour iPhone et Android : `npx @capacitor/assets generate`.

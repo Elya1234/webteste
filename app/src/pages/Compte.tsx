@@ -69,6 +69,7 @@ function AuthForm({ after }: { after: Route | null }) {
       {mode === "in" && <button type="button" className="link" onClick={forgot}>{t("Mot de passe oublié ?")}</button>}
       {DEMO && <p className="small muted">{t("Mode démonstration : le compte reste sur cet appareil.")}</p>}
       <p className="small muted">{t("Une fois connecté, vous le restez sur cet appareil jusqu'à ce que vous vous déconnectiez.")}</p>
+      {mode === "up" && <p className="small muted">{t("En créant un compte, vous acceptez les conditions de vente et la politique de confidentialité.")} <a className="gold" href="#/conditions">{t("Conditions de vente")}</a> · <a className="gold" href="#/confidentialite">{t("Confidentialité")}</a></p>}
     </form>
   );
 }
@@ -105,6 +106,11 @@ function Account({ profile }: { profile: Profile }) {
           <label className="field"><span>{t("Nom")}</span><input className="input" required maxLength={60} value={p.last_name} onChange={set("last_name")} /></label>
         </div>
         <PhoneField id="profile-phone" value={phone} onChange={(v) => { setPhone(v); setSaved(false); }} />
+        <label className="field"><span>{t("Adresse (pour les reçus fiscaux)")}</span><input id="profile-addr" className="input" autoComplete="street-address" maxLength={200} value={p.address || ""} onChange={set("address")} /></label>
+        <div className="grid-2 tight">
+          <label className="field"><span>{t("Code postal")}</span><input id="profile-cp" className="input num" autoComplete="postal-code" inputMode="numeric" maxLength={10} value={p.postal_code || ""} onChange={set("postal_code")} /></label>
+          <label className="field"><span>{t("Ville")}</span><input id="profile-city" className="input" autoComplete="address-level2" maxLength={80} value={p.city || ""} onChange={set("city")} /></label>
+        </div>
         {pErr && <p className="error small">{pErr}</p>}
         <div className="row-end">{saved && <span className="small gold">{t("Enregistré")}</span>}<button className="btn">{t("Enregistrer")}</button></div>
       </form>
@@ -176,6 +182,7 @@ export default function Compte({ params }: { params: URLSearchParams }) {
       {paid === "sepa" && <div className="card ok">{t("Merci ! Le prélèvement est en cours : il sera confirmé par la banque d'ici quelques jours.")}</div>}
       {loading ? <div className="card muted">{t("Chargement…")}</div> : profile ? <Account profile={profile} /> : <AuthForm after={suite} />}
       <LangSwitch />
+      <nav className="legal-links small"><a href="#/confidentialite">{t("Confidentialité")}</a><a href="#/conditions">{t("Conditions de vente")}</a></nav>
       <a className="admin-link small" href="#/admin">{t("Espace administrateur")}</a>
     </div>
   );

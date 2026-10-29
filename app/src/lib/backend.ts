@@ -21,7 +21,7 @@ export type Product = {
   /** Si renseigné, l'acheteur doit écrire un commentaire (ex. « Nom pour la dédicace »). */
   comment_label: string | null; active: boolean;
 };
-export type Profile = { id: string; email: string; first_name: string; last_name: string; phone: string };
+export type Profile = { id: string; email: string; first_name: string; last_name: string; phone: string; address?: string; postal_code?: string; city?: string };
 export type CartLine = { product_id: string; qty: number; comment: string };
 export type OrderStatus = "pending" | "processing" | "paid" | "failed" | "cancelled" | "refunded";
 export type Order = { id: string; created_at: string; status: OrderStatus; total_cents: number; kind: "shop" | "donation"; label: string;
@@ -59,7 +59,8 @@ export async function currentProfile(): Promise<Profile | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-  return { id: user.id, email: user.email || "", first_name: data?.first_name || "", last_name: data?.last_name || "", phone: data?.phone || "" };
+  return { id: user.id, email: user.email || "", first_name: data?.first_name || "", last_name: data?.last_name || "", phone: data?.phone || "",
+    address: data?.address || "", postal_code: data?.postal_code || "", city: data?.city || "" };
 }
 
 /* Démonstration : le mot de passe n'est jamais gardé en clair, seulement son empreinte (PBKDF2, 150 000 tours). */
@@ -127,7 +128,8 @@ export async function signOut() {
 export async function updateProfile(p: Profile) {
   if (p.phone && !/^\+(33[1-9]\d{8}|1[2-9]\d{2}[2-9]\d{6})$/.test(p.phone)) throw new Error("bad_phone");
   if (!supabase) { write(K_DEMO_USER, p); const a = read<DemoAccount>(K_DEMO_ACCOUNT); if (a) write(K_DEMO_ACCOUNT, { ...a, profile: p }); return; }
-  const { error } = await supabase.from("profiles").update({ first_name: p.first_name, last_name: p.last_name, phone: p.phone }).eq("id", p.id);
+  const { error } = await supabase.from("profiles").update({ first_name: p.first_name, last_name: p.last_name, phone: p.phone,
+    address: (p.address || "").slice(0, 200), postal_code: (p.postal_code || "").slice(0, 10), city: (p.city || "").slice(0, 80) }).eq("id", p.id);
   if (error) throw error;
 }
 
@@ -287,4 +289,30 @@ export async function getOrder(id: string): Promise<Order | null> {
   const { data, error } = await supabase.from("orders").select("*, order_items(ref, name, qty, unit_cents, comment)").eq("id", id).maybeSingle();
   if (error) throw error;
   return data as Order | null;
+}
+
+/* ───────── Fiche de l'association (reçus, reçus fiscaux, mentions légales) ───────── */
+export type Association = { legal_name: string; address: string; postal_code: string; city: string; rna: string; siret: string; email: string; phone: string;
+  object: string; president: string; tax_receipts: boolean; category: "cultuelle" | "interet_general" | "utilite_publique" };
+export const EMPTY_ASSOCIATION: Association = { legal_name: "", address: "", postal_code: "", city: "", rna: "", siret: "", email: "", phone: "", object: "", president: "", tax_receipts: false, category: "cultuelle" };
+const K_ASSO = "app.association";
+export async function getAssociation(): Promise<Association> {
+  if (!supabase) return { ...EMPTY_ASSOCIATION, ...(read<Association>(K_ASSO) || {}) };
+  const { data } = await supabase.from("association").select("*").eq("id", 1).maybeSingle();
+  const a = { ...EMPTY_ASSOCIATION, ...(data || {}) } as Association;
+  write(K_ASSO, a);
+  return a;
+}
+export const saveDemoAssociation = (a: Association) => write(K_ASSO, a);
+
+/** Numéro du reçu fiscal d'un don : attribué une seule fois, à la suite (le serveur garantit la suite sans trou ni doublon). */
+export async function taxReceiptNumber(orderId: string): Promise<number> {
+  if (!supabase) {
+    const map = read<Record<string, number>>("app.demo.taxno") || {};
+    if (!map[orderId]) { map[orderId] = Object.keys(map).length + 1; write("app.demo.taxno", map); }
+    return map[orderId];
+  }
+  const { data, error } = await supabase.rpc("tax_receipt_number", { order_id: orderId });
+  if (error) throw error;
+  return data as number;
 }

@@ -47,6 +47,7 @@ export function MenuContent({ onPick, autoFocus = false }: { onPick?: () => void
         {!shown.length && <li className="muted" style={{ padding: 16 }}>{t("Aucune rubrique trouvée.")}</li>}
       </ul>
       <LangSwitch />
+      <nav className="legal-links small"><a href="#/confidentialite" onClick={onPick}>{t("Confidentialité")}</a><a href="#/conditions" onClick={onPick}>{t("Conditions de vente")}</a></nav>
       <a className="admin-link small" href="#/admin" onClick={onPick}>{t("Espace administrateur")}</a>
     </>
   );

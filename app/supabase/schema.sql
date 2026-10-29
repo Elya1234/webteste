@@ -206,3 +206,39 @@ alter table public.admin_attempts enable row level security;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('media', 'media', true, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
 on conflict (id) do nothing;
+
+-- ───────── Fiche de l'association (reçus, reçus fiscaux, mentions légales) : une seule ligne ─────────
+create table if not exists public.association (
+  id integer primary key default 1 check (id = 1),
+  legal_name text not null default '', address text not null default '', postal_code text not null default '', city text not null default '',
+  rna text not null default '', siret text not null default '', email text not null default '', phone text not null default '',
+  object text not null default '', president text not null default '',
+  tax_receipts boolean not null default false,   -- l'association peut délivrer des reçus fiscaux (art. 200 du CGI)
+  category text not null default 'cultuelle' check (category in ('cultuelle', 'interet_general', 'utilite_publique')),
+  updated_at timestamptz not null default now()
+);
+insert into public.association (id) values (1) on conflict do nothing;
+alter table public.association enable row level security;
+drop policy if exists "association: lecture publique" on public.association;
+create policy "association: lecture publique" on public.association for select using (true);
+
+-- Adresse du donateur : obligatoire sur un reçu fiscal
+alter table public.profiles add column if not exists address text not null default '';
+alter table public.profiles add column if not exists postal_code text not null default '';
+alter table public.profiles add column if not exists city text not null default '';
+-- numéro de reçu fiscal : suite continue, attribuée une seule fois par don
+create sequence if not exists public.tax_receipt_seq;
+alter table public.orders add column if not exists tax_receipt_no integer unique;
+create or replace function public.tax_receipt_number(order_id uuid) returns integer language plpgsql security definer set search_path = public as $$
+declare n integer;
+begin
+  select tax_receipt_no into n from public.orders where id = order_id and user_id = auth.uid() and kind = 'donation' and status = 'paid';
+  if not found then raise exception 'reçu indisponible'; end if;
+  if n is null then
+    n := nextval('public.tax_receipt_seq');
+    update public.orders set tax_receipt_no = n where id = order_id;
+  end if;
+  return n;
+end $$;
+revoke all on function public.tax_receipt_number(uuid) from public, anon;
+grant execute on function public.tax_receipt_number(uuid) to authenticated;

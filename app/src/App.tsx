@@ -18,6 +18,7 @@ import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
 import Paiement from "./pages/Paiement";
 import Recu from "./pages/Recu";
+import { Conditions, Confidentialite } from "./pages/Legal";
 import { unreadCount } from "./lib/backend";
 import { useAuth } from "./lib/auth";
 
@@ -60,7 +61,7 @@ export default function App() {
   const page = {
     accueil: <Home />, horaires: <Horaires />, boutique: <Boutique />, panier: <Panier />, dons: <Dons key={params.toString()} params={params} />, compte: <Compte params={params} />,
     menu: <Menu />, siddour: <Siddour params={params} />, calendrier: <Calendrier />, zmanim: <Zmanim />, cours: <Cours />,
-    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />, messages: <Messages />, paiement: <Paiement />, recu: <Recu params={params} />
+    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />, messages: <Messages />, paiement: <Paiement />, recu: <Recu params={params} />, confidentialite: <Confidentialite />, conditions: <Conditions />
   }[route];
   // les rubriques ouvertes depuis le Menu gardent l'onglet Menu allumé
   const tab = NAV.some((n) => n.r === route) ? route : route === "panier" ? "boutique" : route === "messages" || route === "recu" ? "compte" : ITEMS.some((i) => i.r === route) ? "menu" : route;
