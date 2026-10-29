@@ -103,5 +103,9 @@ Les réglages (offices de la semaine type, annonces, dédicace, ville) restent c
 - **Membres** : recherche, filtre par balise, total donné par chacun, fiche avec l'historique complet (dons, dédicaces,
   articles et commentaires), balises et note privée, sélection pour écrire à plusieurs, export Excel.
 - **Dons et achats** : tout, ou seulement les dons / la boutique, total payé, export Excel (comptabilité, reçus fiscaux).
-- **Messages** : à tous, à une ou plusieurs balises, ou aux membres cochés ; suivi « lu par » ; les membres les lisent dans
-  Compte › Messages.
+- **Messages** :
+  - *Conversations* : chaque membre a sa conversation privée avec l'administration (il écrit depuis Compte › Messages,
+    l'administration répond ; pastille des non-lus des deux côtés).
+  - *Envoi groupé et rappels* : message ou **rappel de paiement** (montant + motif) à tous, à des balises ou aux membres
+    cochés. Le rappel arrive dans la conversation du membre avec un bouton « Payer » qui ouvre le don déjà rempli.
+- Les membres **restent connectés** sur leur téléphone (session gardée et renouvelée seule) jusqu'à « Se déconnecter ».

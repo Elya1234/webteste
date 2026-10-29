@@ -141,24 +141,39 @@ create policy "profil: modifier soi-même" on public.profiles for update using (
   and tags = (select p.tags from public.profiles p where p.id = auth.uid())
   and admin_note = (select p.admin_note from public.profiles p where p.id = auth.uid()));
 
-create table if not exists public.messages (
+-- Messagerie : chaque membre a sa conversation privée avec l'administration.
+-- Les messages de groupe (« à tous », « balise ») et les rappels de paiement y arrivent aussi.
+create table if not exists public.messages (            -- journal des envois de groupe
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
+  kind text not null default 'broadcast' check (kind in ('broadcast', 'reminder')),
   title text not null, body text not null,
-  target text not null default 'Tous',     -- résumé lisible : « Tous », « Balise : Cotisant », « 3 membres »
-  sent_by text not null default 'Administration'
+  target text not null default 'Tous'      -- résumé lisible : « Tous », « Balise : Cotisant », « 3 membres »
 );
-create table if not exists public.message_recipients (
-  message_id uuid not null references public.messages on delete cascade,
-  user_id uuid not null references auth.users on delete cascade,
-  read_at timestamptz,
-  primary key (message_id, user_id)
+create table if not exists public.chat_messages (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users on delete cascade,   -- le membre de la conversation
+  from_admin boolean not null,
+  kind text not null default 'text' check (kind in ('text', 'broadcast', 'reminder')),
+  title text, body text not null,
+  amount_cents integer check (amount_cents is null or amount_cents > 0),  -- rappel de paiement : montant proposé
+  purpose text,                                                           -- rappel de paiement : motif (cotisation…)
+  broadcast_id uuid references public.messages on delete set null,
+  created_at timestamptz not null default now(),
+  read_at timestamptz                       -- lu par le destinataire (le membre, ou l'administration)
 );
+create index if not exists chat_messages_user on public.chat_messages (user_id, created_at);
 alter table public.messages enable row level security;
-alter table public.message_recipients enable row level security;
-drop policy if exists "messages: reçus" on public.messages;
-create policy "messages: reçus" on public.messages for select using (exists (select 1 from public.message_recipients r where r.message_id = id and r.user_id = auth.uid()));
-drop policy if exists "destinataires: moi" on public.message_recipients;
-create policy "destinataires: moi" on public.message_recipients for select using (user_id = auth.uid());
-drop policy if exists "destinataires: marquer lu" on public.message_recipients;
-create policy "destinataires: marquer lu" on public.message_recipients for update using (user_id = auth.uid()) with check (user_id = auth.uid());
+alter table public.chat_messages enable row level security;
+drop policy if exists "chat: ma conversation" on public.chat_messages;
+create policy "chat: ma conversation" on public.chat_messages for select using (user_id = auth.uid());
+drop policy if exists "chat: écrire à l'administration" on public.chat_messages;
+create policy "chat: écrire à l'administration" on public.chat_messages for insert with check (
+  user_id = auth.uid() and from_admin = false and kind = 'text' and amount_cents is null and broadcast_id is null and read_at is null
+  and length(body) between 1 and 4000);
+-- le membre marque comme lus les messages reçus (sans pouvoir modifier autre chose)
+create or replace function public.mark_chat_read() returns void language sql security definer set search_path = public as $$
+  update public.chat_messages set read_at = now() where user_id = auth.uid() and from_admin and read_at is null
+$$;
+revoke all on function public.mark_chat_read() from public, anon;
+grant execute on function public.mark_chat_read() to authenticated;

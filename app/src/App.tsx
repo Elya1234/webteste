@@ -14,6 +14,9 @@ import Panier from "./pages/Panier";
 import Dons from "./pages/Dons";
 import Compte from "./pages/Compte";
 import Admin from "./pages/Admin";
+import Messages from "./pages/Messages";
+import { unreadCount } from "./lib/backend";
+import { useAuth } from "./lib/auth";
 
 const NAV: { r: Route; label: string; icon: string }[] = [
   { r: "accueil", label: "Accueil", icon: "M3 11 12 4l9 7v9h-6v-6H9v6H3z" },
@@ -31,6 +34,15 @@ export default function App() {
   const { route, params } = useRoute();
   // ☰ : un toucher ouvre le menu, un deuxième le ferme (aussi : choisir une rubrique, toucher à côté, touche Échap)
   const [menuOpen, setMenuOpen] = useState(false);
+  // messages non lus : pastille sur l'onglet Compte
+  const { profile } = useAuth();
+  const [unread, setUnread] = useState(0);
+  useEffect(() => {
+    if (!profile) { setUnread(0); return; }
+    const f = () => unreadCount().then(setUnread, () => {});
+    f(); const id = setInterval(f, 60000);
+    return () => clearInterval(id);
+  }, [profile?.id, route]);
   useEffect(() => { setMenuOpen(false); }, [route, params.toString()]);
   useEffect(() => {
     if (!menuOpen) return;
@@ -43,12 +55,12 @@ export default function App() {
   const lines = useCart();
   const count = lines.reduce((s, l) => s + l.qty, 0);
   const page = {
-    accueil: <Home />, horaires: <Horaires />, boutique: <Boutique />, panier: <Panier />, dons: <Dons />, compte: <Compte params={params} />,
+    accueil: <Home />, horaires: <Horaires />, boutique: <Boutique />, panier: <Panier />, dons: <Dons key={params.toString()} params={params} />, compte: <Compte params={params} />,
     menu: <Menu />, siddour: <Siddour params={params} />, calendrier: <Calendrier />, zmanim: <Zmanim />, cours: <Cours />,
-    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />
+    halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />, messages: <Messages />
   }[route];
   // les rubriques ouvertes depuis le Menu gardent l'onglet Menu allumé
-  const tab = NAV.some((n) => n.r === route) ? route : route === "panier" ? "boutique" : ITEMS.some((i) => i.r === route) ? "menu" : route;
+  const tab = NAV.some((n) => n.r === route) ? route : route === "panier" ? "boutique" : route === "messages" ? "compte" : ITEMS.some((i) => i.r === route) ? "menu" : route;
 
   return (
     <div className="shell">
@@ -68,7 +80,7 @@ export default function App() {
       <nav className="nav" aria-label="Navigation principale">
         {NAV.map((n) => (
           <a key={n.r} href={"#/" + n.r} className={tab === n.r ? "on" : ""} aria-current={route === n.r ? "page" : undefined}>
-            <Icon d={n.icon} /><span>{n.label}</span>
+            <span className="nav-ic"><Icon d={n.icon} />{n.r === "compte" && unread > 0 && <span className="badge">{unread}</span>}</span><span>{n.label}</span>
           </a>
         ))}
       </nav>

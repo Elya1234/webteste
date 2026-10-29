@@ -7,7 +7,10 @@ import { read, write } from "./storage";
 
 const URL_ = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-export const supabase: SupabaseClient | null = URL_ && KEY ? createClient(URL_, KEY) : null;
+// Session gardée sur l'appareil et renouvelée seule : un membre reste connecté jusqu'à ce qu'il se déconnecte.
+export const supabase: SupabaseClient | null = URL_ && KEY
+  ? createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: "bethchalom.session" } })
+  : null;
 export const DEMO = !supabase;
 
 export type Product = {
@@ -149,18 +152,37 @@ export const listCourses = () => listTable<Course>("courses", "position", DEMO_C
 export const listVideos = () => listTable<Video>("videos", "published_at", DEMO_VIDEOS, false);
 export const listPhotos = () => listTable<Photo>("gallery", "created_at", DEMO_PHOTOS, false);
 
-/* ───────── Messages reçus de l'administration ───────── */
-export type InboxMessage = { id: string; created_at: string; title: string; body: string; read_at: string | null };
-export async function listInbox(): Promise<InboxMessage[]> {
-  if (!supabase) return read<InboxMessage[]>("app.demo.inbox") || [];
-  const { data, error } = await supabase.from("message_recipients").select("read_at, messages(id, created_at, title, body)").order("message_id");
+/* ───────── Messagerie privée membre ⇄ administration ───────── */
+export type ChatMessage = { id: string; user_id: string; from_admin: boolean; kind: "text" | "broadcast" | "reminder"; title?: string | null; body: string;
+  amount_cents?: number | null; purpose?: string | null; created_at: string; read_at: string | null };
+/** Démonstration : toutes les conversations de cet appareil (partagées entre le compte de démonstration et l'administration). */
+export const DEMO_CHAT = "app.demo.chat.v1";
+export const demoChat = () => read<Record<string, ChatMessage[]>>(DEMO_CHAT) || {};
+export const saveDemoChat = (c: Record<string, ChatMessage[]>) => write(DEMO_CHAT, c);
+
+export async function listChat(): Promise<ChatMessage[]> {
+  if (!supabase) return demoChat()["demo"] || [];
+  const { data, error } = await supabase.from("chat_messages").select("*").order("created_at").limit(1000);
   if (error) throw error;
-  type Row = { read_at: string | null; messages: { id: string; created_at: string; title: string; body: string } | null };
-  return ((data || []) as unknown as Row[]).filter((r) => r.messages).map((r) => ({ ...r.messages!, read_at: r.read_at }))
-    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return data as ChatMessage[];
 }
-export async function markRead(id: string) {
-  if (!supabase) { write("app.demo.inbox", (read<InboxMessage[]>("app.demo.inbox") || []).map((m) => (m.id === id ? { ...m, read_at: m.read_at || new Date().toISOString() } : m))); return; }
+export async function sendChat(body: string) {
+  const text = body.trim().slice(0, 4000);
+  if (!text) return;
+  if (!supabase) {
+    const c = demoChat();
+    c.demo = [...(c.demo || []), { id: "c" + Date.now(), user_id: "demo", from_admin: false, kind: "text", body: text, created_at: new Date().toISOString(), read_at: null }];
+    saveDemoChat(c); return;
+  }
   const { data: { user } } = await supabase.auth.getUser();
-  if (user) await supabase.from("message_recipients").update({ read_at: new Date().toISOString() }).eq("message_id", id).eq("user_id", user.id).is("read_at", null);
+  if (!user) throw new Error("Connexion requise");
+  const { error } = await supabase.from("chat_messages").insert({ user_id: user.id, from_admin: false, kind: "text", body: text });
+  if (error) throw error;
+}
+export async function markChatRead() {
+  if (!supabase) { const c = demoChat(); c.demo = (c.demo || []).map((m) => (m.from_admin && !m.read_at ? { ...m, read_at: new Date().toISOString() } : m)); saveDemoChat(c); return; }
+  await supabase.rpc("mark_chat_read");
+}
+export async function unreadCount(): Promise<number> {
+  return (await listChat().catch(() => [])).filter((m) => m.from_admin && !m.read_at).length;
 }

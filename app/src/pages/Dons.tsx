@@ -4,14 +4,16 @@ import { useAuth } from "../lib/auth";
 import { go } from "../lib/router";
 
 // Motifs proposés : à ajuster avec la synagogue
-const PURPOSES = ["Don général", "Cotisation annuelle", "Kibboud / Mitsva (montée à la Torah)", "Neder", "Hazkara / Leilouy Nichmat", "Refoua Chelema", "Kiddouch / Séouda"];
+export const PURPOSES = ["Don général", "Cotisation annuelle", "Kibboud / Mitsva (montée à la Torah)", "Neder", "Hazkara / Leilouy Nichmat", "Refoua Chelema", "Kiddouch / Séouda"];
 const AMOUNTS = [1800, 3600, 5400, 10000, 18000];
 
-export default function Dons() {
+export default function Dons({ params }: { params?: URLSearchParams }) {
+  // lien « Payer » d'un rappel de paiement : montant et motif déjà remplis
+  const preAmount = Number(params?.get("montant")) || 0, preMotif = params?.get("motif") || "";
   const { profile } = useAuth();
-  const [amount, setAmount] = useState(3600);
-  const [custom, setCustom] = useState("");
-  const [purpose, setPurpose] = useState(PURPOSES[0]);
+  const [amount, setAmount] = useState(AMOUNTS.includes(preAmount) ? preAmount : 3600);
+  const [custom, setCustom] = useState(preAmount && !AMOUNTS.includes(preAmount) ? String(preAmount / 100).replace(".", ",") : "");
+  const [purpose, setPurpose] = useState(preMotif && PURPOSES.includes(preMotif) ? preMotif : PURPOSES[0]);
   const [dedication, setDedication] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");

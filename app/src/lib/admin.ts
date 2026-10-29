@@ -2,15 +2,17 @@
  * - Avec Supabase : tout passe par la fonction serveur « admin », qui vérifie le code et renvoie un jeton de 12 h.
  * - Sans (démonstration) : le code est vérifié par la base Google de l'écran, les données sont des exemples gardés sur l'appareil. */
 import { REMOTE_URL } from "../config";
-import { DEMO, supabase, type Order } from "./backend";
+import { DEMO, demoChat, saveDemoChat, supabase, type ChatMessage, type Order, type Profile } from "./backend";
 import { read, write } from "./storage";
 
 export type Member = { id: string; email: string; created_at: string; first_name: string; last_name: string; phone: string;
   tags: string[]; note: string; donated_cents: number; spent_cents: number; last_at: string | null };
 export type AdminOrder = Order & { user_id: string | null; purpose?: string | null; dedication?: string | null;
   order_items?: { ref: string; name: string; qty: number; unit_cents: number; comment: string }[] };
-export type SentMessage = { id: string; created_at: string; title: string; body: string; target: string; sent: number; read: number };
-export type Outgoing = { title: string; body: string; to: "all" | "tags" | "users"; tags?: string[]; user_ids?: string[] };
+export type SentMessage = { id: string; created_at: string; kind?: "broadcast" | "reminder"; title: string; body: string; target: string; sent: number; read: number };
+export type Thread = { user_id: string; last: ChatMessage; unread: number };
+export type Outgoing = { title: string; body: string; to: "all" | "tags" | "users"; tags?: string[]; user_ids?: string[];
+  kind?: "broadcast" | "reminder"; amount_cents?: number; purpose?: string };
 
 const K_TOKEN = "app.admin.token";
 const ss = {
@@ -69,6 +71,12 @@ function demoDb(): DemoDb {
   const messages: SentMessage[] = [{ id: "s1", created_at: d(6), title: "Horaires de Souccot", body: "Les horaires des offices de Souccot sont disponibles dans l'application.", target: "Tous", sent: 8, read: 6 }];
   const db = { members, orders, messages };
   write(K_DEMO, db);
+  saveDemoChat({ ...demoChat(),
+    m3: [{ id: "x1", user_id: "m3", from_admin: false, kind: "text", body: "Bonjour, est-ce qu'il y aura un cours vendredi matin ?", created_at: d(1), read_at: null }],
+    m6: [{ id: "x2", user_id: "m6", from_admin: true, kind: "reminder", title: "Cotisation annuelle", body: "Bonjour Esther, petit rappel : la cotisation annuelle n'a pas encore été réglée. Vous pouvez la payer directement dans l'application. Merci !",
+      amount_cents: 36000, purpose: "Cotisation annuelle", created_at: d(3), read_at: d(2) },
+      { id: "x3", user_id: "m6", from_admin: false, kind: "text", body: "Merci, je m'en occupe cette semaine.", created_at: d(2), read_at: d(2) }]
+  }); // exemples ajoutés une seule fois, avec la création des données de démonstration
   return db;
 }
 function withTotals(db: DemoDb): Member[] {
@@ -83,31 +91,66 @@ function withTotals(db: DemoDb): Member[] {
 /* ───────── Opérations ───────── */
 export async function listMembers(): Promise<Member[]> {
   if (!DEMO) return (await call<{ members: Member[] }>("members")).members;
-  return withTotals(demoDb());
+  return withTotals(withDemoUser(demoDb()));
+}
+/* démonstration : le compte créé sur cet appareil apparaît aussi dans la liste, avec ses vraies commandes de démonstration */
+function withDemoUser(db: DemoDb): DemoDb {
+  const p = read<Profile>("app.demo.user");
+  if (!p || db.members.some((m) => m.id === "demo")) return db;
+  const own = (read<Order[]>("app.demo.orders") || []).map((o) => ({ ...o, user_id: "demo" }));
+  return { ...db, members: [{ id: "demo", email: p.email, created_at: new Date().toISOString(), first_name: p.first_name || "Compte", last_name: p.last_name || "de démonstration",
+    phone: p.phone, tags: [], note: "", donated_cents: 0, spent_cents: 0, last_at: null }, ...db.members], orders: [...own, ...db.orders] };
 }
 export async function listAllOrders(userId?: string): Promise<AdminOrder[]> {
   if (!DEMO) return (await call<{ orders: AdminOrder[] }>("orders", userId ? { id: userId } : {})).orders;
-  const all = demoDb().orders.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const all = withDemoUser(demoDb()).orders.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
   return userId ? all.filter((o) => o.user_id === userId) : all;
 }
 export async function saveMember(id: string, tags: string[], note: string) {
   if (!DEMO) { await call("setMember", { id, tags, note }); return; }
   const db = demoDb();
+  if (id === "demo" && !db.members.some((m) => m.id === "demo")) db.members.unshift(withDemoUser(db).members[0]);
   db.members = db.members.map((m) => (m.id === id ? { ...m, tags, note } : m));
   write(K_DEMO, db);
 }
 export async function sendMessage(msg: Outgoing): Promise<number> {
   if (!DEMO) return (await call<{ count: number }>("send", { message: msg })).count;
-  const db = demoDb();
+  const db = withDemoUser(demoDb());
   const ids = msg.to === "users" ? msg.user_ids || [] : db.members.filter((m) => msg.to === "all" || m.tags.some((t) => (msg.tags || []).includes(t))).map((m) => m.id);
   if (!ids.length) throw new Error("Aucun destinataire.");
+  if (msg.kind === "reminder" && !(Number(msg.amount_cents) >= 100)) throw new Error("Montant invalide.");
   const target = msg.to === "all" ? "Tous" : msg.to === "tags" ? "Balise : " + (msg.tags || []).join(", ") : ids.length + " membre(s)";
-  db.messages.unshift({ id: "s" + Date.now(), created_at: new Date().toISOString(), title: msg.title, body: msg.body, target, sent: ids.length, read: 0 });
-  write(K_DEMO, db);
-  // démonstration : un message « à tous » arrive aussi dans la boîte du compte de démonstration de cet appareil
-  if (msg.to === "all") write("app.demo.inbox", [{ id: "i" + Date.now(), created_at: new Date().toISOString(), title: msg.title, body: msg.body, read_at: null }, ...(read<unknown[]>("app.demo.inbox") || [])]);
+  const base = demoDb();
+  base.messages.unshift({ id: "s" + Date.now(), created_at: new Date().toISOString(), kind: msg.kind || "broadcast", title: msg.title, body: msg.body, target, sent: ids.length, read: 0 });
+  write(K_DEMO, base);
+  const c = demoChat(), now = new Date().toISOString();
+  ids.forEach((id, i) => { c[id] = [...(c[id] || []), { id: "b" + Date.now() + i, user_id: id, from_admin: true, kind: msg.kind || "broadcast", title: msg.title, body: msg.body,
+    amount_cents: msg.kind === "reminder" ? msg.amount_cents : null, purpose: msg.kind === "reminder" ? msg.purpose : null, created_at: now, read_at: null }]; });
+  saveDemoChat(c);
   return ids.length;
 }
+
+/* ───────── Conversations privées ───────── */
+export async function listThreads(): Promise<Thread[]> {
+  if (!DEMO) return (await call<{ threads: Thread[] }>("threads")).threads;
+  return Object.entries(demoChat()).filter(([, l]) => l.length).map(([user_id, l]) => ({ user_id, last: l[l.length - 1], unread: l.filter((m) => !m.from_admin && !m.read_at).length }))
+    .sort((a, b) => b.last.created_at.localeCompare(a.last.created_at));
+}
+export async function getThread(userId: string): Promise<ChatMessage[]> {
+  if (!DEMO) return (await call<{ messages: ChatMessage[] }>("thread", { id: userId })).messages;
+  const c = demoChat();
+  c[userId] = (c[userId] || []).map((m) => (!m.from_admin && !m.read_at ? { ...m, read_at: new Date().toISOString() } : m));
+  saveDemoChat(c);
+  return c[userId];
+}
+export async function replyTo(userId: string, body: string) {
+  const text = body.trim(); if (!text) return;
+  if (!DEMO) { await call("reply", { id: userId, body: text }); return; }
+  const c = demoChat();
+  c[userId] = [...(c[userId] || []), { id: "r" + Date.now(), user_id: userId, from_admin: true, kind: "text", body: text, created_at: new Date().toISOString(), read_at: null }];
+  saveDemoChat(c);
+}
+
 export async function listSent(): Promise<SentMessage[]> {
   if (!DEMO) return (await call<{ messages: SentMessage[] }>("messages")).messages;
   return demoDb().messages;

@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { DEMO, euros } from "../lib/backend";
-import { adminLogin, adminLogout, isAdmin, listAllOrders, listMembers, listSent, saveMember, sendMessage, toCsv,
-  type AdminOrder, type Member, type Outgoing, type SentMessage } from "../lib/admin";
+import { adminLogin, adminLogout, getThread, isAdmin, listAllOrders, listMembers, listSent, listThreads, replyTo, saveMember, sendMessage, toCsv,
+  type AdminOrder, type Member, type Outgoing, type SentMessage, type Thread } from "../lib/admin";
+import type { ChatMessage } from "../lib/backend";
+import { ChatThread } from "./Messages";
+import { PURPOSES } from "./Dons";
 import { go } from "../lib/router";
 
 /* Espace administrateur : tableau de bord, membres (balises, historique), dons et achats, messages. */
 type Tab = "tableau" | "membres" | "dons" | "messages";
 const TABS: [Tab, string][] = [["tableau", "Tableau de bord"], ["membres", "Membres"], ["dons", "Dons et achats"], ["messages", "Messages"]];
 const fullName = (m?: Member) => (m ? [m.first_name, m.last_name].filter(Boolean).join(" ") || m.email : "Compte supprimé");
+const REMINDER_TEXT = "Bonjour, petit rappel amical : votre cotisation annuelle n'a pas encore été réglée. Vous pouvez la payer directement dans l'application avec le bouton ci-dessous. Merci pour votre soutien !";
 const dateFr = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
 
 function download(name: string, csv: string) {
@@ -59,7 +63,10 @@ function Dashboard({ tab, onLogout }: { tab: Tab; onLogout: () => void }) {
   useEffect(() => { reload(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const byId = useMemo(() => new Map((members || []).map((m) => [m.id, m])), [members]);
   const allTags = useMemo(() => Array.from(new Set((members || []).flatMap((m) => m.tags))).sort((a, b) => a.localeCompare(b, "fr")), [members]);
-  const write = (msg: Outgoing) => { setCompose(msg); go("admin", "tab=messages"); };
+  const [thread, setThread] = useState<string | null>(null);
+  const write = (msg: Outgoing) => { setCompose(msg); setThread(null); go("admin", "tab=messages"); };
+  const openThread = (id: string) => { setThread(id); go("admin", "tab=messages"); };
+  const remind = (ids: string[]) => write({ title: "Cotisation annuelle", body: REMINDER_TEXT, to: "users", user_ids: ids, kind: "reminder", amount_cents: 36000, purpose: "Cotisation annuelle" });
 
   return (
     <div className="page admin">
@@ -74,15 +81,21 @@ function Dashboard({ tab, onLogout }: { tab: Tab; onLogout: () => void }) {
       {!members || !orders ? <div className="card muted">Chargement…</div> : (
         <>
           {tab === "tableau" && <Overview members={members} orders={orders} byId={byId} allTags={allTags} />}
-          {tab === "membres" && <Members members={members} allTags={allTags} onOpen={setOpen} onWrite={write} />}
+          {tab === "membres" && <Members members={members} allTags={allTags} onOpen={setOpen} onWrite={write} onRemind={remind} />}
           {tab === "dons" && <Orders orders={orders} byId={byId} />}
-          {tab === "messages" && <Messages members={members} allTags={allTags} draft={compose} clearDraft={() => setCompose(null)} />}
+          {tab === "messages" && <Messages members={members} byId={byId} allTags={allTags} draft={compose} clearDraft={() => setCompose(null)} thread={thread} setThread={setThread} />}
         </>
       )}
       {open && <MemberSheet member={open} allTags={allTags} orders={(orders || []).filter((o) => o.user_id === open.id)} onClose={() => setOpen(null)}
-        onSaved={() => { setOpen(null); reload(); }} onWrite={(m) => { setOpen(null); write({ title: "", body: "", to: "users", user_ids: [m.id] }); }} />}
+        onSaved={() => { setOpen(null); reload(); }} onWrite={(m) => { setOpen(null); openThread(m.id); }} onRemind={(m) => { setOpen(null); remind([m.id]); }} />}
     </div>
   );
+}
+
+function UnreadBanner() {
+  const [n, setN] = useState(0);
+  useEffect(() => { listThreads().then((t) => setN(t.reduce((s, x) => s + x.unread, 0)), () => {}); }, []);
+  return n ? <a className="card unread-banner" href="#/admin?tab=messages"><b>{n} message{n > 1 ? "s" : ""} non lu{n > 1 ? "s" : ""}</b><span className="gold">Répondre ›</span></a> : null;
 }
 
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
@@ -103,6 +116,7 @@ function Overview({ members, orders, byId, allTags }: { members: Member[]; order
         <Stat label="Total des dons" value={euros(sum(dons))} sub={dons.length + " don(s)"} />
         <Stat label="Boutique" value={euros(sum(paid.filter((o) => o.kind === "shop")))} sub={paid.filter((o) => o.kind === "shop").length + " commande(s)"} />
       </div>
+      <UnreadBanner />
       <div className="grid-2">
         <section className="card">
           <div className="card-head"><h2 className="serif gold-text">Dernières activités</h2><a href="#/admin?tab=dons">Tout voir ›</a></div>
@@ -126,7 +140,7 @@ function Overview({ members, orders, byId, allTags }: { members: Member[]; order
   );
 }
 
-function Members({ members, allTags, onOpen, onWrite }: { members: Member[]; allTags: string[]; onOpen: (m: Member) => void; onWrite: (m: Outgoing) => void }) {
+function Members({ members, allTags, onOpen, onWrite, onRemind }: { members: Member[]; allTags: string[]; onOpen: (m: Member) => void; onWrite: (m: Outgoing) => void; onRemind: (ids: string[]) => void }) {
   const [q, setQ] = useState("");
   const [tag, setTag] = useState("");
   const [sel, setSel] = useState<Set<string>>(new Set());
@@ -148,6 +162,7 @@ function Members({ members, allTags, onOpen, onWrite }: { members: Member[]; all
         </div>
         <div className="row-end">
           <button className="btn ghost" onClick={exportCsv}>Exporter (Excel)</button>
+          <button className="btn ghost" disabled={!sel.size} onClick={() => onRemind([...sel])}>Rappel de paiement</button>
           <button className="btn" disabled={!sel.size} onClick={() => onWrite({ title: "", body: "", to: "users", user_ids: [...sel] })}>Écrire aux {sel.size || ""} sélectionné(s)</button>
         </div>
       </div>
@@ -169,8 +184,8 @@ function Members({ members, allTags, onOpen, onWrite }: { members: Member[]; all
   );
 }
 
-function MemberSheet({ member, allTags, orders, onClose, onSaved, onWrite }:
-  { member: Member; allTags: string[]; orders: AdminOrder[]; onClose: () => void; onSaved: () => void; onWrite: (m: Member) => void }) {
+function MemberSheet({ member, allTags, orders, onClose, onSaved, onWrite, onRemind }:
+  { member: Member; allTags: string[]; orders: AdminOrder[]; onClose: () => void; onSaved: () => void; onWrite: (m: Member) => void; onRemind: (m: Member) => void }) {
   const [tags, setTags] = useState(member.tags);
   const [note, setNote] = useState(member.note);
   const [add, setAdd] = useState("");
@@ -199,7 +214,8 @@ function MemberSheet({ member, allTags, orders, onClose, onSaved, onWrite }:
           <textarea id="member-note" className="input" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} />
         </label>
         <div className="row-end">
-          <button className="btn ghost" onClick={() => onWrite(member)}>Écrire un message</button>
+          <button className="btn ghost" onClick={() => onRemind(member)}>Rappel de paiement</button>
+          <button className="btn ghost" onClick={() => onWrite(member)}>Conversation</button>
           <button className="btn" disabled={busy} onClick={() => { setBusy(true); saveMember(member.id, tags, note).then(onSaved, () => setBusy(false)); }}>{busy ? "…" : "Enregistrer"}</button>
         </div>
         <h3 className="serif">Historique</h3>
@@ -248,25 +264,100 @@ function Orders({ orders, byId }: { orders: AdminOrder[]; byId: Map<string, Memb
   );
 }
 
-function Messages({ members, allTags, draft, clearDraft }: { members: Member[]; allTags: string[]; draft: Outgoing | null; clearDraft: () => void }) {
-  const [m, setM] = useState<Outgoing>(draft || { title: "", body: "", to: "all", tags: [] });
+function Messages({ members, byId, allTags, draft, clearDraft, thread, setThread }:
+  { members: Member[]; byId: Map<string, Member>; allTags: string[]; draft: Outgoing | null; clearDraft: () => void; thread: string | null; setThread: (id: string | null) => void }) {
+  const [view, setView] = useState<"conv" | "groupe">(draft ? "groupe" : "conv");
+  useEffect(() => { if (draft) setView("groupe"); }, [draft]);
+  useEffect(() => { if (thread) setView("conv"); }, [thread]);
+  return (
+    <>
+      <div className="seg" role="tablist">
+        <button role="tab" aria-selected={view === "conv"} className={view === "conv" ? "on" : ""} onClick={() => setView("conv")}>Conversations</button>
+        <button role="tab" aria-selected={view === "groupe"} className={view === "groupe" ? "on" : ""} onClick={() => setView("groupe")}>Envoi groupé et rappels</button>
+      </div>
+      {view === "conv" ? <Conversations members={members} byId={byId} open={thread} setOpen={setThread} /> : <Compose members={members} allTags={allTags} draft={draft} clearDraft={clearDraft} />}
+    </>
+  );
+}
+
+function Conversations({ members, byId, open, setOpen }: { members: Member[]; byId: Map<string, Member>; open: string | null; setOpen: (id: string | null) => void }) {
+  const [threads, setThreads] = useState<Thread[] | null>(null);
+  const [msgs, setMsgs] = useState<ChatMessage[] | null>(null);
+  const [pick, setPick] = useState("");
+  const loadThreads = () => listThreads().then(setThreads, () => setThreads([]));
+  const loadMsgs = (id: string) => getThread(id).then(setMsgs, () => setMsgs([]));
+  useEffect(() => { loadThreads(); const t = setInterval(loadThreads, 30000); return () => clearInterval(t); }, []);
+  useEffect(() => { setMsgs(null); if (!open) return; loadMsgs(open); const t = setInterval(() => loadMsgs(open), 20000); return () => clearInterval(t); }, [open]);
+  const others = members.filter((m) => !(threads || []).some((t) => t.user_id === m.id));
+  const member = open ? byId.get(open) : undefined;
+  return (
+    <div className={"conv" + (open ? " has-open" : "")}>
+      <section className="card conv-list">
+        <h2 className="serif gold-text">Conversations</h2>
+        {!threads ? <div className="muted">Chargement…</div> : (
+          <ul className="admin-list">
+            {threads.map((t) => (
+              <li key={t.user_id} className={open === t.user_id ? "sel" : ""}><button className="conv-row" onClick={() => setOpen(t.user_id)}>
+                <span className="avatar" aria-hidden="true">{(byId.get(t.user_id)?.first_name[0] || "?").toUpperCase()}</span>
+                <span className="member-main"><b>{fullName(byId.get(t.user_id))}</b><span className="small muted conv-last">{t.last.from_admin ? "Vous : " : ""}{t.last.title || t.last.body}</span></span>
+                {t.unread > 0 ? <span className="badge-inline">{t.unread}</span> : <span className="small muted">{dateFr(t.last.created_at)}</span>}
+              </button></li>
+            ))}
+            {!threads.length && <li className="muted">Aucune conversation pour le moment.</li>}
+          </ul>
+        )}
+        <div className="field"><span>Nouvelle conversation</span>
+          <div className="tag-add">
+            <select id="conv-new" className="input" value={pick} onChange={(e) => setPick(e.target.value)}>
+              <option value="">Choisir un membre…</option>
+              {others.map((m) => <option key={m.id} value={m.id}>{fullName(m)}</option>)}
+            </select>
+            <button className="btn ghost" disabled={!pick} onClick={() => { setOpen(pick); setPick(""); }}>Ouvrir</button>
+          </div>
+        </div>
+      </section>
+      <section className="card conv-thread">
+        {!open ? <p className="muted">Choisissez une conversation pour lire et répondre.</p> : (
+          <>
+            <div className="card-head"><div><button className="link conv-back" onClick={() => setOpen(null)}>‹ Conversations</button><h2 className="serif gold-text">{fullName(member)}</h2>
+              <div className="small muted">{member?.email}{member?.phone && " · " + member.phone}</div></div></div>
+            {!msgs ? <div className="muted">Chargement…</div> :
+              <ChatThread messages={msgs} side="admin" onSend={async (t) => { await replyTo(open, t); await loadMsgs(open); loadThreads(); }} />}
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function Compose({ members, allTags, draft, clearDraft }: { members: Member[]; allTags: string[]; draft: Outgoing | null; clearDraft: () => void }) {
+  const blank: Outgoing = { title: "", body: "", to: "all", tags: [], kind: "broadcast" };
+  const [m, setM] = useState<Outgoing>(draft || blank);
   const [sent, setSent] = useState<SentMessage[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
-  useEffect(() => { if (draft) { setM(draft); clearDraft(); } }, [draft, clearDraft]);
+  const [euro, setEuro] = useState(draft?.amount_cents ? String(draft.amount_cents / 100) : "360");
+  useEffect(() => { if (draft) { setM(draft); if (draft.amount_cents) setEuro(String(draft.amount_cents / 100)); clearDraft(); } }, [draft, clearDraft]);
   useEffect(() => { listSent().then(setSent, () => setSent([])); }, []);
+  const reminder = m.kind === "reminder";
   const count = m.to === "all" ? members.length : m.to === "tags" ? members.filter((x) => x.tags.some((t) => (m.tags || []).includes(t))).length : (m.user_ids || []).length;
   const chosen = members.filter((x) => (m.user_ids || []).includes(x.id));
   async function send(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setMsg("");
-    try { const n = await sendMessage(m); setMsg("Message envoyé à " + n + " membre(s)."); setM({ title: "", body: "", to: "all", tags: [] }); setSent(await listSent()); }
-    catch (x) { setMsg((x as Error).message); }
+    try {
+      const n = await sendMessage({ ...m, amount_cents: reminder ? Math.round(Number(euro.replace(",", ".")) * 100) : undefined });
+      setMsg((reminder ? "Rappel envoyé à " : "Message envoyé à ") + n + " membre(s)."); setM(blank); setSent(await listSent());
+    } catch (x) { setMsg((x as Error).message); }
     setBusy(false);
   }
   return (
     <div className="grid-2">
       <form className="card" onSubmit={send}>
-        <h2 className="serif gold-text">Nouveau message</h2>
+        <h2 className="serif gold-text">{reminder ? "Rappel de paiement" : "Message de groupe"}</h2>
+        <div className="seg">
+          <button type="button" className={!reminder ? "on" : ""} onClick={() => setM({ ...m, kind: "broadcast" })}>Message</button>
+          <button type="button" className={reminder ? "on" : ""} onClick={() => setM({ ...m, kind: "reminder", title: m.title || "Cotisation annuelle", body: m.body || REMINDER_TEXT, purpose: m.purpose || "Cotisation annuelle" })}>Rappel de paiement</button>
+        </div>
         <div className="field"><span>Destinataires</span>
           <div className="seg three">
             <button type="button" className={m.to === "all" ? "on" : ""} onClick={() => setM({ ...m, to: "all" })}>Tous</button>
@@ -275,21 +366,27 @@ function Messages({ members, allTags, draft, clearDraft }: { members: Member[]; 
           </div>
           {m.to === "tags" && <div className="chips">{allTags.map((t) => { const on = (m.tags || []).includes(t);
             return <button type="button" key={t} className={"chip" + (on ? " on" : "")} onClick={() => setM({ ...m, tags: on ? (m.tags || []).filter((x) => x !== t) : [...(m.tags || []), t] })}>{t}</button>; })}</div>}
-          {m.to === "users" && <div className="chips">{chosen.length ? chosen.map((x) => <span key={x.id} className="chip static">{fullName(x)}</span>) : <span className="small muted">Choisissez les membres dans l'onglet Membres (cases à cocher).</span>}</div>}
+          {m.to === "users" && <div className="chips">{chosen.length ? chosen.map((x) => <span key={x.id} className="chip static">{fullName(x)}</span>) : <span className="small muted">Cochez les membres dans l'onglet Membres.</span>}</div>}
           <span className="small muted">{count} destinataire(s)</span>
         </div>
+        {reminder && (
+          <div className="grid-2 tight">
+            <label className="field"><span>Montant (€)</span><input id="rem-amount" className="input" inputMode="decimal" value={euro} onChange={(e) => setEuro(e.target.value.replace(/[^\d,.]/g, ""))} /></label>
+            <label className="field"><span>Motif</span><select id="rem-purpose" className="input" value={m.purpose} onChange={(e) => setM({ ...m, purpose: e.target.value })}>{PURPOSES.map((p) => <option key={p}>{p}</option>)}</select></label>
+          </div>
+        )}
         <label className="field"><span>Titre</span><input id="msg-title" className="input" required maxLength={120} value={m.title} onChange={(e) => setM({ ...m, title: e.target.value })} placeholder="Ex. Horaires de Hanoucca" /></label>
         <label className="field"><span>Message</span><textarea id="msg-body" className="input" required rows={5} maxLength={4000} value={m.body} onChange={(e) => setM({ ...m, body: e.target.value })} /></label>
         {msg && <p className="small gold">{msg}</p>}
-        <button className="btn full" disabled={busy || !count}>{busy ? "Envoi…" : "Envoyer à " + count + " membre(s)"}</button>
-        <p className="small muted">Le message arrive dans l'application, rubrique Compte › Messages.</p>
+        <button className="btn full" disabled={busy || !count}>{busy ? "Envoi…" : (reminder ? "Envoyer le rappel à " : "Envoyer à ") + count + " membre(s)"}</button>
+        <p className="small muted">{reminder ? "Chaque membre reçoit le rappel dans sa conversation, avec un bouton « Payer » déjà rempli." : "Le message arrive dans la conversation de chaque membre (Compte › Messages)."}</p>
       </form>
       <section className="card">
-        <h2 className="serif gold-text">Messages envoyés</h2>
-        {!sent ? <div className="muted">Chargement…</div> : !sent.length ? <div className="muted">Aucun message envoyé.</div> : (
-          <ul className="admin-list">{sent.map((s) => (
-            <li key={s.id}><div><b>{s.title}</b><div className="small muted">{dateFr(s.created_at)} · {s.target}</div><div className="small msg-body">{s.body}</div></div>
-              <span className="small muted right">lu par<br /><b className="num">{s.read}/{s.sent}</b></span></li>
+        <h2 className="serif gold-text">Envois groupés</h2>
+        {!sent ? <div className="muted">Chargement…</div> : !sent.length ? <div className="muted">Aucun envoi.</div> : (
+          <ul className="admin-list">{sent.map((x) => (
+            <li key={x.id}><div><b>{x.kind === "reminder" ? "Rappel · " : ""}{x.title}</b><div className="small muted">{dateFr(x.created_at)} · {x.target}</div><div className="small msg-body">{x.body}</div></div>
+              <span className="small muted right">lu par<br /><b className="num">{x.read}/{x.sent}</b></span></li>
           ))}</ul>
         )}
       </section>

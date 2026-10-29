@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { deleteAccount, DEMO, euros, listInbox, listOrders, markRead, resetPassword, signIn, signOut, signUp, updateProfile, type InboxMessage, type Order, type Profile } from "../lib/backend";
+import { deleteAccount, DEMO, euros, listOrders, resetPassword, signIn, signOut, signUp, unreadCount, updateProfile, type Order, type Profile } from "../lib/backend";
 import { useAuth } from "../lib/auth";
 import { go, type Route } from "../lib/router";
 
@@ -53,6 +53,7 @@ function AuthForm({ after }: { after: Route | null }) {
       <button className="btn full" disabled={busy}>{busy ? "…" : mode === "up" ? "Créer mon compte" : "Se connecter"}</button>
       {mode === "in" && <button type="button" className="link" onClick={forgot}>Mot de passe oublié ?</button>}
       {DEMO && <p className="small muted">Mode démonstration : le compte reste sur cet appareil.</p>}
+      <p className="small muted">Une fois connecté, vous le restez sur cet appareil jusqu'à ce que vous vous déconnectiez.</p>
     </form>
   );
 }
@@ -103,26 +104,14 @@ function Account({ profile }: { profile: Profile }) {
 }
 
 function Inbox() {
-  const [msgs, setMsgs] = useState<InboxMessage[] | null>(null);
-  const [open, setOpen] = useState<string | null>(null);
-  useEffect(() => { listInbox().then(setMsgs, () => setMsgs([])); }, []);
-  const unread = (msgs || []).filter((m) => !m.read_at).length;
-  function toggle(m: InboxMessage) {
-    setOpen(open === m.id ? null : m.id);
-    if (!m.read_at) { markRead(m.id); setMsgs((l) => (l || []).map((x) => (x.id === m.id ? { ...x, read_at: new Date().toISOString() } : x))); }
-  }
+  const [n, setN] = useState<number | null>(null);
+  useEffect(() => { unreadCount().then(setN, () => setN(0)); }, []);
   return (
-    <section className="card">
-      <div className="card-head"><h2 className="serif gold-text">Messages</h2>{unread > 0 && <span className="badge-inline">{unread} nouveau(x)</span>}</div>
-      {!msgs ? <div className="muted">Chargement…</div> : !msgs.length ? <div className="muted">Aucun message de la synagogue pour le moment.</div> : (
-        <ul className="inbox">{msgs.map((m) => (
-          <li key={m.id} className={m.read_at ? "" : "unread"}>
-            <button onClick={() => toggle(m)} aria-expanded={open === m.id}><b>{m.title}</b><span className="small muted">{new Date(m.created_at).toLocaleDateString("fr-FR")}</span></button>
-            {open === m.id && <p className="msg-body">{m.body}</p>}
-          </li>
-        ))}</ul>
-      )}
-    </section>
+    <a className="card msg-card" href="#/messages">
+      <span className="tile-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16v11H8l-4 4z" /></svg></span>
+      <span className="msg-card-t"><b>Messages</b><span className="small muted">Écrire à l'administration, rappels, annonces</span></span>
+      {n ? <span className="badge-inline">{n} nouveau{n > 1 ? "x" : ""}</span> : <span className="gold" aria-hidden="true">›</span>}
+    </a>
   );
 }
 
