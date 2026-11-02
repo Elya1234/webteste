@@ -3,6 +3,8 @@
    ========================================================= */
 (() => {
   "use strict";
+  // couleurs courantes (mises à jour par le sélecteur d'ambiance)
+  const pal = { c1: "0,240,255", c2: "168,85,247", c3: "255,61,154" };
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -40,9 +42,9 @@
         bootLog.innerHTML += bootLines[i] + "\n";
         i++;
         bootBar.style.width = (i / bootLines.length) * 100 + "%";
-        setTimeout(step, 70 + Math.random() * 50);
+        setTimeout(step, 170 + Math.random() * 120);
       } else {
-        setTimeout(startSite, 200);
+        setTimeout(startSite, 350);
       }
     };
     step();
@@ -131,7 +133,7 @@
 
   /* ---------- 5. SCRAMBLE TEXT ---------- */
   const scrambleEl = $("#scramble");
-  const words = ["attirer des clients", "inspirer confiance", "être trouvés sur Google", "vendre en ligne", "durer dans le temps"];
+  const words = ["impressionnent", "convertissent", "se chargent vite", "rankent sur Google", "vous ressemblent"];
   const glyphs = "!<>-_\\/[]{}—=+*^?#01";
   let wIndex = 0;
   function scrambleTo(text) {
@@ -161,7 +163,7 @@
     setInterval(() => {
       wIndex = (wIndex + 1) % words.length;
       scrambleTo(words[wIndex]);
-    }, 3200);
+    }, 2800);
   }
 
   /* ---------- 6. CODE EDITOR TYPING ---------- */
@@ -244,7 +246,7 @@
       x: Math.random() * W, y: Math.random() * H,
       vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
       r: Math.random() * 1.6 + .6,
-      c: Math.random() < .5 ? "0,240,255" : "168,85,247",
+      c: Math.random() < .5 ? "c1" : "c2",
     }));
   }
   function draw() {
@@ -263,16 +265,16 @@
         const b = nodes[j];
         const d = Math.hypot(a.x - b.x, a.y - b.y);
         if (d < max) {
-          ctx.strokeStyle = `rgba(${a.c},${(1 - d / max) * .35})`;
+          ctx.strokeStyle = `rgba(${pal[a.c]},${(1 - d / max) * .35})`;
           ctx.lineWidth = .7;
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
       if (dm < 180) {
-        ctx.strokeStyle = `rgba(0,240,255,${(1 - dm / 180) * .6})`;
+        ctx.strokeStyle = `rgba(${pal.c1},${(1 - dm / 180) * .6})`;
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
       }
-      ctx.fillStyle = `rgba(${a.c},.9)`;
+      ctx.fillStyle = `rgba(${pal[a.c]},.9)`;
       ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
     }
   }
@@ -394,6 +396,8 @@
   <b>pourquoi</b>   pourquoi Corpus Hovdjo
   <b>contact</b>    nous écrire
   <b>devis</b>      aller au formulaire
+  <b>matrix</b>     ??? 👀
+  <b>hack</b>       mode hacker
   <b>clear</b>      vider l'écran`,
     services: () => `<span class="g">✔</span> Site vitrine
 <span class="g">✔</span> E-commerce
@@ -425,6 +429,9 @@ Réponse devis   → <span class="v">sous 24 h</span>`,
 horaires lun – ven · 9h – 19h
 Tapez <b>devis</b> pour ouvrir le formulaire.`,
     devis: () => { setTimeout(() => $("#contact").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }), 300); return '<span class="g">Ouverture du formulaire…</span>'; },
+    sudo: () => '<span class="p">Permission refusée.</span> Mais on peut quand même vous faire un super site 😉',
+    ls: () => 'services/  tarifs/  realisations/  contact.txt  <span class="g">votre-futur-site.html</span>',
+    whoami: () => 'Un futur client satisfait, visiblement.',
     hello: () => 'Bonjour ! 👋 Tapez <b>help</b> pour commencer.',
     bonjour: () => cmds.hello(),
   };
@@ -476,9 +483,6 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
   form.addEventListener("submit", e => {
     e.preventDefault();
     let ok = true;
-    const consent = $("#f-consent");
-    consent.parentElement.classList.toggle("error", !consent.checked);
-    if (!consent.checked) ok = false;
     ["f-name", "f-email", "f-msg"].forEach(id => {
       const f = $("#" + id);
       const bad = !f.value.trim() || (f.type === "email" && !/^\S+@\S+\.\S+$/.test(f.value));
@@ -487,14 +491,14 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
     });
     if (!ok) {
       formMsg.className = "form__msg err";
-      formMsg.textContent = "> Merci de compléter les champs en rouge et d'accepter d'être recontacté.";
+      formMsg.textContent = "> erreur : merci de compléter les champs en rouge.";
       return;
     }
     const subject = `Demande de devis — ${$("#f-type").value}`;
-    const body = `Nom : ${$("#f-name").value}\nEntreprise : ${$("#f-company").value || "-"}\nEmail : ${$("#f-email").value}\nTéléphone : ${$("#f-tel").value || "-"}\nProjet : ${$("#f-type").value}\nBudget : ${$("#f-budget").value}\n\n${$("#f-msg").value}`;
+    const body = `Nom : ${$("#f-name").value}\nEmail : ${$("#f-email").value}\nProjet : ${$("#f-type").value}\n\n${$("#f-msg").value}`;
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     formMsg.className = "form__msg";
-    formMsg.textContent = "> Votre messagerie s'ouvre avec la demande prête à envoyer ✓";
+    formMsg.textContent = "> ok : votre messagerie s'ouvre pour envoyer la demande ✓";
   });
 
   /* =========================================================
@@ -539,6 +543,14 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
       fit,
     };
   }
+  // boot
+  const bootRain = makeMatrix($("#bootMatrix"), { size: 14, fps: 28 });
+  if (!document.body.classList.contains("is-loading") || reduce) bootRain.stop(); else bootRain.start();
+  new MutationObserver(() => { if (boot.classList.contains("done")) bootRain.stop(); }).observe(boot, { attributes: true });
+  // section terminal
+  const secRain = makeMatrix($("#sectionMatrix"), { size: 15, fps: 18 });
+  new IntersectionObserver(([e]) => e.isIntersecting ? secRain.start() : secRain.stop()).observe($("#sectionMatrix"));
+
   /* ---- 12b. Globe 3D interactif ---- */
   const gcv = $("#globe"), g = gcv.getContext("2d");
   let gw, gh, gR;
@@ -572,13 +584,13 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
     g.clearRect(0, 0, gw, gh);
     // halo
     const grd = g.createRadialGradient(gw / 2, gh / 2, gR * .2, gw / 2, gh / 2, gR * 1.5);
-    grd.addColorStop(0, "rgba(0,240,255,.07)"); grd.addColorStop(1, "rgba(0,240,255,0)");
+    grd.addColorStop(0, `rgba(${pal.c1},.07)`); grd.addColorStop(1, `rgba(${pal.c1},0)`);
     g.fillStyle = grd; g.fillRect(0, 0, gw, gh);
     // points
     for (const p of gPts) {
       const r = rot(p), [x, y, z] = proj(r);
       const k = (z + 1) / 2;
-      g.fillStyle = z > 0 ? `rgba(0,240,255,${.15 + k * .75})` : `rgba(168,85,247,${.08 + k * .3})`;
+      g.fillStyle = z > 0 ? `rgba(${pal.c1},${.15 + k * .75})` : `rgba(${pal.c2},${.08 + k * .3})`;
       g.beginPath(); g.arc(x, y, .6 + k * 1.5, 0, 6.283); g.fill();
     }
     // arcs de données entre deux points
@@ -593,12 +605,12 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
         const pp = proj(rot(m.map(v => v / L * lift)));
         first ? g.moveTo(pp[0], pp[1]) : g.lineTo(pp[0], pp[1]); first = false;
       }
-      g.strokeStyle = "rgba(255,61,154,.35)"; g.lineWidth = 1; g.stroke();
+      g.strokeStyle = `rgba(${pal.c3},.35)`; g.lineWidth = 1; g.stroke();
       // paquet qui voyage
       const m = [A[0] + (B[0] - A[0]) * prog, A[1] + (B[1] - A[1]) * prog, A[2] + (B[2] - A[2]) * prog];
       const L = Math.hypot(...m) || 1, lift = 1 + Math.sin(prog * Math.PI) * .35;
       const pp = proj(rot(m.map(v => v / L * lift)));
-      g.fillStyle = "#ff3d9a"; g.shadowColor = "#ff3d9a"; g.shadowBlur = 12;
+      g.fillStyle = g.shadowColor = `rgb(${pal.c3})`; g.shadowBlur = 12;
       g.beginPath(); g.arc(pp[0], pp[1], 2.4, 0, 6.283); g.fill(); g.shadowBlur = 0;
     }
     // anneau en orbite + satellite
@@ -607,9 +619,9 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
       const pp = proj(rot([Math.cos(s) * 1.45, Math.sin(s) * .18, Math.sin(s) * 1.45]));
       s === 0 ? g.moveTo(pp[0], pp[1]) : g.lineTo(pp[0], pp[1]);
     }
-    g.strokeStyle = "rgba(168,85,247,.35)"; g.stroke();
+    g.strokeStyle = `rgba(${pal.c2},.35)`; g.stroke();
     const sa = gt * .015, sp = proj(rot([Math.cos(sa) * 1.45, Math.sin(sa) * .18, Math.sin(sa) * 1.45]));
-    g.fillStyle = "#00f0ff"; g.shadowColor = "#00f0ff"; g.shadowBlur = 16;
+    g.fillStyle = g.shadowColor = `rgb(${pal.c1})`; g.shadowBlur = 16;
     g.beginPath(); g.arc(sp[0], sp[1], 3.5, 0, 6.283); g.fill(); g.shadowBlur = 0;
   }
   gFit(); addEventListener("resize", gFit);
@@ -650,6 +662,71 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
   // liens du menu et kickers : décodage au survol
   $$(".nav__links a:not(.btn), .kicker, .logo__text").forEach(a => a.addEventListener("mouseenter", () => decode(a, 2)));
 
+  /* ---- 12d. Transition « terminal » entre sections ---- */
+  const wipe = $("#wipe"), wipeText = $("#wipeText");
+  const names = { top: "accueil", services: "services", realisations: "exemples", process: "methode", tarifs: "tarifs", faq: "faq", contact: "contact", stack: "stack", terminal: "terminal" };
+  let wiping = false;
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || reduce || wiping) return;
+    const id = a.getAttribute("href").slice(1);
+    const target = id ? document.getElementById(id) : null;
+    if (!target) return;
+    e.preventDefault();
+    wiping = true;
+    wipe.classList.add("on");
+    const cmd = `$ cd ~/${names[id] || id}`;
+    let i = 0;
+    setTimeout(() => {
+      wipe.classList.add("text");
+      const t = setInterval(() => {
+        wipeText.textContent = cmd.slice(0, ++i) + "▌";
+        if (i >= cmd.length) {
+          clearInterval(t);
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: "instant", block: "start" });
+            window.history.replaceState(null, "", "#" + id);
+            wipe.classList.remove("text");
+            wipe.classList.remove("on");
+            setTimeout(() => { wiping = false; wipeText.textContent = ""; }, 700);
+          }, 220);
+        }
+      }, 22);
+    }, 420);
+  });
+
+  /* ---- 12e. Étincelles de code au clic + traînée du curseur ---- */
+  const sparkChars = ["{", "}", "<", "/>", ";", "0", "1", "#", "*", "()", "=>"];
+  const sparkCols = ["#00f0ff", "#a855f7", "#ff3d9a", "#3dff9a"];
+  window.__sparkCols = sparkCols;
+  document.addEventListener("pointerdown", e => {
+    if (reduce || e.target.closest("input, textarea, select, .term")) return;
+    for (let i = 0; i < 9; i++) {
+      const s = document.createElement("span");
+      s.className = "spark";
+      s.textContent = sparkChars[(Math.random() * sparkChars.length) | 0];
+      const ang = (i / 9) * Math.PI * 2 + Math.random() * .5, dist = 40 + Math.random() * 50;
+      s.style.cssText = `--x:${e.clientX}px;--y:${e.clientY}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist}px;--r:${(Math.random() - .5) * 180}deg;transform:translate(${e.clientX}px,${e.clientY}px);color:${sparkCols[i % 4]}`;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 850);
+    }
+  });
+  if (finePointer && !reduce) {
+    let lastT = 0;
+    addEventListener("mousemove", e => {
+      const now = performance.now();
+      if (now - lastT < 28) return;
+      lastT = now;
+      const d = document.createElement("i");
+      d.className = "trail";
+      const t = `translate(${e.clientX}px,${e.clientY}px)`;
+      d.style.transform = t; d.style.setProperty("--t", t);
+      d.style.background = sparkCols[(now / 100 | 0) % 3];
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 650);
+    });
+  }
+
   /* ---- 12f. Cube 3D : on peut le faire tourner à la souris ---- */
   const cube = $("#cube");
   let drag = null, cRX = -22, cRY = 0;
@@ -683,6 +760,15 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
   function closeMatrix() { mFull.classList.remove("on"); setTimeout(() => fullRain.stop(), 500); }
   mFull.addEventListener("click", closeMatrix);
   cmds.matrix = () => { setTimeout(matrixMode, 300); return '<span class="g">Initialisation de la Matrice…</span>'; };
+  cmds.hack = () => {
+    const lines = ["Connexion au serveur Corpus…", "Contournement du pare-feu… [OK]", "Téléchargement de bonnes idées… 100%", "Injection de créativité… [OK]",
+      '<span class="p">ACCÈS AUTORISÉ</span> : votre futur site vous attend 😎'];
+    lines.forEach((l, i) => setTimeout(() => {
+      const o = document.createElement("div"); o.className = "term__out"; o.innerHTML = '<span class="g">▸</span> ' + l;
+      termBody.appendChild(o); termBody.scrollTop = termBody.scrollHeight;
+    }, 350 * (i + 1)));
+    return '<span class="v">Mode hacker activé…</span>';
+  };
   // code Konami (↑↑↓↓←→←→BA) ou taper « matrix » n'importe où
   const konami = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
   let kPos = 0, typed = "";
@@ -694,4 +780,41 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
     if (typed === "matrix") matrixMode();
     if (e.key === "Escape") closeMatrix();
   });
+
+  /* =========================================================
+     13. AMBIANCES DE COULEURS + MENU ACTIF
+     ========================================================= */
+  const root = document.documentElement;
+  const palEl = $("#palette"), palBtn = $("#paletteToggle");
+  function applyPalette(name) {
+    if (name === "neon") delete root.dataset.palette; else root.dataset.palette = name;
+    const cs = getComputedStyle(root);
+    ["c1", "c2", "c3"].forEach(k => { pal[k] = cs.getPropertyValue("--" + k).trim().replace(/\s+/g, ""); });
+    const sc = window.__sparkCols;
+    if (sc) { sc[0] = `rgb(${pal.c1})`; sc[1] = `rgb(${pal.c2})`; sc[2] = `rgb(${pal.c3})`; }
+    $$(".palette__menu button").forEach(b => b.classList.toggle("on", b.dataset.themeName === name));
+    try { localStorage.setItem("ch-palette", name); } catch (e) {}
+  }
+  let saved = "neon";
+  try { saved = localStorage.getItem("ch-palette") || "neon"; } catch (e) {}
+  applyPalette(saved);
+  palBtn.addEventListener("click", () => {
+    const open = palEl.classList.toggle("open");
+    palBtn.setAttribute("aria-expanded", open);
+  });
+  $$(".palette__menu button").forEach(b => b.addEventListener("click", () => {
+    applyPalette(b.dataset.themeName);
+    palEl.classList.remove("open"); palBtn.setAttribute("aria-expanded", "false");
+  }));
+  document.addEventListener("click", e => { if (!e.target.closest("#palette")) { palEl.classList.remove("open"); palBtn.setAttribute("aria-expanded", "false"); } });
+
+  // lien du menu actif selon la section visible
+  const navMap = new Map($$(".nav__links a:not(.btn)").map(a => [a.getAttribute("href").slice(1), a]));
+  const spy = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    navMap.forEach(a => a.classList.remove("active"));
+    const a = navMap.get(e.target.id);
+    if (a) a.classList.add("active");
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  $$("main section[id]").forEach(sec => spy.observe(sec));
 })();

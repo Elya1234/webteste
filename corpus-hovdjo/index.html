@@ -11,13 +11,14 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305070d'/%3E%3Cpath d='M22 20 10 32l12 12M42 20l12 12-12 12' stroke='%2300f0ff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M36 16 28 48' stroke='%23a855f7' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="is-loading">
 
 <!-- ============ BOOT LOADER ============ -->
 <div class="boot" id="boot" aria-hidden="true">
+  <canvas class="boot__matrix" id="bootMatrix"></canvas>
   <div class="boot__inner">
     <pre class="boot__log" id="bootLog"></pre>
     <div class="boot__bar"><span id="bootBar"></span></div>
@@ -37,8 +38,8 @@
   <nav class="nav__links" id="navLinks">
     <a href="#services">Services</a>
     <a href="#realisations">Exemples</a>
+    <a href="#terminal">Pourquoi nous</a>
     <a href="#process">Méthode</a>
-    <a href="#engagements">Engagements</a>
     <a href="#tarifs">Tarifs</a>
     <a href="#faq">FAQ</a>
     <a href="#contact" class="btn btn--sm btn--glow">Devis gratuit</a>
@@ -56,20 +57,21 @@
 
   <div class="container hero__inner">
     <div class="hero__text">
-      <p class="tag reveal"><span class="pulse"></span> Agence web · Disponible pour de nouveaux projets</p>
+      <p class="tag reveal"><span class="pulse"></span> Disponible pour de nouveaux projets</p>
       <h1 class="hero__title reveal">
-        Des sites web professionnels, conçus pour
-        <span class="hero__rotate"><span id="scramble">attirer des clients</span><i class="caret">_</i></span>
+        <span class="glitch" data-text="CORPUS HOVDJO">CORPUS HOVDJO</span>
+        <span class="hero__line">On code des sites qui</span>
+        <span class="hero__rotate"><span id="scramble">impressionnent</span><i class="caret">_</i></span>
       </h1>
-      <p class="hero__sub reveal">Corpus Hovdjo conçoit, développe et maintient le site internet de votre entreprise : design sur mesure, code optimisé, référencement Google et accompagnement après la mise en ligne. <strong>À partir de 800&nbsp;€&nbsp;HT.</strong></p>
+      <p class="hero__sub reveal">Agence web de développement : design sur mesure, code propre, référencement et performance. Votre site professionnel livré clé en main, <strong>à partir de 800&nbsp;€</strong>.</p>
       <div class="hero__cta reveal">
-        <a href="#contact" class="btn btn--glow magnetic">Demander un devis gratuit <span class="arrow">→</span></a>
+        <a href="#contact" class="btn btn--glow magnetic">Lancer mon projet <span class="arrow">→</span></a>
         <a href="#tarifs" class="btn btn--ghost magnetic">Voir les tarifs</a>
       </div>
       <ul class="hero__checks reveal">
-        <li>Devis gratuit sous 24&nbsp;h</li>
-        <li>Paiement en 3 fois</li>
-        <li>Site 100&nbsp;% à votre nom</li>
+        <li>Design 100&nbsp;% sur mesure</li>
+        <li>Responsive mobile</li>
+        <li>SEO inclus</li>
       </ul>
     </div>
 
@@ -102,20 +104,22 @@
   </a>
 </section>
 
+<!-- ============ STATS ============ -->
+<section class="stats-wrap" aria-label="Chiffres clés">
+<div class="stats container">
+  <div class="stat reveal"><b class="count" data-to="800" data-suffix=" €">0</b><span>Prix de départ d'un site complet</span></div>
+  <div class="stat reveal"><b class="count" data-to="24" data-suffix=" h">0</b><span>Délai de réponse à votre demande</span></div>
+  <div class="stat reveal"><b class="count" data-to="90" data-prefix="+" data-suffix="">0</b><span>Score de performance Lighthouse visé</span></div>
+  <div class="stat reveal"><b class="count" data-to="100" data-suffix=" %">0</b><span>Responsive : mobile, tablette, ordinateur</span></div>
+</div>
+</section>
+
 <!-- ============ MARQUEE STACK ============ -->
 <section class="marquee" id="stack" aria-label="Technologies">
   <div class="marquee__track">
     <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>React</span><span>Next.js</span><span>WordPress</span><span>Shopify</span><span>Node.js</span><span>PHP</span><span>Tailwind</span><span>Figma</span><span>SEO</span><span>Google Analytics</span><span>API REST</span>
     <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>React</span><span>Next.js</span><span>WordPress</span><span>Shopify</span><span>Node.js</span><span>PHP</span><span>Tailwind</span><span>Figma</span><span>SEO</span><span>Google Analytics</span><span>API REST</span>
   </div>
-</section>
-
-<!-- ============ STATS ============ -->
-<section class="stats container">
-  <div class="stat reveal"><b class="count" data-to="800" data-suffix=" €">0</b><span>Prix de départ d'un site complet</span></div>
-  <div class="stat reveal"><b class="count" data-to="24" data-suffix=" h">0</b><span>Délai de réponse à votre demande</span></div>
-  <div class="stat reveal"><b class="count" data-to="90" data-prefix="+" data-suffix="">0</b><span>Score de performance Lighthouse visé</span></div>
-  <div class="stat reveal"><b class="count" data-to="100" data-suffix=" %">0</b><span>Responsive : mobile, tablette, ordinateur</span></div>
 </section>
 
 <!-- ============ SERVICES ============ -->
@@ -128,42 +132,44 @@
     </header>
 
     <div class="services">
-      <article class="card glow-card reveal">
+      <article class="card glow-card reveal card--1">
         <div class="card__icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 8h18M8 21h8M12 18v3"/></svg></div>
+        <span class="card__badge">Le plus demandé</span>
         <h3>Site vitrine</h3>
         <p>Présentez votre activité avec un site élégant, rapide et pensé pour transformer vos visiteurs en clients.</p>
-        <ul><li>Jusqu'à 5 pages</li><li>Formulaire de contact</li><li>Google Maps &amp; réseaux</li></ul>
-        <span class="card__price">dès 800 €</span>
+        <ul><li>Jusqu'à 5 pages</li><li>Formulaire de contact</li><li>Google Maps &amp; réseaux</li><li>Design responsive</li><li>SEO de base</li></ul>
+        <div class="card__big"><small>à partir de</small><b>800&nbsp;€</b></div>
+        <a href="#tarifs" class="btn btn--glow btn--sm card__cta">Voir la formule</a>
       </article>
-      <article class="card glow-card reveal">
+      <article class="card glow-card reveal card--2">
         <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg></div>
         <h3>E-commerce</h3>
         <p>Une boutique en ligne complète : catalogue, panier, paiement sécurisé, gestion des stocks et des commandes.</p>
         <ul><li>Paiement Stripe / PayPal</li><li>Back-office simple</li><li>Shopify ou WooCommerce</li></ul>
         <span class="card__price">dès 2 400 €</span>
       </article>
-      <article class="card glow-card reveal">
+      <article class="card glow-card reveal card--3">
         <div class="card__icon"><svg viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></div>
         <h3>Application web</h3>
         <p>Espace client, réservation, tableau de bord, outil interne : on développe vos fonctionnalités sur mesure.</p>
         <ul><li>Comptes utilisateurs</li><li>Base de données</li><li>API &amp; intégrations</li></ul>
         <span class="card__price">sur devis</span>
       </article>
-      <article class="card glow-card reveal">
+      <article class="card glow-card reveal card--4">
         <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
         <h3>Refonte de site</h3>
         <p>Votre site est daté ou lent ? On le modernise sans perdre votre référencement existant.</p>
         <ul><li>Audit complet</li><li>Nouveau design</li><li>Redirections SEO</li></ul>
         <span class="card__price">dès 800 €</span>
       </article>
-      <article class="card glow-card reveal">
+      <article class="card glow-card reveal card--5">
         <div class="card__icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></svg></div>
         <h3>SEO &amp; performance</h3>
         <p>Optimisation technique, vitesse de chargement, contenus et fiche Google pour remonter dans les résultats.</p>
         <ul><li>Audit Lighthouse</li><li>Mots-clés locaux</li><li>Google Business</li></ul>
         <span class="card__price">dès 290 €</span>
       </article>
-      <article class="card glow-card reveal">
+      <article class="card glow-card reveal card--6">
         <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
         <h3>Maintenance &amp; hébergement</h3>
         <p>Mises à jour, sauvegardes, sécurité, nom de domaine et petites modifications : on veille sur votre site.</p>
@@ -225,12 +231,46 @@
   </div>
 </section>
 
+<!-- ============ TERMINAL INTERACTIF ============ -->
+<section class="section" id="terminal">
+  <canvas class="matrix" id="sectionMatrix" aria-hidden="true"></canvas>
+  <div class="container split">
+    <div class="split__text reveal">
+      <p class="kicker">// 03 — pourquoi nous</p>
+      <h2>Des développeurs,<br><span class="grad">pas des templates.</span></h2>
+      <p class="section__lead">Chaque site est codé à la main, optimisé pour la vitesse et le référencement. Pas de thème générique, pas de surcharge : juste ce dont votre activité a besoin.</p>
+      <ul class="why">
+        <li><b>⚡ Ultra rapide</b><span>Chargement optimisé, meilleur classement Google.</span></li>
+        <li><b>🔒 Sécurisé</b><span>HTTPS, sauvegardes, mises à jour suivies.</span></li>
+        <li><b>📱 Mobile d'abord</b><span>Parfait sur tous les écrans.</span></li>
+        <li><b>🤝 Un seul interlocuteur</b><span>Du premier appel jusqu'après la mise en ligne.</span></li>
+      </ul>
+    </div>
+    <div class="term reveal" id="term">
+      <div class="term__bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span>corpus@hovdjo: ~</span></div>
+      <div class="term__body" id="termBody">
+        <div class="term__out">Bienvenue chez Corpus Hovdjo. Tapez <b>help</b> pour voir les commandes.</div>
+      </div>
+      <form class="term__input" id="termForm" autocomplete="off">
+        <span class="term__prompt">corpus@hovdjo:~$</span>
+        <input type="text" id="termInput" aria-label="Commande du terminal" spellcheck="false">
+      </form>
+      <div class="term__hints">
+        <button type="button" data-cmd="services">services</button>
+        <button type="button" data-cmd="prix">prix</button>
+        <button type="button" data-cmd="delais">delais</button>
+        <button type="button" data-cmd="contact">contact</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ PROCESS ============ -->
 <section class="section" id="process">
   <div class="container">
     <div class="head-row">
       <header class="section__head reveal">
-        <p class="kicker">// 03 — méthode</p>
+        <p class="kicker">// 04 — méthode</p>
         <h2>Un process clair,<br><span class="grad">zéro mauvaise surprise.</span></h2>
       </header>
       <div class="cube-wrap reveal" aria-hidden="true">
@@ -253,30 +293,11 @@
   </div>
 </section>
 
-<!-- ============ ENGAGEMENTS ============ -->
-<section class="section" id="engagements">
-  <div class="container">
-    <header class="section__head reveal">
-      <p class="kicker">// nos engagements</p>
-      <h2>Un partenaire fiable,<br><span class="grad">du devis à la maintenance.</span></h2>
-      <p class="section__lead">Confier son site à une agence, c'est une question de confiance. Voici ce que nous garantissons sur chaque projet.</p>
-    </header>
-    <div class="pledges">
-      <article class="pledge reveal"><div class="pledge__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><h3>Prix ferme</h3><p>Le montant du devis est celui que vous payez. Aucun frais caché, aucune surprise en fin de projet.</p></div></article>
-      <article class="pledge reveal"><div class="pledge__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><h3>Délais tenus</h3><p>Un planning daté, validé ensemble avant de démarrer, avec des points d'étape réguliers.</p></div></article>
-      <article class="pledge reveal"><div class="pledge__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7a4 4 0 1 1-3.9 5H3v3h3v3h3v-3h2.1A4 4 0 0 1 15 7z"/></svg></div><div><h3>Vous êtes propriétaire</h3><p>Code, nom de domaine, contenus et accès : tout est à votre nom. Vous restez libre.</p></div></article>
-      <article class="pledge reveal"><div class="pledge__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div><div><h3>Conforme RGPD</h3><p>Mentions légales, politique de confidentialité, bandeau cookies et formulaires conformes.</p></div></article>
-      <article class="pledge reveal"><div class="pledge__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></div><div><h3>Sauvegardes &amp; mises à jour</h3><p>Votre site est sauvegardé, surveillé et maintenu à jour pour rester rapide et sûr.</p></div></article>
-      <article class="pledge reveal"><div class="pledge__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div><h3>Accompagnement</h3><p>Formation à la prise en main et support réactif après la livraison de votre site.</p></div></article>
-    </div>
-  </div>
-</section>
-
 <!-- ============ TARIFS ============ -->
 <section class="section section--alt" id="tarifs">
   <div class="container">
     <header class="section__head reveal">
-      <p class="kicker">// 04 — tarifs</p>
+      <p class="kicker">// 05 — tarifs</p>
       <h2>Des prix transparents,<br><span class="grad">à partir de 800&nbsp;€.</span></h2>
       <p class="section__lead">Paiement en plusieurs fois possible. Le site vous appartient à 100&nbsp;% à la livraison.</p>
     </header>
@@ -327,15 +348,6 @@
       </article>
     </div>
 
-    <div class="included reveal">
-      <span class="included__label">Inclus dans toutes les formules</span>
-      <ul>
-        <li>Nom de domaine configuré</li><li>Certificat SSL (HTTPS)</li><li>Adapté mobile &amp; tablette</li>
-        <li>SEO technique</li><li>Mentions légales &amp; RGPD</li><li>Formation à la prise en main</li>
-      </ul>
-      <p class="included__note">Tarifs indiqués hors taxes. Acompte de 30&nbsp;% à la commande, solde à la mise en ligne.</p>
-    </div>
-
     <!-- simulateur -->
     <div class="estimator reveal" id="estimator">
       <div class="estimator__left">
@@ -366,46 +378,21 @@
   </div>
 </section>
 
-<!-- ============ TERMINAL INTERACTIF ============ -->
-<section class="section" id="terminal">
-  <div class="container split">
-    <div class="split__text reveal">
-      <p class="kicker">// 05 — pourquoi nous</p>
-      <h2>Des développeurs,<br><span class="grad">pas des templates.</span></h2>
-      <p class="section__lead">Chaque site est codé à la main, optimisé pour la vitesse et le référencement. Pas de thème générique, pas de surcharge : juste ce dont votre activité a besoin.</p>
-      <ul class="why">
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><b>Ultra rapide</b><span>Chargement optimisé, meilleur classement Google.</span></li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><b>Sécurisé</b><span>HTTPS, sauvegardes, mises à jour suivies.</span></li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><b>Mobile d'abord</b><span>Parfait sur tous les écrans.</span></li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><b>Un seul interlocuteur</b><span>Du premier appel jusqu'après la mise en ligne.</span></li>
-      </ul>
-    </div>
-    <div class="term reveal" id="term">
-      <div class="term__bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span>corpus@hovdjo: ~</span></div>
-      <div class="term__body" id="termBody">
-        <div class="term__out">Bienvenue chez Corpus Hovdjo. Tapez <b>help</b> pour voir les commandes.</div>
-      </div>
-      <form class="term__input" id="termForm" autocomplete="off">
-        <span class="term__prompt">corpus@hovdjo:~$</span>
-        <input type="text" id="termInput" aria-label="Commande du terminal" spellcheck="false">
-      </form>
-      <div class="term__hints">
-        <button type="button" data-cmd="services">services</button>
-        <button type="button" data-cmd="prix">prix</button>
-        <button type="button" data-cmd="delais">delais</button>
-        <button type="button" data-cmd="contact">contact</button>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ FAQ ============ -->
 <section class="section section--alt" id="faq">
-  <div class="container container--narrow">
-    <header class="section__head reveal">
-      <p class="kicker">// 06 — faq</p>
-      <h2>Questions <span class="grad">fréquentes</span></h2>
-    </header>
+  <div class="container faq-grid">
+    <aside class="faq-aside">
+      <header class="section__head reveal">
+        <p class="kicker">// 06 — faq</p>
+        <h2>Questions <span class="grad">fréquentes</span></h2>
+        <p class="section__lead">Les réponses aux questions qu'on nous pose avant chaque projet.</p>
+      </header>
+      <div class="ask glow-card reveal">
+        <b>Une autre question ?</b>
+        <p>Tapez <code>contact</code> dans le terminal ou écrivez-nous : réponse sous 24&nbsp;h.</p>
+        <a href="#contact" class="btn btn--ghost btn--sm">Poser ma question →</a>
+      </div>
+    </aside>
     <div class="faq">
       <details class="reveal"><summary>Combien coûte un site internet ?</summary><p>Nos sites démarrent à 800&nbsp;€ pour un site vitrine complet jusqu'à 5 pages. Le prix dépend ensuite du nombre de pages et des fonctionnalités (boutique, réservation, multilingue…). Utilisez le simulateur ci-dessus pour une première estimation.</p></details>
       <details class="reveal"><summary>Combien de temps pour créer mon site ?</summary><p>Comptez en moyenne 1 à 2 semaines pour un site vitrine et 3 à 6 semaines pour une boutique en ligne, selon la rapidité des échanges et la disponibilité de vos contenus.</p></details>
@@ -436,11 +423,6 @@
         <div class="input"><input id="f-name" name="name" required placeholder=" "><label for="f-name">Nom</label></div>
         <div class="input"><input id="f-email" name="email" type="email" required placeholder=" "><label for="f-email">Email</label></div>
       </div>
-      <div class="form__row">
-        <div class="input"><input id="f-company" name="company" placeholder=" "><label for="f-company">Entreprise (facultatif)</label></div>
-        <div class="input"><input id="f-tel" name="tel" type="tel" placeholder=" "><label for="f-tel">Téléphone (facultatif)</label></div>
-      </div>
-      <div class="form__row">
       <div class="input">
         <select id="f-type" name="type">
           <option>Site vitrine</option>
@@ -454,19 +436,7 @@
         </select>
         <label for="f-type" class="fixed">Type de projet</label>
       </div>
-      <div class="input">
-        <select id="f-budget" name="budget">
-          <option>800 € – 1 500 €</option>
-          <option>1 500 € – 3 000 €</option>
-          <option>3 000 € – 6 000 €</option>
-          <option>Plus de 6 000 €</option>
-          <option>Je ne sais pas encore</option>
-        </select>
-        <label for="f-budget" class="fixed">Budget envisagé</label>
-      </div>
-      </div>
       <div class="input"><textarea id="f-msg" name="message" rows="5" required placeholder=" "></textarea><label for="f-msg">Votre projet</label></div>
-      <label class="consent" for="f-consent"><input type="checkbox" id="f-consent"> <span>J'accepte que mes données soient utilisées pour être recontacté au sujet de ma demande. Elles ne sont jamais revendues.</span></label>
       <button class="btn btn--glow btn--full magnetic" type="submit">Envoyer ma demande <span class="arrow">→</span></button>
       <p class="form__msg" id="formMsg" role="status"></p>
     </form>
@@ -479,32 +449,40 @@
   <div class="container footer__grid">
     <div class="footer__brand">
       <a href="#top" class="logo"><span class="logo__mark">&lt;/&gt;</span><span class="logo__text">CORPUS<b>HOVDJO</b></span></a>
-      <p>Agence de création de sites internet sur mesure pour les entreprises, artisans et indépendants. Sites à partir de 800&nbsp;€&nbsp;HT.</p>
-      <a href="#contact" class="btn btn--ghost btn--sm">Demander un devis</a>
+      <p>Création de sites web sur mesure : vitrine, e-commerce, applications et SEO. À partir de 800&nbsp;€.</p>
+      <a href="#contact" class="btn btn--glow btn--sm">Devis gratuit →</a>
     </div>
-    <div class="footer__col">
-      <h4>Services</h4>
-      <a href="#services">Site vitrine</a><a href="#services">E-commerce</a><a href="#services">Application web</a><a href="#services">SEO &amp; maintenance</a>
-    </div>
-    <div class="footer__col">
-      <h4>Agence</h4>
-      <a href="#process">Méthode</a><a href="#engagements">Engagements</a><a href="#tarifs">Tarifs</a><a href="#faq">FAQ</a>
-    </div>
-    <div class="footer__col">
-      <h4>Contact</h4>
-      <a href="mailto:contact@corpus-hovdjo.fr">contact@corpus-hovdjo.fr</a><a href="tel:+33600000000">06 00 00 00 00</a><span>Lun – Ven · 9h – 19h</span>
-    </div>
+    <div class="footer__col"><h4>// services</h4><a href="#services">Site vitrine</a><a href="#services">E-commerce</a><a href="#services">Application web</a><a href="#services">SEO &amp; maintenance</a></div>
+    <div class="footer__col"><h4>// agence</h4><a href="#realisations">Exemples</a><a href="#terminal">Pourquoi nous</a><a href="#process">Méthode</a><a href="#tarifs">Tarifs</a></div>
+    <div class="footer__col"><h4>// contact</h4><a href="mailto:contact@corpus-hovdjo.fr">contact@corpus-hovdjo.fr</a><a href="tel:+33600000000">06 00 00 00 00</a><span>Lun – Ven · 9h – 19h</span></div>
   </div>
   <div class="container footer__bottom">
-    <p>© <span id="year"></span> Corpus Hovdjo · SIRET 000 000 000 00000 · Tous droits réservés.</p>
+    <p>© <span id="year"></span> Corpus Hovdjo. Codé avec ♥ et beaucoup de café.</p>
     <nav><a href="#">Mentions légales</a><a href="#">Confidentialité</a><a href="#">CGV</a></nav>
   </div>
 </footer>
+
+<!-- transition entre sections -->
+<div class="wipe" id="wipe" aria-hidden="true">
+  <div class="wipe__cols"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i></div>
+  <div class="wipe__text" id="wipeText"></div>
+</div>
 
 <!-- mode matrix plein écran (easter egg) -->
 <div class="matrix-full" id="matrixFull" aria-hidden="true">
   <canvas id="fullMatrix"></canvas>
   <p id="matrixMsg"></p>
+</div>
+
+<!-- sélecteur d'ambiance de couleurs -->
+<div class="palette" id="palette">
+  <button type="button" class="palette__toggle" id="paletteToggle" aria-expanded="false" aria-label="Changer les couleurs du site"><span></span></button>
+  <div class="palette__menu" role="group" aria-label="Ambiance de couleurs">
+    <button type="button" data-theme-name="neon" class="on"><i style="--a:#00f0ff;--b:#a855f7"></i>Néon</button>
+    <button type="button" data-theme-name="aurore"><i style="--a:#3dff9a;--b:#00c8ff"></i>Aurore</button>
+    <button type="button" data-theme-name="sunset"><i style="--a:#ff8a3d;--b:#ff3d78"></i>Sunset</button>
+    <button type="button" data-theme-name="glace"><i style="--a:#7dd3fc;--b:#6366f1"></i>Glace</button>
+  </div>
 </div>
 
 <script src="main.js"></script>
