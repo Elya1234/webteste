@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corpus Hovdjo — Création de sites web sur mesure dès 800 € HT</title>
+<meta name="description" content="Corpus Hovdjo dessine et développe des sites internet sur mesure pour les entreprises : vitrine, e-commerce, refonte, SEO. À partir de 800 € HT.">
+<meta name="theme-color" content="#0a1120">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231f3dff'/%3E%3Cpath d='M18 16v32h28' stroke='%23fff' stroke-width='5' fill='none'/%3E%3Ccircle cx='44' cy='20' r='5' fill='%23ff5a1f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a href="#top" class="brand" aria-label="Corpus Hovdjo, accueil">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">Corpus Hovdjo</span>
+    </a>
+    <nav class="nav__links" id="navLinks">
+      <a href="#services">Services</a>
+      <a href="#refonte">Avant / après</a>
+      <a href="#methode">Méthode</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact" class="btn btn--ink btn--sm">Demander un devis</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="hero__glow" aria-hidden="true"></div>
+  <div class="hero__grid" id="heroGrid" aria-hidden="true"></div>
+  <canvas class="hero__net" id="net" aria-hidden="true"></canvas>
+  <div class="wrap hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow reveal"><span class="eyebrow__dot"></span>Agence web · Conception &amp; développement</p>
+      <h1 class="reveal">Du plan au code,<br>du code <em>à votre site</em>.</h1>
+      <p class="lead reveal">Corpus Hovdjo dessine la structure de votre site avec vous, l'écrit ligne par ligne, puis le met en ligne : design sur mesure, code rapide, référencement Google et suivi. Livré clé en main, <strong>à partir de 800&nbsp;€&nbsp;HT</strong>.</p>
+      <div class="hero__cta reveal">
+        <a href="#contact" class="btn btn--blue">Demander un devis gratuit <span class="arr">→</span></a>
+        <a href="#tarifs" class="btn btn--line">Voir les tarifs</a>
+      </div>
+      <dl class="specs reveal">
+        <div><dt>Prix de départ</dt><dd><span class="count" data-to="800">800</span>&nbsp;€ HT</dd></div>
+        <div><dt>Réponse au devis</dt><dd>sous <span class="count" data-to="24">24</span>&nbsp;h</dd></div>
+        <div><dt>Score Lighthouse visé</dt><dd><span class="count" data-to="90">90</span>+</dd></div>
+      </dl>
+    </div>
+
+    <!-- Plan → Rendu -->
+    <div class="board reveal">
+      <div class="board__head">
+        <span class="board__ref">PROJET CH-0042 · Atelier Brun</span>
+        <div class="toggle" role="group" aria-label="Affichage">
+          <button type="button" data-view="plan" class="on">Plan</button>
+          <button type="button" data-view="code">Code</button>
+          <button type="button" data-view="rendu">Rendu</button>
+        </div>
+      </div>
+      <div class="blueprint" id="blueprint">
+        <!-- le rendu (site fini) -->
+        <div class="layer layer--render" id="render">
+          <div class="ms">
+            <div class="ms-nav"><span class="ms-logo">Atelier Brun</span><span class="ms-links"><i>Réalisations</i><i>Savoir-faire</i><i>Contact</i></span><span class="ms-btn">Devis</span></div>
+            <div class="ms-hero">
+              <div class="ms-copy">
+                <span class="ms-eyebrow">Menuiserie · Lyon</span>
+                <span class="ms-h">Du bois, du sur-mesure, du durable.</span>
+                <span class="ms-p">Cuisines, escaliers et dressings fabriqués dans notre atelier depuis 1998.</span>
+                <span class="ms-cta">Prendre rendez-vous</span>
+              </div>
+              <div class="ms-img"></div>
+            </div>
+            <div class="ms-cards">
+              <div><span class="ms-thumb t1"></span><b>Cuisines</b></div>
+              <div><span class="ms-thumb t2"></span><b>Escaliers</b></div>
+              <div><span class="ms-thumb t3"></span><b>Dressings</b></div>
+            </div>
+          </div>
+        </div>
+        <!-- le code -->
+        <div class="layer layer--code" aria-hidden="true">
+          <div class="code__bar"><i></i><i></i><i></i>atelier-brun/index.html</div>
+          <pre class="code__pre" id="codePre"></pre>
+          <div class="code__status"><span>HTML · CSS · JS</span><span>Performance <b id="perf">0</b>/100</span></div>
+        </div>
+        <!-- le plan est un clone du rendu, stylé en traits (créé en JS) -->
+        <div class="layer layer--plan" id="plan" aria-hidden="true">
+          <span class="dim dim--w">1440 px · grille 12 colonnes</span>
+          <span class="dim dim--nav">nav · 64 px</span>
+          <span class="dim dim--hero">hero · 7 / 5</span>
+          <span class="dim dim--img">image 4:3</span>
+          <span class="dim dim--cards">cartes × 3 · gap 24</span>
+        </div>
+        <div class="scan" id="scan" aria-hidden="true"></div>
+      </div>
+      <p class="board__caption">Plan validé avec vous, code écrit à la main, site livré clé en main.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BANDEAU ===================== -->
+<div class="ribbon" aria-label="Technologies maîtrisées">
+  <div class="ribbon__track">
+    <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>React</span><span>Next.js</span><span>WordPress</span><span>Shopify</span><span>WooCommerce</span><span>Node.js</span><span>PHP</span><span>Figma</span><span>Google Search Console</span>
+    <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>React</span><span>Next.js</span><span>WordPress</span><span>Shopify</span><span>WooCommerce</span><span>Node.js</span><span>PHP</span><span>Figma</span><span>Google Search Console</span>
+  </div>
+</div>
+
+<!-- ===================== SERVICES ===================== -->
+<section class="section" id="services">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Services</p>
+      <h2>Une prestation complète, de la conception à la maintenance.</h2>
+    </header>
+
+    <div class="svc-list">
+      <a href="#contact" class="svc reveal" data-type="Site vitrine">
+        <span class="svc__ref">VIT</span>
+        <div class="svc__body"><h3>Site vitrine</h3><p>Présentez votre activité avec un site clair et rapide, pensé pour transformer vos visiteurs en clients.</p></div>
+        <span class="svc__meta">1 à 2 semaines</span>
+        <span class="svc__price">dès 800 €</span>
+        <span class="svc__go" aria-hidden="true">→</span>
+      </a>
+      <a href="#contact" class="svc reveal" data-type="E-commerce (2 400 €)">
+        <span class="svc__ref">ECO</span>
+        <div class="svc__body"><h3>Boutique en ligne</h3><p>Catalogue, panier, paiement sécurisé, gestion des stocks et des commandes, emails automatiques.</p></div>
+        <span class="svc__meta">3 à 6 semaines</span>
+        <span class="svc__price">dès 2 400 €</span>
+        <span class="svc__go" aria-hidden="true">→</span>
+      </a>
+      <a href="#contact" class="svc reveal" data-type="Refonte de site">
+        <span class="svc__ref">REF</span>
+        <div class="svc__body"><h3>Refonte de site</h3><p>Votre site est daté ou lent ? Nous le modernisons en conservant votre référencement existant.</p></div>
+        <span class="svc__meta">2 à 3 semaines</span>
+        <span class="svc__price">dès 800 €</span>
+        <span class="svc__go" aria-hidden="true">→</span>
+      </a>
+      <a href="#contact" class="svc reveal" data-type="Application web">
+        <span class="svc__ref">APP</span>
+        <div class="svc__body"><h3>Application web</h3><p>Espace client, prise de rendez-vous, outil interne : des fonctionnalités développées pour votre métier.</p></div>
+        <span class="svc__meta">selon le projet</span>
+        <span class="svc__price">sur devis</span>
+        <span class="svc__go" aria-hidden="true">→</span>
+      </a>
+      <a href="#contact" class="svc reveal" data-type="SEO / Maintenance">
+        <span class="svc__ref">SEO</span>
+        <div class="svc__body"><h3>Référencement Google</h3><p>Audit technique, vitesse, mots-clés locaux et fiche Google Business pour être trouvé par vos clients.</p></div>
+        <span class="svc__meta">dès 2 semaines</span>
+        <span class="svc__price">dès 290 €</span>
+        <span class="svc__go" aria-hidden="true">→</span>
+      </a>
+      <a href="#contact" class="svc reveal" data-type="SEO / Maintenance">
+        <span class="svc__ref">MNT</span>
+        <div class="svc__body"><h3>Maintenance &amp; hébergement</h3><p>Mises à jour, sauvegardes, sécurité, nom de domaine et petites modifications de contenu.</p></div>
+        <span class="svc__meta">mensuel</span>
+        <span class="svc__price">dès 39 €/mois</span>
+        <span class="svc__go" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== AVANT / APRÈS ===================== -->
+<section class="section section--tint" id="refonte">
+  <div class="wrap split">
+    <header class="head reveal">
+      <p class="eyebrow">Avant / après</p>
+      <h2>Ce que change une vraie refonte.</h2>
+      <p class="lead">Faites glisser le curseur pour comparer un site daté et sa version refaite. Même entreprise, même contenu : une image professionnelle, lisible sur mobile et mieux placée sur Google.</p>
+      <ul class="ticks">
+        <li>Temps de chargement divisé</li>
+        <li>Lisible sur téléphone</li>
+        <li>Bouton d'appel et de devis visibles</li>
+        <li>Structure optimisée pour Google</li>
+      </ul>
+      <p class="note">Exemple fictif réalisé pour la démonstration.</p>
+    </header>
+
+    <div class="compare reveal" id="compare">
+      <!-- APRÈS -->
+      <div class="cmp cmp--after">
+        <div class="ga-nav"><b>Garage Martin</b><span>Entretien</span><span>Carrosserie</span><span class="ga-call">04 00 00 00 00</span></div>
+        <div class="ga-hero">
+          <span class="ga-tag">Garage agréé · Villeurbanne</span>
+          <span class="ga-h">Votre voiture entre de bonnes mains.</span>
+          <span class="ga-p">Révision, freins, pneus et carrosserie. Devis gratuit en 24 h.</span>
+          <span class="ga-btns"><i>Prendre rendez-vous</i><i class="o">Nos tarifs</i></span>
+        </div>
+        <div class="ga-row"><span><b>4,8/5</b>avis clients</span><span><b>30 min</b>diagnostic</span><span><b>12 mois</b>garantie</span></div>
+      </div>
+      <!-- AVANT -->
+      <div class="cmp cmp--before" id="before">
+        <div class="ol-top">BIENVENUE SUR LE SITE DU GARAGE MARTIN !!!</div>
+        <div class="ol-body">
+          <table class="ol-menu"><tr><td><u>Accueil</u></td></tr><tr><td><u>Nos services</u></td></tr><tr><td><u>Plan d'accès</u></td></tr><tr><td><u>Livre d'or</u></td></tr></table>
+          <div class="ol-main">
+            <p class="ol-h">Garage Martin - Mécanique toutes marques</p>
+            <p>Nous effectuons tout type de réparations. N'hésitez pas à nous contacter par téléphone pour plus de renseignements.</p>
+            <p class="ol-img">[ photo du garage ]</p>
+            <p class="ol-small">Site optimisé pour Internet Explorer 6 - résolution 800x600<br>Vous êtes le visiteur n° 004217</p>
+          </div>
+        </div>
+      </div>
+      <span class="cmp__label cmp__label--b">Avant</span>
+      <span class="cmp__label cmp__label--a">Après</span>
+      <div class="cmp__handle" id="handle" aria-hidden="true"><span>‹ ›</span></div>
+      <input type="range" min="0" max="100" value="35" id="cmpRange" aria-label="Comparer avant et après">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MÉTHODE ===================== -->
+<section class="section" id="methode">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Méthode</p>
+      <h2>Cinq étapes, un interlocuteur, aucune surprise.</h2>
+    </header>
+    <ol class="steps" id="steps">
+      <li class="reveal"><span class="steps__n">01</span><h3>Échange</h3><p>Un appel de 30 minutes pour comprendre votre activité et vos objectifs. Devis détaillé sous 24&nbsp;h.</p><span class="steps__t">Jour 1</span></li>
+      <li class="reveal"><span class="steps__n">02</span><h3>Plan</h3><p>Arborescence et maquette de votre site. Vous validez avant toute ligne de code.</p><span class="steps__t">Jours 2 à 5</span></li>
+      <li class="reveal"><span class="steps__n">03</span><h3>Développement</h3><p>Code propre et rapide, suivi en direct sur un lien de prévisualisation privé.</p><span class="steps__t">Semaine 2</span></li>
+      <li class="reveal"><span class="steps__n">04</span><h3>Mise en ligne</h3><p>Nom de domaine, hébergement, HTTPS, Search Console : tout est branché.</p><span class="steps__t">Fin semaine 2</span></li>
+      <li class="reveal"><span class="steps__n">05</span><h3>Suivi</h3><p>Formation à la prise en main, puis maintenance et évolutions à la demande.</p><span class="steps__t">Ensuite</span></li>
+    </ol>
+    <p class="note reveal">Calendrier type d'un site vitrine. Une boutique en ligne demande 3 à 6 semaines.</p>
+  </div>
+</section>
+
+<!-- ===================== TARIFS ===================== -->
+<section class="section section--tint" id="tarifs">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Tarifs</p>
+      <h2>Des formules claires, à partir de 800&nbsp;€&nbsp;HT.</h2>
+      <p class="lead">Prix fermes, indiqués hors taxes. Acompte de 30&nbsp;% à la commande, solde à la mise en ligne. Paiement en 3 fois possible.</p>
+    </header>
+
+    <div class="sheets">
+      <article class="sheet reveal">
+        <header><span class="sheet__ref">Fiche 01</span><h3>Essentiel</h3><p>Lancer sa présence en ligne.</p></header>
+        <div class="sheet__price"><b>800</b><span>€ HT</span></div>
+        <dl>
+          <div><dt>Pages</dt><dd>jusqu'à 5</dd></div>
+          <div><dt>Design</dt><dd>sur mesure</dd></div>
+          <div><dt>Formulaire de contact</dt><dd>inclus</dd></div>
+          <div><dt>Référencement</dt><dd>technique</dd></div>
+          <div><dt>Délai</dt><dd>1 à 2 sem.</dd></div>
+        </dl>
+        <a href="#contact" class="btn btn--line btn--full" data-plan="Essentiel (800 €)">Choisir Essentiel</a>
+      </article>
+
+      <article class="sheet sheet--main reveal">
+        <span class="sheet__flag">Recommandé</span>
+        <header><span class="sheet__ref">Fiche 02</span><h3>Business</h3><p>Convertir les visiteurs en clients.</p></header>
+        <div class="sheet__price"><b>1 490</b><span>€ HT</span></div>
+        <dl>
+          <div><dt>Pages</dt><dd>jusqu'à 10</dd></div>
+          <div><dt>Design</dt><dd>premium &amp; animations</dd></div>
+          <div><dt>Blog / actualités</dt><dd>inclus</dd></div>
+          <div><dt>Référencement</dt><dd>avancé + Google Business</dd></div>
+          <div><dt>Maintenance</dt><dd>3 mois offerts</dd></div>
+          <div><dt>Délai</dt><dd>2 à 3 sem.</dd></div>
+        </dl>
+        <a href="#contact" class="btn btn--blue btn--full" data-plan="Business (1 490 €)">Choisir Business</a>
+      </article>
+
+      <article class="sheet reveal">
+        <header><span class="sheet__ref">Fiche 03</span><h3>E-commerce</h3><p>Vendre en ligne, jour et nuit.</p></header>
+        <div class="sheet__price"><b>2 400</b><span>€ HT</span></div>
+        <dl>
+          <div><dt>Produits</dt><dd>illimités</dd></div>
+          <div><dt>Paiement</dt><dd>CB, PayPal, Apple Pay</dd></div>
+          <div><dt>Stocks &amp; commandes</dt><dd>back-office</dd></div>
+          <div><dt>Emails clients</dt><dd>automatiques</dd></div>
+          <div><dt>Délai</dt><dd>3 à 6 sem.</dd></div>
+        </dl>
+        <a href="#contact" class="btn btn--line btn--full" data-plan="E-commerce (2 400 €)">Choisir E-commerce</a>
+      </article>
+    </div>
+
+    <!-- simulateur -->
+    <div class="calc reveal" id="calc">
+      <div class="calc__form">
+        <h3>Estimer mon projet</h3>
+        <label class="calc__range" for="pages">
+          <span>Nombre de pages</span><b id="pagesOut">5</b>
+        </label>
+        <input type="range" id="pages" min="1" max="20" value="5">
+        <div class="calc__opts">
+          <label class="chk"><input type="checkbox" data-price="350"><span>Design premium &amp; animations</span><em>+350 €</em></label>
+          <label class="chk"><input type="checkbox" data-price="250"><span>Blog / actualités</span><em>+250 €</em></label>
+          <label class="chk"><input type="checkbox" data-price="300"><span>Prise de rendez-vous</span><em>+300 €</em></label>
+          <label class="chk"><input type="checkbox" data-price="1400"><span>Boutique en ligne</span><em>+1 400 €</em></label>
+          <label class="chk"><input type="checkbox" data-price="300"><span>Site multilingue</span><em>+300 €</em></label>
+          <label class="chk"><input type="checkbox" data-price="290"><span>Référencement avancé</span><em>+290 €</em></label>
+          <label class="chk"><input type="checkbox" data-price="200"><span>Rédaction des textes</span><em>+200 €</em></label>
+          <label class="chk"><input type="checkbox" data-price="150"><span>Création du logo</span><em>+150 €</em></label>
+        </div>
+      </div>
+      <div class="calc__out">
+        <span class="calc__label">Estimation indicative</span>
+        <div class="calc__total"><b id="total">800</b> € HT</div>
+        <div class="calc__bar"><span id="calcBar"></span></div>
+        <p>Le devis final est établi gratuitement après notre échange.</p>
+        <a href="#contact" class="btn btn--blue btn--full" id="calcCta">Recevoir mon devis exact</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGAGEMENTS ===================== -->
+<section class="section" id="engagements">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Engagements</p>
+      <h2>Ce que nous garantissons sur chaque projet.</h2>
+    </header>
+    <div class="pledges">
+      <div class="pledge reveal"><h3>Prix ferme</h3><p>Le montant du devis est celui que vous payez. Aucun frais caché en fin de projet.</p></div>
+      <div class="pledge reveal"><h3>Délais datés</h3><p>Un planning validé ensemble avant de démarrer, avec des points d'étape réguliers.</p></div>
+      <div class="pledge reveal"><h3>Vous êtes propriétaire</h3><p>Code, nom de domaine, contenus et accès : tout est à votre nom.</p></div>
+      <div class="pledge reveal"><h3>Conformité RGPD</h3><p>Mentions légales, confidentialité, cookies et formulaires conformes.</p></div>
+      <div class="pledge reveal"><h3>Sécurité</h3><p>HTTPS, sauvegardes automatiques et mises à jour suivies.</p></div>
+      <div class="pledge reveal"><h3>Accompagnement</h3><p>Formation à la prise en main et support réactif après la livraison.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="section section--tint" id="faq">
+  <div class="wrap split split--faq">
+    <header class="head reveal">
+      <p class="eyebrow">Questions fréquentes</p>
+      <h2>Tout ce qu'on nous demande avant de commencer.</h2>
+      <p class="lead">Une autre question ? Écrivez-nous, réponse sous 24&nbsp;h.</p>
+    </header>
+    <div class="faq">
+      <details class="reveal" open><summary>Combien coûte un site internet ?</summary><p>Nos sites démarrent à 800&nbsp;€&nbsp;HT pour un site vitrine complet jusqu'à 5 pages. Le prix dépend ensuite du nombre de pages et des fonctionnalités. Le simulateur ci-dessus donne une première estimation.</p></details>
+      <details class="reveal"><summary>Combien de temps faut-il ?</summary><p>1 à 2 semaines pour un site vitrine, 3 à 6 semaines pour une boutique en ligne, selon la disponibilité de vos contenus.</p></details>
+      <details class="reveal"><summary>Pourrai-je modifier mon site moi-même ?</summary><p>Oui. Nous installons une interface d'administration simple et nous vous formons pour modifier textes, images et articles.</p></details>
+      <details class="reveal"><summary>Le nom de domaine et l'hébergement sont-ils inclus ?</summary><p>Nous nous occupons de tout le paramétrage. Le nom de domaine et l'hébergement sont à votre nom.</p></details>
+      <details class="reveal"><summary>Comment se passe le paiement ?</summary><p>30&nbsp;% d'acompte à la commande, le solde à la mise en ligne. Un paiement en 3 fois est possible sur demande.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section class="section contact" id="contact">
+  <div class="wrap split">
+    <header class="head reveal">
+      <p class="eyebrow eyebrow--light">Contact</p>
+      <h2>Parlons de votre projet.</h2>
+      <p class="lead">Décrivez votre besoin en quelques lignes. Nous revenons vers vous sous 24&nbsp;h avec un devis gratuit et sans engagement.</p>
+      <dl class="coords">
+        <div><dt>Email</dt><dd><a href="mailto:contact@corpus-hovdjo.fr">contact@corpus-hovdjo.fr</a></dd></div>
+        <div><dt>Téléphone</dt><dd><a href="tel:+33600000000">06 00 00 00 00</a></dd></div>
+        <div><dt>Horaires</dt><dd>Lundi – vendredi, 9h – 19h</dd></div>
+      </dl>
+    </header>
+
+    <form class="form reveal" id="form" novalidate>
+      <div class="form__row">
+        <label class="fld"><span>Nom *</span><input id="f-name" required autocomplete="name"></label>
+        <label class="fld"><span>Entreprise</span><input id="f-company" autocomplete="organization"></label>
+      </div>
+      <div class="form__row">
+        <label class="fld"><span>Email *</span><input id="f-email" type="email" required autocomplete="email"></label>
+        <label class="fld"><span>Téléphone</span><input id="f-tel" type="tel" autocomplete="tel"></label>
+      </div>
+      <div class="form__row">
+        <label class="fld"><span>Type de projet</span>
+          <select id="f-type">
+            <option>Site vitrine</option><option>Essentiel (800 €)</option><option>Business (1 490 €)</option><option>E-commerce (2 400 €)</option><option>Refonte de site</option><option>Application web</option><option>SEO / Maintenance</option><option>Autre</option>
+          </select>
+        </label>
+        <label class="fld"><span>Budget</span>
+          <select id="f-budget"><option>800 € – 1 500 €</option><option>1 500 € – 3 000 €</option><option>3 000 € – 6 000 €</option><option>Plus de 6 000 €</option><option>Je ne sais pas encore</option></select>
+        </label>
+      </div>
+      <label class="fld"><span>Votre projet *</span><textarea id="f-msg" rows="5" required></textarea></label>
+      <label class="chk chk--consent" for="f-consent"><input type="checkbox" id="f-consent"><span>J'accepte que mes données soient utilisées pour être recontacté au sujet de ma demande.</span></label>
+      <button class="btn btn--signal btn--full" type="submit">Envoyer ma demande <span class="arr">→</span></button>
+      <p class="form__msg" id="formMsg" role="status"></p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div>
+      <a href="#top" class="brand"><span class="brand__mark" aria-hidden="true"></span><span class="brand__name">Corpus Hovdjo</span></a>
+      <p>Conception et développement de sites internet sur mesure. À partir de 800&nbsp;€&nbsp;HT.</p>
+    </div>
+    <div class="footer__col"><h4>Services</h4><a href="#services">Site vitrine</a><a href="#services">Boutique en ligne</a><a href="#services">Refonte</a><a href="#services">Référencement</a></div>
+    <div class="footer__col"><h4>Agence</h4><a href="#methode">Méthode</a><a href="#tarifs">Tarifs</a><a href="#engagements">Engagements</a><a href="#faq">FAQ</a></div>
+    <div class="footer__col"><h4>Contact</h4><a href="mailto:contact@corpus-hovdjo.fr">contact@corpus-hovdjo.fr</a><a href="tel:+33600000000">06 00 00 00 00</a></div>
+  </div>
+  <div class="wrap footer__bottom">
+    <p>© <span id="year"></span> Corpus Hovdjo · SIRET 000 000 000 00000</p>
+    <nav><a href="#">Mentions légales</a><a href="#">Confidentialité</a><a href="#">CGV</a></nav>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
