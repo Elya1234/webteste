@@ -738,7 +738,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
 
   /* ---- 12d. Transition « terminal » entre sections ---- */
   const wipe = $("#wipe"), wipeText = $("#wipeText");
-  const names = { top: "accueil", services: "services", realisations: "exemples", process: "methode", tarifs: "tarifs", faq: "faq", contact: "contact", stack: "stack", terminal: "terminal" };
+  const names = { top: "accueil", services: "services", realisations: "exemples", process: "methode", tarifs: "tarifs", faq: "faq", contact: "contact", stack: "stack", terminal: "terminal", refonte: "avant-apres" };
   let wiping = false;
   document.addEventListener("click", e => {
     const a = e.target.closest('a[href^="#"]');
@@ -960,5 +960,101 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
       }, 9000);
       setInterval(() => showTeaser(3500), 45000);
     }, 2200);
+  })();
+
+  /* =========================================================
+     15. EXEMPLE « DU PLAN AU SITE » + AVANT / APRÈS
+     ========================================================= */
+  (function planCodeRendu() {
+    const bp = $("#bp"); if (!bp) return;
+    const render = $("#bpRender"), plan = $("#bpPlan");
+    const clone = $(".ms", render).cloneNode(true);
+    plan.prepend(clone);
+    $$(".ms-nav, .ms-logo, .ms-links i, .ms-btn, .ms-eyebrow, .ms-h, .ms-p, .ms-cta, .ms-img, .ms-cards > div", clone)
+      .forEach((el, i) => { el.classList.add("draw"); el.style.setProperty("--dl", i * .08 + "s"); });
+    $$(".dim", plan).forEach((d, i) => d.style.setProperty("--dl", .6 + i * .15 + "s"));
+
+    const pre = $("#bpCode"), perf = $("#bpPerf");
+    const T = (t, c) => `<span class="tk-${t}">${c}</span>`;
+    const src = [
+      T("com", "&lt;!-- Le Maison · accueil --&gt;"),
+      T("tag", "&lt;header") + " " + T("attr", "class") + "=" + T("str", '"nav"') + T("tag", "&gt;"),
+      "  " + T("tag", "&lt;a") + " " + T("attr", "href") + "=" + T("str", '"/"') + T("tag", "&gt;") + "Le Maison" + T("tag", "&lt;/a&gt;"),
+      T("tag", "&lt;/header&gt;"),
+      T("tag", "&lt;section") + " " + T("attr", "class") + "=" + T("str", '"hero"') + T("tag", "&gt;"),
+      "  " + T("tag", "&lt;h1&gt;") + "Cuisine de saison" + T("tag", "&lt;/h1&gt;"),
+      "  " + T("tag", "&lt;a") + " " + T("attr", "class") + "=" + T("str", '"btn"') + T("tag", "&gt;") + "Réserver" + T("tag", "&lt;/a&gt;"),
+      T("tag", "&lt;/section&gt;"),
+      T("tag", "&lt;div") + " " + T("attr", "class") + "=" + T("str", '"carte"') + T("tag", "&gt;") + "…" + T("tag", "&lt;/div&gt;"),
+    ];
+    const tok = s => { const o = [], re = /(<[^>]+>)|(&[a-z]+;)|([\s\S])/g; let m; while ((m = re.exec(s))) o.push({ tag: !!m[1], s: m[0] }); return o; };
+    const lines = src.map(tok);
+    let tt = null;
+    const show = (done, cur, caret) => { pre.innerHTML = done.concat(cur === null ? [] : [cur]).map((l, i) => `<span class="ln">${i + 1}</span>${l}`).join("\n") + (caret ? '<span class="cur"></span>' : ""); };
+    function full() { clearTimeout(tt); show(src, null, false); perf.textContent = 100; }
+    function typeCode(cb) {
+      clearTimeout(tt);
+      const done = []; let li = 0, ci = 0, cur = ""; perf.textContent = 0;
+      (function st() {
+        if (li >= lines.length) {
+          show(done, null, true);
+          let s = 0; const iv = setInterval(() => { s += 5; perf.textContent = Math.min(100, s); if (s >= 100) clearInterval(iv); }, 25);
+          if (cb) tt = setTimeout(cb, 700);
+          return;
+        }
+        const L = lines[li];
+        while (ci < L.length && L[ci].tag) cur += L[ci++].s;
+        for (let k = 0; k < 2 && ci < L.length; k++) { cur += L[ci++].s; while (ci < L.length && L[ci].tag) cur += L[ci++].s; }
+        show(done, cur, true);
+        if (ci >= L.length) { done.push(cur); cur = ""; li++; ci = 0; tt = setTimeout(st, 90); } else tt = setTimeout(st, 22);
+      })();
+    }
+    const btns = $$(".bp-toggle button");
+    let auto = true, timers = [];
+    const later = (f, ms) => timers.push(setTimeout(f, ms));
+    const clearAll = () => { timers.forEach(clearTimeout); timers = []; clearTimeout(tt); };
+    const scan = () => { bp.classList.remove("scan-run"); void bp.offsetWidth; bp.classList.add("scan-run"); };
+    function setState(v, typing, cb) {
+      btns.forEach(b => b.classList.toggle("on", b.dataset.view === v));
+      const prev = bp.dataset.state || "plan";
+      bp.classList.remove("s-code", "s-rendu");
+      if (v !== "plan") bp.classList.add("s-" + v);
+      bp.dataset.state = v;
+      if (v === "plan") { bp.classList.remove("drawn"); void bp.offsetWidth; requestAnimationFrame(() => bp.classList.add("drawn")); }
+      else { bp.classList.add("drawn"); if (prev === "plan" || (prev === "code" && v === "rendu")) scan(); }
+      if (v === "code") typeCode(typing ? cb : null); else if (v === "rendu") full();
+    }
+    function cycle() {
+      if (!auto) return;
+      setState("plan");
+      later(() => setState("code", true, () => later(() => { setState("rendu"); later(cycle, 5200); }, 900)), 3200);
+    }
+    btns.forEach(b => b.addEventListener("click", () => { auto = false; clearAll(); setState(b.dataset.view); }));
+    if (reduce) { bp.classList.add("drawn", "s-rendu"); full(); btns.forEach(b => b.classList.toggle("on", b.dataset.view === "rendu")); return; }
+    show([], "", true);
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && auto && !timers.length) cycle();
+      if (!e.isIntersecting && auto) clearAll();
+    }, { threshold: .35 }).observe(bp);
+  })();
+
+  (function beforeAfter() {
+    const cmp = $("#compare"), range = $("#cmpRange"); if (!cmp) return;
+    const setPos = v => cmp.style.setProperty("--pos", v + "%");
+    range.addEventListener("input", () => setPos(range.value));
+    let shown = false;
+    new IntersectionObserver(([e], o) => {
+      if (!e.isIntersecting || shown || reduce) return;
+      shown = true; o.disconnect();
+      const seq = [40, 12, 88, 40], t0 = performance.now();
+      (function anim(t) {
+        const seg = Math.floor((t - t0) / 800);
+        if (seg >= seq.length - 1) { setPos(40); range.value = 40; return; }
+        const k = ((t - t0) % 800) / 800, ez = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        const v = seq[seg] + (seq[seg + 1] - seq[seg]) * ez;
+        setPos(v); range.value = v;
+        requestAnimationFrame(anim);
+      })(t0);
+    }, { threshold: .5 }).observe(cmp);
   })();
 })();

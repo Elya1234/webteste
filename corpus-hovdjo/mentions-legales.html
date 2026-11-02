@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mentions légales — Corpus Hovdjo</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0d14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .legal-nav{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));background:rgba(10,13,20,.8);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .legal-nav .btn{width:auto}
+  .legal{width:min(820px,100% - 32px);margin:0 auto;padding:60px 0 100px}
+  .legal h1{font-size:clamp(34px,5vw,54px);margin:8px 0 10px}
+  .legal .upd{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .legal h2{font-size:22px;margin:44px 0 12px;padding-top:20px;border-top:1px solid var(--line)}
+  .legal p,.legal li{color:#c3cad8;line-height:1.75}
+  .legal ul{list-style:disc;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+  .legal p+p{margin-top:10px}
+  .legal .todo{color:var(--cyan);font-family:var(--mono);font-size:.92em;background:rgba(var(--c1),.1);padding:1px 6px;border-radius:5px}
+  .legal .note{margin-top:26px;padding:16px 18px;border-radius:14px;border:1px dashed var(--line-2);color:var(--muted);font-size:14px}
+  .legal-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:50px}
+</style>
+<script>try{var p=localStorage.getItem("ch-palette-pro");if(p&&p!=="saphir")document.documentElement.dataset.palette=p}catch(e){}</script>
+</head>
+<body>
+<header class="legal-nav">
+  <a href="index.html" class="logo" aria-label="Corpus Hovdjo, accueil"><span class="logo__mark">&lt;/&gt;</span><span class="logo__text">CORPUS<b>HOVDJO</b></span></a>
+  <a href="index.html" class="btn btn--ghost btn--sm">← Retour au site</a>
+</header>
+<main class="legal">
+  <p class="kicker">// informations légales</p>
+  <h1>Mentions légales</h1>
+  <p class="upd">Dernière mise à jour : <span class="todo">[date]</span></p>
+
+  <h2>Éditeur du site</h2>
+  <p>Le site corpus-hovdjo.fr est édité par <span class="todo">[nom et prénom ou raison sociale]</span>, <span class="todo">[forme juridique : micro-entreprise, SASU…]</span>, immatriculée sous le numéro SIRET <span class="todo">[000 000 000 00000]</span>.</p>
+  <p>Adresse : <span class="todo">[adresse postale]</span><br>Email : <span class="todo">[contact@corpus-hovdjo.fr]</span><br>Téléphone : <span class="todo">[06 00 00 00 00]</span><br>Directeur de la publication : <span class="todo">[nom et prénom]</span></p>
+  <p>TVA : <span class="todo">[numéro de TVA intracommunautaire, ou « TVA non applicable, art. 293 B du CGI »]</span></p>
+  <h2>Hébergement</h2>
+  <p>Le site est hébergé par <span class="todo">[nom de l'hébergeur]</span>, <span class="todo">[adresse de l'hébergeur]</span>, <span class="todo">[téléphone de l'hébergeur]</span>.</p>
+  <h2>Propriété intellectuelle</h2>
+  <p>L'ensemble des contenus de ce site (textes, visuels, logo, code, animations) est la propriété de Corpus Hovdjo, sauf mention contraire. Toute reproduction ou réutilisation sans autorisation écrite est interdite.</p>
+  <p>Les exemples de sites présentés sont des concepts réalisés pour la démonstration.</p>
+  <h2>Responsabilité</h2>
+  <p>Corpus Hovdjo s'efforce de fournir des informations exactes et à jour. Les prix affichés et les estimations du configurateur sont indicatifs : seul le devis signé fait foi.</p>
+  <h2>Données personnelles</h2>
+  <p>Le traitement de vos données est décrit dans notre <a href="confidentialite.html" style="color:var(--cyan)">politique de confidentialité</a>.</p>
+
+  <p class="note">Les passages <span class="todo">[entre crochets]</span> sont à compléter avec vos informations. Faites vérifier ces textes par un professionnel du droit avant la mise en ligne.</p>
+  <nav class="legal-links"><a class="btn btn--ghost btn--sm" href="mentions-legales.html">Mentions légales</a><a class="btn btn--ghost btn--sm" href="confidentialite.html">Confidentialité</a><a class="btn btn--ghost btn--sm" href="cgv.html">CGV</a></nav>
+</main>
+</body>
+</html>

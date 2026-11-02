@@ -196,15 +196,51 @@
     </header>
 
     <div class="showcase">
-      <!-- concept 1 : restaurant -->
-      <figure class="mock reveal tilt">
-        <div class="mock__bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="mock__url">lemaison-bistro.fr</span></div>
-        <div class="mock__screen m-resto">
-          <div class="m-nav"><b>Le Maison</b><i></i><i></i><i></i></div>
-          <div class="m-hero"><span class="m-h1">Cuisine de saison</span><span class="m-p"></span><span class="m-btn">Réserver</span></div>
-          <div class="m-row"><span></span><span></span><span></span></div>
+      <!-- concept 1 : restaurant, du plan au site -->
+      <figure class="mock mock--build reveal">
+        <div class="mock__bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="mock__url">lemaison-bistro.fr</span>
+          <span class="bp-toggle" role="group" aria-label="Étape de création">
+            <button type="button" data-view="plan" class="on">Plan</button>
+            <button type="button" data-view="code">Code</button>
+            <button type="button" data-view="rendu">Rendu</button>
+          </span>
         </div>
-        <figcaption><b>Restaurant</b><span>Site vitrine · réservation en ligne</span></figcaption>
+        <div class="bp" id="bp">
+          <div class="bp-layer bp-render" id="bpRender">
+            <div class="ms">
+              <div class="ms-nav"><span class="ms-logo">Le Maison</span><span class="ms-links"><i>La carte</i><i>Le lieu</i><i>Contact</i></span><span class="ms-btn">Réserver</span></div>
+              <div class="ms-hero">
+                <div class="ms-copy">
+                  <span class="ms-eyebrow">Bistro · Lyon 2e</span>
+                  <span class="ms-h">Cuisine de saison, faite maison.</span>
+                  <span class="ms-p">Produits frais du marché, vins naturels et terrasse ombragée.</span>
+                  <span class="ms-cta">Réserver une table</span>
+                </div>
+                <div class="ms-img"></div>
+              </div>
+              <div class="ms-cards">
+                <div><span class="ms-thumb t1"></span><b>Entrées</b></div>
+                <div><span class="ms-thumb t2"></span><b>Plats</b></div>
+                <div><span class="ms-thumb t3"></span><b>Desserts</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="bp-layer bp-code" aria-hidden="true">
+            <pre class="bp-pre" id="bpCode"></pre>
+            <div class="bp-status"><span>HTML · CSS · JS</span><span>Performance <b id="bpPerf">0</b>/100</span></div>
+          </div>
+          <div class="bp-layer bp-plan" id="bpPlan" aria-hidden="true">
+            <span class="dim dim--w">1440 px · grille 12 col.</span>
+            <span class="dim dim--nav">nav · 64 px</span>
+            <span class="dim dim--hero">hero · 7 / 5</span>
+            <span class="dim dim--img">photo 4:3</span>
+            <span class="dim dim--cards">cartes × 3</span>
+          </div>
+          <div class="bp-scan" aria-hidden="true"></div>
+        </div>
+        <figcaption><b>Restaurant · du plan au site</b><span>Plan validé avec vous → code écrit à la main → site en ligne. Cliquez sur Plan, Code ou Rendu.</span></figcaption>
       </figure>
 
       <!-- concept 2 : boutique -->
@@ -237,12 +273,60 @@
   </div>
 </section>
 
+<!-- ============ AVANT / APRÈS ============ -->
+<section class="section" id="refonte">
+  <div class="container split split--ba">
+    <div class="split__text reveal">
+      <p class="kicker">// 03 — avant / après</p>
+      <h2>Ce que change<br><span class="grad">une vraie refonte.</span></h2>
+      <p class="section__lead">Faites glisser le curseur : même entreprise, même contenu. D'un côté un site daté, de l'autre un site rapide, lisible sur mobile et qui donne envie d'appeler.</p>
+      <ul class="ba-ticks">
+        <li>Chargement bien plus rapide</li>
+        <li>Parfait sur téléphone</li>
+        <li>Bouton d'appel et de devis visibles</li>
+        <li>Structure optimisée pour Google</li>
+      </ul>
+      <a href="devis.html#refonte" class="btn btn--glow magnetic">Moderniser mon site →</a>
+      <p class="ba-note">Exemple fictif réalisé pour la démonstration.</p>
+    </div>
+
+    <div class="compare reveal" id="compare">
+      <div class="cmp cmp--after">
+        <div class="ga-nav"><b>Garage Martin</b><span>Entretien</span><span>Carrosserie</span><span class="ga-call">04 00 00 00 00</span></div>
+        <div class="ga-hero">
+          <span class="ga-tag">Garage agréé · Villeurbanne</span>
+          <span class="ga-h">Votre voiture entre de bonnes mains.</span>
+          <span class="ga-p">Révision, freins, pneus et carrosserie. Devis gratuit en 24 h.</span>
+          <span class="ga-btns"><i>Prendre rendez-vous</i><i class="o">Nos tarifs</i></span>
+        </div>
+        <div class="ga-row"><span><b>4,8/5</b>avis clients</span><span><b>30 min</b>diagnostic</span><span><b>12 mois</b>garantie</span></div>
+      </div>
+      <div class="cmp cmp--before">
+        <div class="ol-top">BIENVENUE SUR LE SITE DU GARAGE MARTIN !!!</div>
+        <div class="ol-body">
+          <table class="ol-menu"><tr><td><u>Accueil</u></td></tr><tr><td><u>Nos services</u></td></tr><tr><td><u>Plan d'accès</u></td></tr><tr><td><u>Livre d'or</u></td></tr></table>
+          <div class="ol-main">
+            <p class="ol-h">Garage Martin - Mécanique toutes marques</p>
+            <p>Nous effectuons tout type de réparations. N'hésitez pas à nous contacter par téléphone pour plus de renseignements.</p>
+            <p class="ol-img">[ photo du garage ]</p>
+            <p class="ol-small">Site optimisé pour Internet Explorer 6 - résolution 800x600<br>Vous êtes le visiteur n° 004217</p>
+          </div>
+        </div>
+      </div>
+      <span class="cmp__label cmp__label--b">Avant</span>
+      <span class="cmp__label cmp__label--a">Après</span>
+      <div class="cmp__handle" aria-hidden="true"><span>‹ ›</span></div>
+      <input type="range" min="0" max="100" value="40" id="cmpRange" aria-label="Comparer le site avant et après la refonte">
+    </div>
+  </div>
+</section>
+
 <!-- ============ TERMINAL INTERACTIF ============ -->
 <section class="section" id="terminal">
   <canvas class="matrix" id="sectionMatrix" aria-hidden="true"></canvas>
   <div class="container split">
     <div class="split__text reveal">
-      <p class="kicker">// 03 — pourquoi nous</p>
+      <p class="kicker">// 04 — pourquoi nous</p>
       <h2>Des développeurs,<br><span class="grad">pas des templates.</span></h2>
       <p class="section__lead">Chaque site est codé à la main, optimisé pour la vitesse et le référencement. Pas de thème générique, pas de surcharge : juste ce dont votre activité a besoin.</p>
       <ul class="why">
@@ -276,7 +360,7 @@
   <div class="container">
     <div class="head-row">
       <header class="section__head reveal">
-        <p class="kicker">// 04 — méthode</p>
+        <p class="kicker">// 05 — méthode</p>
         <h2>Un process clair,<br><span class="grad">zéro mauvaise surprise.</span></h2>
       </header>
       <div class="cube-wrap reveal" aria-hidden="true">
@@ -303,7 +387,7 @@
 <section class="section section--alt" id="tarifs">
   <div class="container">
     <header class="section__head reveal">
-      <p class="kicker">// 05 — tarifs</p>
+      <p class="kicker">// 06 — tarifs</p>
       <h2>Des prix transparents,<br><span class="grad">à partir de</span> <span class="price-live">800&nbsp;€.</span></h2>
       <p class="section__lead">Paiement en plusieurs fois possible. Le site vous appartient à 100&nbsp;% à la livraison.</p>
     </header>
@@ -389,7 +473,7 @@
   <div class="container faq-grid">
     <aside class="faq-aside">
       <header class="section__head reveal">
-        <p class="kicker">// 06 — faq</p>
+        <p class="kicker">// 07 — faq</p>
         <h2>Questions <span class="grad">fréquentes</span></h2>
         <p class="section__lead">Les réponses aux questions qu'on nous pose avant chaque projet.</p>
       </header>
@@ -414,7 +498,7 @@
 <section class="section contact" id="contact">
   <div class="container split">
     <div class="split__text reveal">
-      <p class="kicker">// 07 — contact</p>
+      <p class="kicker">// 08 — contact</p>
       <h2>Prêt à lancer<br><span class="grad">votre site ?</span></h2>
       <p class="section__lead">Décrivez votre projet en quelques lignes. On vous répond sous 24&nbsp;h avec un devis gratuit et sans engagement.</p>
       <ul class="contact__list">
@@ -465,7 +549,7 @@
   </div>
   <div class="container footer__bottom">
     <p>© <span id="year"></span> Corpus Hovdjo. Codé avec ♥ et beaucoup de café.</p>
-    <nav><a href="#">Mentions légales</a><a href="#">Confidentialité</a><a href="#">CGV</a></nav>
+    <nav><a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a><a href="cgv.html">CGV</a></nav>
   </div>
 </footer>
 
