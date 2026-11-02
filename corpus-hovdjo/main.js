@@ -4,7 +4,7 @@
 (() => {
   "use strict";
   // couleurs courantes (mises à jour par le sélecteur d'ambiance)
-  const pal = { c1: "0,240,255", c2: "168,85,247", c3: "255,61,154" };
+  const pal = { c1: "92,148,255", c2: "139,128,249", c3: "94,200,240" };
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -506,7 +506,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
      ========================================================= */
 
   /* ---- 12a. Pluie de code (Matrix) réutilisable ---- */
-  function makeMatrix(cv, { color = "61,255,154", size = 16, fps = 22, fade = "5,7,13" } = {}) {
+  function makeMatrix(cv, { color = null, size = 16, fps = 22, fade = "10,13,20" } = {}) {
     const c = cv.getContext("2d");
     const chars = "01アイウエオカキクケコサシスセソ<>/{}[]=;$#*+ABCDEF";
     let w, h, drops, running = false, last = 0, raf;
@@ -529,7 +529,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
       for (let i = 0; i < drops.length; i++) {
         const ch = chars[(Math.random() * chars.length) | 0];
         const y = drops[i] * size;
-        c.fillStyle = Math.random() < .04 ? "#ffffff" : `rgba(${color},${.55 + Math.random() * .45})`;
+        c.fillStyle = Math.random() < .04 ? "#ffffff" : `rgba(${color || pal.c1},${.4 + Math.random() * .45})`;
         c.fillText(ch, i * size, y);
         if (y > h && Math.random() > .975) drops[i] = 0;
         drops[i] += 1;
@@ -697,7 +697,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
 
   /* ---- 12e. Étincelles de code au clic + traînée du curseur ---- */
   const sparkChars = ["{", "}", "<", "/>", ";", "0", "1", "#", "*", "()", "=>"];
-  const sparkCols = ["#00f0ff", "#a855f7", "#ff3d9a", "#3dff9a"];
+  const sparkCols = ["rgb(92,148,255)", "rgb(139,128,249)", "rgb(94,200,240)", "#eef1f7"];
   window.__sparkCols = sparkCols;
   document.addEventListener("pointerdown", e => {
     if (reduce || e.target.closest("input, textarea, select, .term")) return;
@@ -787,16 +787,17 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
   const root = document.documentElement;
   const palEl = $("#palette"), palBtn = $("#paletteToggle");
   function applyPalette(name) {
-    if (name === "neon") delete root.dataset.palette; else root.dataset.palette = name;
+    if (name === "saphir") delete root.dataset.palette; else root.dataset.palette = name;
     const cs = getComputedStyle(root);
     ["c1", "c2", "c3"].forEach(k => { pal[k] = cs.getPropertyValue("--" + k).trim().replace(/\s+/g, ""); });
     const sc = window.__sparkCols;
     if (sc) { sc[0] = `rgb(${pal.c1})`; sc[1] = `rgb(${pal.c2})`; sc[2] = `rgb(${pal.c3})`; }
     $$(".palette__menu button").forEach(b => b.classList.toggle("on", b.dataset.themeName === name));
-    try { localStorage.setItem("ch-palette", name); } catch (e) {}
+    try { localStorage.setItem("ch-palette-pro", name); } catch (e) {}
   }
-  let saved = "neon";
-  try { saved = localStorage.getItem("ch-palette") || "neon"; } catch (e) {}
+  let saved = "saphir";
+  try { saved = localStorage.getItem("ch-palette-pro") || "saphir"; } catch (e) {}
+  if (!$(`[data-theme-name="${saved}"]`)) saved = "saphir";
   applyPalette(saved);
   palBtn.addEventListener("click", () => {
     const open = palEl.classList.toggle("open");
