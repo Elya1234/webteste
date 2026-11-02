@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Créer mon devis — Corpus Hovdjo</title>
+<meta name="description" content="Construisez votre site étape par étape et obtenez votre devis instantanément. Sites à partir de 800 €.">
+<meta name="theme-color" content="#0a0d14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0d14'/%3E%3Cpath d='M22 20 10 32l12 12M42 20l12 12-12 12' stroke='%235c94ff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M36 16 28 48' stroke='%238b80f9' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="devis.css">
+<script>try{var p=localStorage.getItem("ch-palette-pro");if(p&&p!=="saphir")document.documentElement.dataset.palette=p}catch(e){}</script>
+</head>
+<body class="dv-body">
+
+<div class="dv-bg" aria-hidden="true"></div>
+
+<header class="dv-nav">
+  <a href="index.html" class="logo" aria-label="Corpus Hovdjo, retour au site">
+    <span class="logo__mark">&lt;/&gt;</span>
+    <span class="logo__text">CORPUS<b>HOVDJO</b></span>
+  </a>
+  <a href="index.html" class="btn btn--ghost btn--sm">← Retour au site</a>
+</header>
+
+<main class="dv">
+  <header class="dv-head">
+    <p class="kicker">$ ./devis --sur-mesure</p>
+    <h1>Construisez votre site,<br><span class="grad">voyez-le prendre forme.</span></h1>
+    <p class="section__lead">Choisissez vos options : l'aperçu se dessine en direct et le prix se calcule instantanément. À partir de <b>800&nbsp;€</b>, avec un suivi de A à Z.</p>
+  </header>
+
+  <div class="dv-grid">
+    <!-- ================= ÉTAPES ================= -->
+    <section class="dv-steps" aria-label="Configuration du site">
+      <ol class="dv-progress" id="progress">
+        <li><button type="button" data-go="0" class="on"><span>1</span>Projet</button></li>
+        <li><button type="button" data-go="1"><span>2</span>Pages</button></li>
+        <li><button type="button" data-go="2"><span>3</span>Style</button></li>
+        <li><button type="button" data-go="3"><span>4</span>Options</button></li>
+        <li><button type="button" data-go="4"><span>5</span>Envoi</button></li>
+      </ol>
+      <div class="dv-progress__bar"><i id="progressBar"></i></div>
+
+      <!-- 1. projet -->
+      <div class="dv-step on" data-step="0">
+        <h2>Quel site voulez-vous ?</h2>
+        <div class="dv-cards" id="types">
+          <label class="dv-card"><input type="radio" name="type" value="vitrine" checked>
+            <b>Site de présentation</b><small>Présenter votre activité, attirer des clients</small><em>dès 800 €</em></label>
+          <label class="dv-card"><input type="radio" name="type" value="ecommerce">
+            <b>Site commercial</b><small>Boutique en ligne, paiement sécurisé</small><em>dès 2 400 €</em></label>
+          <label class="dv-card"><input type="radio" name="type" value="reservation">
+            <b>Site avec réservation</b><small>Prise de rendez-vous ou de table en ligne</small><em>dès 1 100 €</em></label>
+          <label class="dv-card"><input type="radio" name="type" value="refonte">
+            <b>Refonte de site</b><small>Moderniser un site existant</small><em>dès 800 €</em></label>
+        </div>
+        <div class="dv-row">
+          <label class="dv-field"><span>Nom de votre entreprise</span><input id="bizName" placeholder="Ex. : Le Comptoir" maxlength="28" autocomplete="organization"></label>
+          <label class="dv-field"><span>Votre secteur</span>
+            <select id="sector">
+              <option value="restaurant">Restaurant / café</option>
+              <option value="commerce">Commerce / boutique</option>
+              <option value="artisan">Artisan / BTP</option>
+              <option value="sante">Santé / bien-être / beauté</option>
+              <option value="services" selected>Services / conseil</option>
+              <option value="autre">Autre</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- 2. pages -->
+      <div class="dv-step" data-step="1">
+        <h2>Quelles pages ?</h2>
+        <p class="dv-hint">5 pages incluses, puis 90 € par page supplémentaire.</p>
+        <div class="dv-chips" id="pages">
+          <label class="dv-chip is-fixed"><input type="checkbox" value="Accueil" checked disabled><span>Accueil</span></label>
+          <label class="dv-chip"><input type="checkbox" value="À propos" checked><span>À propos</span></label>
+          <label class="dv-chip"><input type="checkbox" value="Services" checked><span>Services</span></label>
+          <label class="dv-chip"><input type="checkbox" value="Galerie"><span>Galerie</span></label>
+          <label class="dv-chip"><input type="checkbox" value="Tarifs"><span>Tarifs</span></label>
+          <label class="dv-chip"><input type="checkbox" value="Équipe"><span>Équipe</span></label>
+          <label class="dv-chip"><input type="checkbox" value="Avis clients"><span>Avis clients</span></label>
+          <label class="dv-chip"><input type="checkbox" value="FAQ"><span>FAQ</span></label>
+          <label class="dv-chip is-fixed"><input type="checkbox" value="Contact" checked disabled><span>Contact</span></label>
+        </div>
+        <p class="dv-count"><b id="pageCount">4</b> pages · <span id="pageExtra">incluses</span></p>
+      </div>
+
+      <!-- 3. style -->
+      <div class="dv-step" data-step="2">
+        <h2>Quel style ?</h2>
+        <div class="dv-styles" id="styles">
+          <label class="dv-style"><input type="radio" name="style" value="moderne" checked><span class="dv-swatch sw-moderne"><i></i><i></i><i></i></span><b>Moderne</b><small>Sombre, net, technologique</small></label>
+          <label class="dv-style"><input type="radio" name="style" value="elegant"><span class="dv-swatch sw-elegant"><i></i><i></i><i></i></span><b>Élégant</b><small>Clair, raffiné, haut de gamme</small></label>
+          <label class="dv-style"><input type="radio" name="style" value="colore"><span class="dv-swatch sw-colore"><i></i><i></i><i></i></span><b>Coloré</b><small>Vivant, chaleureux, accessible</small></label>
+        </div>
+        <label class="dv-toggle"><input type="checkbox" id="premium"><span class="dv-toggle__ui"></span><span><b>Design premium &amp; animations</b><small>Effets au défilement, transitions soignées, micro-animations</small></span><em>+350 €</em></label>
+      </div>
+
+      <!-- 4. options -->
+      <div class="dv-step" data-step="3">
+        <h2>Quelles options ?</h2>
+        <div class="dv-opts" id="opts">
+          <label class="dv-opt" data-feat="blog"><input type="checkbox" value="blog" data-price="250"><span><b>Blog / actualités</b><small>Publiez vos nouvelles facilement</small></span><em>+250 €</em></label>
+          <label class="dv-opt" data-feat="booking"><input type="checkbox" value="booking" data-price="300"><span><b>Réservation en ligne</b><small>Rendez-vous ou tables, 24 h/24</small></span><em>+300 €</em></label>
+          <label class="dv-opt" data-feat="shop"><input type="checkbox" value="shop" data-price="1400"><span><b>Boutique en ligne</b><small>Produits, panier, paiement</small></span><em>+1 400 €</em></label>
+          <label class="dv-opt" data-feat="lang"><input type="checkbox" value="lang" data-price="300"><span><b>Site multilingue</b><small>Français + anglais</small></span><em>+300 €</em></label>
+          <label class="dv-opt" data-feat="seo"><input type="checkbox" value="seo" data-price="290"><span><b>Référencement avancé</b><small>Mots-clés, Google Business</small></span><em>+290 €</em></label>
+          <label class="dv-opt" data-feat="text"><input type="checkbox" value="text" data-price="200"><span><b>Rédaction des textes</b><small>On écrit pour vous</small></span><em>+200 €</em></label>
+          <label class="dv-opt" data-feat="logo"><input type="checkbox" value="logo" data-price="150"><span><b>Création du logo</b><small>Identité visuelle simple</small></span><em>+150 €</em></label>
+          <label class="dv-opt" data-feat="wa"><input type="checkbox" value="wa" data-price="50"><span><b>Bouton WhatsApp</b><small>Vos clients vous écrivent en 1 clic</small></span><em>+50 €</em></label>
+        </div>
+        <div class="dv-row dv-row--3">
+          <div class="dv-seg" role="radiogroup" aria-label="Délai">
+            <span class="dv-seg__label">Délai</span>
+            <label><input type="radio" name="delay" value="std" checked><span>Standard</span></label>
+            <label><input type="radio" name="delay" value="express"><span>Express +25 %</span></label>
+          </div>
+          <div class="dv-seg" role="radiogroup" aria-label="Maintenance">
+            <span class="dv-seg__label">Suivi après livraison</span>
+            <label><input type="radio" name="maint" value="0"><span>Aucun</span></label>
+            <label><input type="radio" name="maint" value="39" checked><span>39 €/mois</span></label>
+            <label><input type="radio" name="maint" value="79"><span>79 €/mois</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. envoi -->
+      <div class="dv-step" data-step="4">
+        <h2>Recevez votre devis</h2>
+        <p class="dv-hint">Vérifiez le récapitulatif, laissez vos coordonnées et envoyez votre demande. Réponse sous 24&nbsp;h.</p>
+        <pre class="dv-recap" id="recap"></pre>
+        <div class="dv-row">
+          <label class="dv-field"><span>Votre nom *</span><input id="cName" autocomplete="name"></label>
+          <label class="dv-field"><span>Téléphone</span><input id="cTel" type="tel" autocomplete="tel"></label>
+        </div>
+        <label class="dv-field"><span>Email *</span><input id="cEmail" type="email" autocomplete="email"></label>
+        <label class="dv-field"><span>Un mot sur votre projet</span><textarea id="cMsg" rows="3"></textarea></label>
+        <p class="dv-error" id="sendErr" role="status"></p>
+        <div class="dv-send">
+          <a class="btn btn--wa" id="sendWa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg> Envoyer sur WhatsApp</a>
+          <a class="btn btn--glow" id="sendMail" href="#">Envoyer par email</a>
+          <button type="button" class="btn btn--ghost" id="copyRecap">Copier le récapitulatif</button>
+        </div>
+      </div>
+
+      <div class="dv-nav-steps">
+        <button type="button" class="btn btn--ghost" id="prev">← Retour</button>
+        <button type="button" class="btn btn--glow" id="next">Continuer →</button>
+      </div>
+    </section>
+
+    <!-- ================= APERÇU + PRIX ================= -->
+    <aside class="dv-side">
+      <div class="dv-preview">
+        <div class="dv-preview__bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="dv-url" id="pvUrl">votre-entreprise.fr</span>
+          <span class="dv-live"><i></i>aperçu en direct</span>
+        </div>
+        <div class="pv" id="pv" data-style="moderne">
+          <div class="pv-nav">
+            <b class="pv-logo" id="pvLogo">Votre entreprise</b>
+            <span class="pv-links" id="pvLinks"></span>
+            <span class="pv-lang" id="pvLang">FR · EN</span>
+            <span class="pv-cart" id="pvCart">Panier · 2</span>
+          </div>
+          <div class="pv-hero">
+            <div class="pv-hero__txt">
+              <span class="pv-eyebrow" id="pvSector">Services</span>
+              <span class="pv-h" id="pvH">Des experts à vos côtés</span>
+              <span class="pv-p">Découvrez nos services et contactez-nous en quelques secondes.</span>
+              <span class="pv-btns"><span class="pv-cta" id="pvCta">Nous contacter</span><span class="pv-wa" id="pvWa">WhatsApp</span></span>
+            </div>
+            <div class="pv-hero__img" id="pvImg"></div>
+          </div>
+          <div class="pv-sec" id="pvShop"><span class="pv-sec__t">Nos produits</span><div class="pv-products"><div><i class="a"></i><b>Produit 1</b><em>29 €</em></div><div><i class="b"></i><b>Produit 2</b><em>45 €</em></div><div><i class="c"></i><b>Produit 3</b><em>19 €</em></div></div></div>
+          <div class="pv-sec" id="pvBooking"><span class="pv-sec__t">Réserver en ligne</span><div class="pv-booking"><div class="pv-cal"></div><div class="pv-slots"><span>10:00</span><span class="on">11:30</span><span>14:00</span><span>16:30</span></div></div></div>
+          <div class="pv-sec" id="pvServices"><span class="pv-sec__t">Nos services</span><div class="pv-cols"><span></span><span></span><span></span></div></div>
+          <div class="pv-sec" id="pvGallery"><span class="pv-sec__t">Galerie</span><div class="pv-gallery"><i></i><i></i><i></i><i></i></div></div>
+          <div class="pv-sec" id="pvPrices"><span class="pv-sec__t">Tarifs</span><div class="pv-cols pv-cols--price"><span><b>29 €</b></span><span><b>49 €</b></span><span><b>89 €</b></span></div></div>
+          <div class="pv-sec" id="pvReviews"><span class="pv-sec__t">Avis clients</span><div class="pv-reviews"><span>★★★★★</span><span>★★★★★</span></div></div>
+          <div class="pv-sec" id="pvBlog"><span class="pv-sec__t">Actualités</span><div class="pv-cols pv-cols--2"><span></span><span></span></div></div>
+          <div class="pv-foot"><span id="pvFootName">Votre entreprise</span><span>Mentions légales · Contact</span></div>
+          <span class="pv-badge" id="pvPremium">✦ animations premium</span>
+        </div>
+      </div>
+
+      <div class="dv-price">
+        <div class="dv-price__top">
+          <span class="dv-price__label">Votre estimation</span>
+          <span class="dv-price__weeks" id="weeks">≈ 2 semaines</span>
+        </div>
+        <div class="dv-price__total"><b id="total">800</b><span>€ HT</span></div>
+        <p class="dv-price__split" id="split">ou 3 × 267 € sans frais</p>
+        <ul class="dv-lines" id="lines"></ul>
+        <p class="dv-price__maint" id="maintLine">+ suivi 39 €/mois (sans engagement)</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg>
+</a>
+
+<script src="devis.js"></script>
+</body>
+</html>

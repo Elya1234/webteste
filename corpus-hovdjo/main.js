@@ -842,4 +842,52 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
     if (a) a.classList.add("active");
   }), { rootMargin: "-45% 0px -50% 0px" });
   $$("main section[id]").forEach(sec => spy.observe(sec));
+
+  /* =========================================================
+     14. MESSAGE D'ACCUEIL (bulle de discussion) + WHATSAPP
+     ========================================================= */
+  // ⚠️ Remplacez par votre numéro WhatsApp (format international, sans + ni espaces) :
+  const WHATSAPP = "33600000000";
+  const waLink = txt => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(txt)}`;
+  $("#chatWa").href = waLink("Bonjour, je souhaite un devis pour mon site internet.");
+  $("#contactWa").href = waLink("Bonjour, j'ai un projet de site internet et je souhaite en discuter.");
+
+  const chat = $("#chat"), launcher = $("#chatLauncher"), bubble = $("#chatBubble");
+  const msgs = $$(".chat__msg"), typing = $("#chatTyping"), actions = $("#chatActions"), status = $("#chatStatus");
+  let played = false, chatTimers = [];
+  const wait = (fn, ms) => chatTimers.push(setTimeout(fn, ms));
+  function openChat() {
+    chat.classList.add("open", "read");
+    launcher.setAttribute("aria-expanded", "true");
+    bubble.setAttribute("aria-hidden", "false");
+    if (played) return;
+    played = true;
+    if (reduce) { msgs.forEach(m => m.classList.add("show")); actions.classList.add("show"); status.textContent = "en ligne · répond en quelques minutes"; return; }
+    let t = 0;
+    msgs.forEach((m, i) => {
+      wait(() => typing.classList.add("show"), t);
+      t += i === 0 ? 900 : 1300;
+      wait(() => { typing.classList.remove("show"); m.classList.add("show"); }, t);
+      t += 350;
+    });
+    wait(() => { actions.classList.add("show"); status.textContent = "en ligne · répond en quelques minutes"; }, t + 200);
+  }
+  function closeChat() {
+    chat.classList.remove("open");
+    launcher.setAttribute("aria-expanded", "false");
+    bubble.setAttribute("aria-hidden", "true");
+    try { sessionStorage.setItem("ch-chat-closed", "1"); } catch (e) {}
+  }
+  launcher.addEventListener("click", () => chat.classList.contains("open") ? closeChat() : openChat());
+  $("#chatClose").addEventListener("click", closeChat);
+  let closedBefore = false;
+  try { closedBefore = sessionStorage.getItem("ch-chat-closed") === "1"; } catch (e) {}
+  // apparaît peu après l'ouverture du site
+  (function waitForSite() {
+    if (!started) return setTimeout(waitForSite, 300);
+    setTimeout(() => {
+      chat.classList.add("ready");
+      if (!closedBefore) setTimeout(openChat, 900);
+    }, 2200);
+  })();
 })();

@@ -47,7 +47,7 @@
     <a href="#process">Méthode</a>
     <a href="#tarifs">Tarifs</a>
     <a href="#faq">FAQ</a>
-    <a href="#contact" class="btn btn--sm btn--glow">Devis gratuit</a>
+    <a href="devis.html" class="btn btn--sm btn--glow">Faire mon devis</a>
   </nav>
   <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span></button>
 </header>
@@ -70,7 +70,7 @@
       </h1>
       <p class="hero__sub reveal">Agence web de développement : design sur mesure, code propre, référencement et performance. Votre site professionnel livré clé en main, <strong>à partir de 800&nbsp;€</strong>.</p>
       <div class="hero__cta reveal">
-        <a href="#contact" class="btn btn--glow magnetic">Lancer mon projet <span class="arrow">→</span></a>
+        <a href="devis.html" class="btn btn--glow magnetic">Faire mon devis <span class="arrow">→</span></a>
         <a href="#tarifs" class="btn btn--ghost magnetic">Voir les tarifs</a>
       </div>
       <ul class="hero__checks reveal">
@@ -319,7 +319,7 @@
           <li>SEO de base</li>
           <li>Mise en ligne incluse</li>
         </ul>
-        <a href="#contact" class="btn btn--ghost btn--full" data-plan="Essentiel (800 €)">Choisir Essentiel</a>
+        <a href="devis.html#essentiel" class="btn btn--ghost btn--full" data-plan="Essentiel (800 €)">Choisir Essentiel</a>
       </article>
 
       <article class="plan plan--featured glow-card reveal">
@@ -335,7 +335,7 @@
           <li>Statistiques de visites</li>
           <li>3 mois de maintenance offerts</li>
         </ul>
-        <a href="#contact" class="btn btn--glow btn--full" data-plan="Business (1 490 €)">Choisir Business</a>
+        <a href="devis.html#business" class="btn btn--glow btn--full" data-plan="Business (1 490 €)">Choisir Business</a>
       </article>
 
       <article class="plan glow-card reveal">
@@ -349,7 +349,7 @@
           <li>Emails de commande</li>
           <li>Formation incluse</li>
         </ul>
-        <a href="#contact" class="btn btn--ghost btn--full" data-plan="E-commerce (2 400 €)">Choisir E-commerce</a>
+        <a href="devis.html#ecommerce" class="btn btn--ghost btn--full" data-plan="E-commerce (2 400 €)">Choisir E-commerce</a>
       </article>
     </div>
 
@@ -377,7 +377,7 @@
         <span class="est__label">Estimation</span>
         <div class="est__total"><b id="estTotal">800</b> €</div>
         <p class="est__note">Prix indicatif HT. Le devis final est établi gratuitement après notre échange.</p>
-        <a href="#contact" class="btn btn--glow btn--full" id="estCta">Recevoir mon devis exact</a>
+        <a href="devis.html" class="btn btn--glow btn--full" id="estCta">Construire mon devis détaillé →</a>
       </div>
     </div>
   </div>
@@ -421,6 +421,7 @@
         <li><span>☎</span><a href="tel:+33600000000">06 00 00 00 00</a></li>
         <li><span>◷</span>Lun – Ven · 9h – 19h</li>
       </ul>
+      <a class="btn btn--wa contact__wa" id="contactWa" href="https://wa.me/33600000000" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg> Écrire sur WhatsApp</a>
     </div>
 
     <form class="form glow-card reveal" id="contactForm" novalidate>
@@ -477,6 +478,31 @@
 <div class="matrix-full" id="matrixFull" aria-hidden="true">
   <canvas id="fullMatrix"></canvas>
   <p id="matrixMsg"></p>
+</div>
+
+<!-- message d'accueil (bulle de discussion) -->
+<div class="chat" id="chat">
+  <div class="chat__bubble" id="chatBubble" role="dialog" aria-label="Message de Corpus Hovdjo" aria-hidden="true">
+    <button type="button" class="chat__close" id="chatClose" aria-label="Fermer le message">×</button>
+    <div class="chat__head">
+      <span class="chat__avatar">CH<i></i></span>
+      <div><b>Corpus Hovdjo</b><small id="chatStatus">en train d'écrire…</small></div>
+    </div>
+    <div class="chat__body" id="chatBody">
+      <div class="chat__msg" data-i="0">Bonjour 👋 Vous avez un projet de site internet ?</div>
+      <div class="chat__msg" data-i="1">Site de présentation ou site commercial : faites votre devis en 2 minutes, <b>à partir de seulement 800&nbsp;€</b>.</div>
+      <div class="chat__msg" data-i="2">On vous accompagne de A à Z pour lancer votre projet, avec un suivi après la mise en ligne.</div>
+      <div class="chat__typing" id="chatTyping"><i></i><i></i><i></i></div>
+    </div>
+    <div class="chat__actions" id="chatActions">
+      <a href="devis.html" class="btn btn--glow btn--sm">Faire mon devis →</a>
+      <a class="btn btn--wa btn--sm" id="chatWa" href="https://wa.me/33600000000" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg> WhatsApp</a>
+    </div>
+  </div>
+  <button type="button" class="chat__launcher" id="chatLauncher" aria-label="Ouvrir le message de Corpus Hovdjo" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="chat__badge" id="chatBadge">1</span>
+  </button>
 </div>
 
 <!-- sélecteur d'ambiance de couleurs -->
