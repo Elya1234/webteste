@@ -392,11 +392,16 @@
       <p class="section__lead">Paiement en plusieurs fois possible. Le site vous appartient à 100&nbsp;% à la livraison.</p>
     </header>
 
+    <div class="pay-switch reveal" role="radiogroup" aria-label="Mode de paiement">
+      <button type="button" class="on" data-pay="1" role="radio" aria-checked="true">Paiement comptant</button>
+      <button type="button" data-pay="3" role="radio" aria-checked="false">En 3 fois sans frais</button>
+      <span class="pay-switch__pill" aria-hidden="true"></span>
+    </div>
     <div class="pricing">
       <article class="plan glow-card reveal">
         <h3>Essentiel</h3>
         <p class="plan__desc">Idéal pour lancer votre présence en ligne.</p>
-        <div class="plan__price"><small>à partir de</small><b class="price-live">800</b><span>€</span></div>
+        <div class="plan__price"><small>à partir de</small><b class="price-live" data-price="800">800</b><span class="plan__unit">€</span></div>
         <ul>
           <li>Site vitrine jusqu'à 5 pages</li>
           <li>Design sur mesure &amp; responsive</li>
@@ -411,7 +416,7 @@
         <span class="plan__badge">Le plus choisi</span>
         <h3>Business</h3>
         <p class="plan__desc">Pour les entreprises qui veulent convertir.</p>
-        <div class="plan__price"><small>à partir de</small><b>1 490</b><span>€</span></div>
+        <div class="plan__price"><small>à partir de</small><b data-price="1490">1 490</b><span class="plan__unit">€</span></div>
         <ul>
           <li>Jusqu'à 10 pages</li>
           <li>Animations &amp; design premium</li>
@@ -426,7 +431,7 @@
       <article class="plan glow-card reveal">
         <h3>E-commerce</h3>
         <p class="plan__desc">Vendez en ligne, 24 h/24.</p>
-        <div class="plan__price"><small>à partir de</small><b>2 400</b><span>€</span></div>
+        <div class="plan__price"><small>à partir de</small><b data-price="2400">2 400</b><span class="plan__unit">€</span></div>
         <ul>
           <li>Boutique complète</li>
           <li>Paiement sécurisé</li>
@@ -537,6 +542,7 @@
 </main>
 
 <footer class="footer">
+  <div class="footer__mark" id="footerMark" aria-hidden="true">CORPUS HOVDJO</div>
   <div class="container footer__grid">
     <div class="footer__brand">
       <a href="#top" class="logo"><span class="logo__mark">&lt;/&gt;</span><span class="logo__text">CORPUS<b>HOVDJO</b></span></a>
@@ -594,6 +600,14 @@
   </button>
   </div>
 </div>
+
+<!-- retour en haut -->
+<button type="button" class="totop" id="toTop" aria-label="Revenir en haut de la page">
+  <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="totop__track" cx="24" cy="24" r="21"/><circle class="totop__ring" id="toTopRing" cx="24" cy="24" r="21" pathLength="1"/><path d="M24 31V17M17 23l7-7 7 7"/></svg>
+</button>
+
+<!-- lumière qui suit la souris -->
+<div class="spot" id="spot" aria-hidden="true"></div>
 
 <!-- sélecteur d'ambiance de couleurs -->
 <div class="palette" id="palette">

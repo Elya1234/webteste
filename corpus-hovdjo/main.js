@@ -1057,4 +1057,97 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
       })(t0);
     }, { threshold: .5 }).observe(cmp);
   })();
+
+  /* =========================================================
+     16. NOUVELLES ANIMATIONS & OPTIONS
+     ========================================================= */
+  // lumière qui suit la souris + grand nom du pied de page
+  const spot = $("#spot"), fMark = $("#footerMark");
+  if (finePointer && !reduce) {
+    addEventListener("mousemove", e => {
+      spot.style.setProperty("--sx", e.clientX + "px");
+      spot.style.setProperty("--sy", e.clientY + "px");
+      const r = fMark.getBoundingClientRect();
+      fMark.style.setProperty("--mx", e.clientX - r.left + "px");
+      fMark.style.setProperty("--my", e.clientY - r.top + "px");
+    }, { passive: true });
+  } else if (!reduce) {
+    // sur mobile, la lumière balaie le nom toute seule
+    let t = 0;
+    (function sweep() {
+      t += .006;
+      const r = fMark.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) {
+        fMark.style.setProperty("--mx", (Math.sin(t) * .5 + .5) * r.width + "px");
+        fMark.style.setProperty("--my", r.height * .45 + "px");
+      }
+      requestAnimationFrame(sweep);
+    })();
+  }
+
+  // icônes des services : chaque trait se dessine
+  $$(".card__icon svg").forEach(svg => $$("path, rect, circle", svg).forEach(el => el.setAttribute("pathLength", "1")));
+
+  // tarifs : paiement comptant / en 3 fois
+  const paySwitch = $(".pay-switch"), pill = $(".pay-switch__pill");
+  const payBtns = $$(".pay-switch button"), priceEls = $$(".plan__price b[data-price]");
+  function placePill() {
+    const on = $(".pay-switch button.on");
+    pill.style.setProperty("--pw", on.offsetWidth + "px");
+    pill.style.setProperty("--px", on.offsetLeft - 5 + "px");
+  }
+  function setPay(n) {
+    payBtns.forEach(b => { const on = +b.dataset.pay === n; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); });
+    placePill();
+    priceEls.forEach((b, i) => {
+      b.classList.add("flip");
+      setTimeout(() => {
+        const base = +b.dataset.price;
+        b.textContent = (n === 3 ? Math.ceil(base / 3) : base).toLocaleString("fr-FR");
+        b.nextElementSibling.textContent = n === 3 ? "€ × 3" : "€";
+        b.classList.remove("flip");
+      }, 260 + i * 70);
+    });
+  }
+  payBtns.forEach(b => b.addEventListener("click", () => setPay(+b.dataset.pay)));
+  addEventListener("resize", placePill);
+  setTimeout(placePill, 100);
+  void paySwitch;
+
+  // FAQ : ouverture et fermeture fluides
+  $$(".faq details").forEach(d => {
+    const sum = $("summary", d);
+    let anim = null;
+    sum.addEventListener("click", e => {
+      if (reduce) return;
+      e.preventDefault();
+      if (anim) anim.cancel();
+      const start = d.offsetHeight;
+      const opening = !d.open;
+      if (opening) d.open = true;
+      const end = opening ? d.scrollHeight : sum.offsetHeight + 2;
+      anim = d.animate({ height: [start + "px", end + "px"] }, { duration: 450, easing: "cubic-bezier(.16,1,.3,1)" });
+      anim.onfinish = () => { anim = null; if (!opening) d.open = false; d.style.height = ""; };
+    });
+  });
+
+  // retour en haut + anneau de progression
+  const toTop = $("#toTop"), ring = $("#toTopRing");
+  addEventListener("scroll", () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? scrollY / max : 0;
+    ring.style.setProperty("--prog", 1 - p);
+    toTop.classList.toggle("show", scrollY > 700);
+  }, { passive: true });
+  toTop.addEventListener("click", () => scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }));
+
+  // haut de page : léger effet de profondeur au défilement
+  const heroText = $(".hero__text"), globeCv = $("#globe");
+  if (!reduce) addEventListener("scroll", () => {
+    const y = scrollY;
+    if (y > innerHeight * 1.2) return;
+    heroText.style.transform = `translateY(${y * .18}px)`;
+    heroText.style.opacity = Math.max(0, 1 - y / (innerHeight * .9));
+    if (globeCv) globeCv.style.translate = `0 ${y * -.08}px`;
+  }, { passive: true });
 })();

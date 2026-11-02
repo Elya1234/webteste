@@ -1001,3 +1001,69 @@ strong .price-live,.chat__msg .price-live,.chat__teaser .price-live{font-weight:
 .ol-img{flex:1;display:grid;place-items:center;background:#eee;border:1px dashed #999;color:#888}
 .ol-small{font-size:1.6cqw;color:#666;text-align:center}
 @media (max-width:900px){.split--ba{grid-template-columns:1fr}}
+
+
+/* =========================================================
+   NOUVELLES ANIMATIONS & OPTIONS
+   ========================================================= */
+/* dégradés de titres qui coulent doucement */
+.grad{background:linear-gradient(100deg,var(--cyan),var(--violet),var(--pink),var(--cyan));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradFlow 9s linear infinite}
+@keyframes gradFlow{to{background-position:300% 0}}
+
+/* lumière douce qui suit la souris sur toute la page */
+.spot{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .6s;
+  background:radial-gradient(520px circle at var(--sx,50%) var(--sy,50%),rgba(var(--c1),.07),transparent 60%)}
+.has-cursor .spot{opacity:1}
+
+/* icônes des services qui se dessinent */
+.card__icon svg *{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.4s var(--soft) .3s}
+.card.in .card__icon svg *{stroke-dashoffset:0}
+.card:hover .card__icon svg *{animation:iconRedraw 1s var(--soft)}
+@keyframes iconRedraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.card__icon{position:relative;overflow:hidden}
+.card__icon::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-120%);transition:transform .9s var(--soft)}
+.card:hover .card__icon::after{transform:translateX(120%)}
+
+/* reflet qui traverse les aperçus de sites */
+.mock{position:relative}
+.mock::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.08) 50%,transparent 65%);transform:translateX(-110%)}
+.mock:hover::after{transform:translateX(110%);transition:transform 1.1s var(--soft)}
+
+/* option de paiement sur les tarifs */
+.pay-switch{position:relative;display:flex;width:max-content;max-width:100%;margin:0 auto 44px;padding:5px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg-3)}
+.pay-switch button{position:relative;z-index:1;border:0;background:transparent;padding:11px 20px;border-radius:999px;font-size:15px;font-weight:600;color:var(--muted);transition:color .4s;white-space:nowrap}
+.pay-switch button.on{color:var(--on-accent)}
+.pay-switch__pill{position:absolute;top:5px;bottom:5px;left:5px;width:var(--pw,50%);transform:translateX(var(--px,0));border-radius:999px;background:linear-gradient(135deg,var(--cyan),var(--violet));transition:transform .6s var(--soft),width .6s var(--soft)}
+.plan__price b{display:inline-block;transition:transform .35s var(--soft),opacity .35s}
+.plan__price b.flip{transform:translateY(-10px) rotateX(70deg);opacity:0}
+.plan__unit{transition:opacity .3s}
+@media (max-width:480px){.pay-switch button{padding:10px 14px;font-size:14px}}
+
+/* FAQ : ouverture fluide */
+.faq details{overflow:hidden}
+.faq details p{animation:none}
+
+/* retour en haut avec progression */
+.totop{position:fixed;left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:150;width:50px;height:50px;padding:0;border-radius:50%;border:1px solid var(--line-2);
+  background:rgba(10,14,24,.85);backdrop-filter:blur(10px);color:var(--text);display:grid;place-items:center;
+  opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;transition:opacity .5s,transform .6s var(--soft)}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.totop:hover{transform:translateY(-3px)}
+.totop svg{width:50px;height:50px;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.totop__track{stroke:var(--line-2);stroke-width:2}
+.totop__ring{stroke:var(--cyan);stroke-width:2.5;stroke-dasharray:1;stroke-dashoffset:var(--prog,1);transform:rotate(-90deg);transform-origin:center}
+.totop path{stroke:var(--text);stroke-width:2.2;transition:transform .4s var(--soft)}
+.totop:hover path{transform:translateY(-2px)}
+
+/* grand nom en bas de page, éclairé par la souris */
+.footer{position:relative;overflow:hidden}
+.footer__mark{font-family:var(--sans);font-weight:700;font-size:clamp(52px,13.5vw,210px);line-height:.9;letter-spacing:-.04em;text-align:center;white-space:nowrap;
+  padding:0 0 40px;margin-top:-10px;user-select:none;
+  color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.09);
+  background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),var(--cyan),var(--violet) 45%,transparent 72%);-webkit-background-clip:text;background-clip:text}
+@media (max-width:640px){.footer__mark{font-size:clamp(40px,14vw,90px);padding-bottom:28px}}
+
+@media (prefers-reduced-motion:reduce){
+  .grad{animation:none}
+  .card__icon svg *{stroke-dashoffset:0}
+}
