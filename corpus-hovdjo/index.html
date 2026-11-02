@@ -18,10 +18,15 @@
 
 <!-- ============ BOOT LOADER ============ -->
 <div class="boot" id="boot" aria-hidden="true">
+  <div class="boot__curtain boot__curtain--top"></div>
+  <div class="boot__curtain boot__curtain--bot"></div>
   <canvas class="boot__matrix" id="bootMatrix"></canvas>
   <div class="boot__inner">
+    <svg class="boot__mark" viewBox="0 0 64 64"><path class="bm bm1" d="M22 20 10 32l12 12"/><path class="bm bm2" d="M42 20l12 12-12 12"/><path class="bm bm3" d="M36 16 28 48"/></svg>
+    <div class="boot__name" id="bootName">CORPUS HOVDJO</div>
+    <p class="boot__tag">Création de sites web sur mesure</p>
     <pre class="boot__log" id="bootLog"></pre>
-    <div class="boot__bar"><span id="bootBar"></span></div>
+    <div class="boot__meta"><div class="boot__bar"><span id="bootBar"></span></div><span class="boot__pct" id="bootPct">0%</span></div>
   </div>
 </div>
 

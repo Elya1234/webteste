@@ -24,7 +24,11 @@
     '<span class="dim">[  0.402]</span> connexion sécurisée <span class="cy">https</span> ... ok',
     '<span class="dim">[  0.520]</span> démarrage de l\'expérience ▸',
   ];
-  let started = false;
+  const bootPct = $("#bootPct"), bootName = $("#bootName");
+  // le nom s'écrit lettre par lettre
+  bootName.innerHTML = [...bootName.textContent].map((ch, k) =>
+    `<span style="--k:${k}">${ch === " " ? "&nbsp;" : ch}</span>`).join("");
+  let started = false, leaving = false;
   function startSite() {
     if (started) return;
     started = true;
@@ -33,24 +37,40 @@
     initReveal();
     startEditor();
   }
+  function finishBoot() {
+    if (leaving) return;
+    leaving = true;
+    boot.classList.add("leaving");
+    setTimeout(startSite, reduce ? 0 : 520);
+  }
   if (reduce) {
-    startSite();
+    finishBoot();
   } else {
+    // compteur de pourcentage fluide
+    let target = 0, shownPct = 0;
+    (function pct() {
+      shownPct += (target - shownPct) * .12;
+      bootPct.textContent = Math.round(shownPct) + "%";
+      bootBar.style.width = shownPct + "%";
+      if (!leaving) requestAnimationFrame(pct);
+    })();
     let i = 0;
     const step = () => {
       if (i < bootLines.length) {
         bootLog.innerHTML += bootLines[i] + "\n";
+        bootLog.scrollTop = bootLog.scrollHeight;
         i++;
-        bootBar.style.width = (i / bootLines.length) * 100 + "%";
-        setTimeout(step, 170 + Math.random() * 120);
+        target = (i / bootLines.length) * 100;
+        setTimeout(step, 230 + Math.random() * 120);
       } else {
-        setTimeout(startSite, 350);
+        setTimeout(() => { bootPct.textContent = "100%"; bootBar.style.width = "100%"; }, 300);
+        setTimeout(finishBoot, 750);
       }
     };
-    step();
-    setTimeout(startSite, 4000); // sécurité
+    setTimeout(step, 700); // laisse le logo se dessiner
+    setTimeout(finishBoot, 5200); // sécurité
   }
-  boot.addEventListener("click", startSite);
+  boot.addEventListener("click", finishBoot);
 
   /* ---------- 2. NAV ---------- */
   const nav = $("#nav");
@@ -546,7 +566,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
   // boot
   const bootRain = makeMatrix($("#bootMatrix"), { size: 14, fps: 28 });
   if (!document.body.classList.contains("is-loading") || reduce) bootRain.stop(); else bootRain.start();
-  new MutationObserver(() => { if (boot.classList.contains("done")) bootRain.stop(); }).observe(boot, { attributes: true });
+  new MutationObserver(() => { if (boot.classList.contains("done")) setTimeout(() => bootRain.stop(), 1200); }).observe(boot, { attributes: true });
   // section terminal
   const secRain = makeMatrix($("#sectionMatrix"), { size: 15, fps: 18 });
   new IntersectionObserver(([e]) => e.isIntersecting ? secRain.start() : secRain.stop()).observe($("#sectionMatrix"));
@@ -675,12 +695,12 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
     e.preventDefault();
     wiping = true;
     wipe.classList.add("on");
-    const cmd = `$ cd ~/${names[id] || id}`;
+    const cmd = `~/${names[id] || id}`;
     let i = 0;
     setTimeout(() => {
       wipe.classList.add("text");
       const t = setInterval(() => {
-        wipeText.textContent = cmd.slice(0, ++i) + "▌";
+        wipeText.textContent = cmd.slice(0, ++i);
         if (i >= cmd.length) {
           clearInterval(t);
           setTimeout(() => {
@@ -701,12 +721,16 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
   window.__sparkCols = sparkCols;
   document.addEventListener("pointerdown", e => {
     if (reduce || e.target.closest("input, textarea, select, .term")) return;
-    for (let i = 0; i < 9; i++) {
+    const ring = document.createElement("span");
+    ring.className = "ripple";
+    ring.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;border-color:${sparkCols[0]}`;
+    document.body.appendChild(ring);
+    setTimeout(() => ring.remove(), 900);
+    for (let i = 0; i < 10; i++) {
       const s = document.createElement("span");
       s.className = "spark";
-      s.textContent = sparkChars[(Math.random() * sparkChars.length) | 0];
-      const ang = (i / 9) * Math.PI * 2 + Math.random() * .5, dist = 40 + Math.random() * 50;
-      s.style.cssText = `--x:${e.clientX}px;--y:${e.clientY}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist}px;--r:${(Math.random() - .5) * 180}deg;transform:translate(${e.clientX}px,${e.clientY}px);color:${sparkCols[i % 4]}`;
+      const ang = (i / 10) * Math.PI * 2 + Math.random() * .3, dist = 26 + Math.random() * 34;
+      s.style.cssText = `--x:${e.clientX}px;--y:${e.clientY}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist}px;--r:0deg;transform:translate(${e.clientX}px,${e.clientY}px);background:${sparkCols[i % 3]}`;
       document.body.appendChild(s);
       setTimeout(() => s.remove(), 850);
     }
@@ -715,7 +739,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
     let lastT = 0;
     addEventListener("mousemove", e => {
       const now = performance.now();
-      if (now - lastT < 28) return;
+      if (now - lastT < 40) return;
       lastT = now;
       const d = document.createElement("i");
       d.className = "trail";
