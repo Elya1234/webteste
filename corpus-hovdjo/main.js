@@ -5,6 +5,7 @@
   "use strict";
   // couleurs courantes (mises à jour par le sélecteur d'ambiance)
   const pal = { c1: "92,148,255", c2: "139,128,249", c3: "94,200,240" };
+  let bootRainRef = null; // pluie du chargement (créée plus bas)
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -28,6 +29,16 @@
   // le nom s'écrit lettre par lettre
   bootName.innerHTML = [...bootName.textContent].map((ch, k) =>
     `<span style="--k:${k}">${ch === " " ? "&nbsp;" : ch}</span>`).join("");
+  if (!reduce) {
+    const G = "01<>/{}=#*+アカサタ";
+    $$("span", bootName).forEach((sp, k) => {
+      const real = sp.textContent;
+      if (real.trim() === "" || real === "\u00a0") return;
+      const t0 = 450 + k * 45, t1 = t0 + 700 + k * 35;
+      const iv = setInterval(() => { sp.textContent = G[(Math.random() * G.length) | 0]; }, 55);
+      setTimeout(() => { clearInterval(iv); sp.textContent = real; sp.classList.add("set"); }, t1);
+    });
+  }
   let started = false, leaving = false;
   function startSite() {
     if (started) return;
@@ -40,6 +51,7 @@
   function finishBoot() {
     if (leaving) return;
     leaving = true;
+    if (bootRainRef) bootRainRef.warp(4.5); // la pluie accélère avant l'ouverture
     boot.classList.add("leaving");
     setTimeout(startSite, reduce ? 0 : 520);
   }
@@ -525,50 +537,92 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
      12. EFFETS AVANCÉS
      ========================================================= */
 
-  /* ---- 12a. Pluie de code (Matrix) réutilisable ---- */
-  function makeMatrix(cv, { color = null, size = 16, fps = 22, fade = "10,13,20" } = {}) {
+  /* ---- 12a. Pluie de code : colonnes en profondeur, traînées dégradées ---- */
+  // Fond transparent : se pose au-dessus de n'importe quel décor.
+  function makeMatrix(cv, { color = null, density = 1, alpha = 1, words = true, parallax = false } = {}) {
     const c = cv.getContext("2d");
-    const chars = "01アイウエオカキクケコサシスセソ<>/{}[]=;$#*+ABCDEF";
-    let w, h, drops, running = false, last = 0, raf;
+    const glyphs = "01<>/{}[]=;:$#*+().アイウエオカキクケコサシスセソタチツテトABCDEF";
+    const TOKENS = ["<div>", "const", "html", "css", "seo", "800€", "{ }", "=>", "async", "site", "</>", "web", "ui", "api"];
+    const LAYERS = [ // profondeur : petit/lent/pâle → grand/rapide/vif
+      { size: 11, speed: .55, a: .28, len: [10, 22] },
+      { size: 14, speed: .9,  a: .5,  len: [12, 26] },
+      { size: 18, speed: 1.45, a: .85, len: [10, 20] },
+    ];
+    let w, h, drops = [], running = false, raf, last = 0, warp = 1, mx = 0, tmx = 0;
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const glyph = () => glyphs[(Math.random() * glyphs.length) | 0];
+    function makeDrop(L, init) {
+      const len = Math.round(rnd(L.len[0], L.len[1]));
+      let chars = Array.from({ length: len }, glyph);
+      if (words && Math.random() < .18) { // une colonne sur cinq « écrit » un mot de code
+        const t = TOKENS[(Math.random() * TOKENS.length) | 0];
+        [...t].forEach((ch, k) => { if (k < len) chars[k] = ch; });
+      }
+      return { L, x: Math.floor(Math.random() * (w / L.size)) * L.size, y: init ? rnd(-h, h) : rnd(-h * .6, -20), v: L.speed * rnd(.8, 1.25), chars };
+    }
     function fit() {
       const dpr = Math.min(devicePixelRatio || 1, 2);
       w = cv.clientWidth; h = cv.clientHeight;
+      if (!w || !h) return;
       cv.width = w * dpr; cv.height = h * dpr;
       c.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drops = Array.from({ length: Math.ceil(w / size) }, () => Math.random() * -h / size);
-      c.fillStyle = `rgb(${fade})`; c.fillRect(0, 0, w, h);
+      drops = [];
+      LAYERS.forEach((L, i) => {
+        const n = Math.round((w / L.size) * [.28, .2, .1][i] * density);
+        for (let k = 0; k < n; k++) drops.push(makeDrop(L, true));
+      });
     }
     function frame(t) {
       if (!running) return;
       raf = requestAnimationFrame(frame);
-      if (t - last < 1000 / fps) return;
-      last = t;
-      c.fillStyle = `rgba(${fade},.09)`;
-      c.fillRect(0, 0, w, h);
-      c.font = `${size}px "JetBrains Mono", monospace`;
-      for (let i = 0; i < drops.length; i++) {
-        const ch = chars[(Math.random() * chars.length) | 0];
-        const y = drops[i] * size;
-        c.fillStyle = Math.random() < .04 ? "#ffffff" : `rgba(${color || pal.c1},${.4 + Math.random() * .45})`;
-        c.fillText(ch, i * size, y);
-        if (y > h && Math.random() > .975) drops[i] = 0;
-        drops[i] += 1;
+      const dt = Math.min(3, (t - last) / 16.7 || 1); last = t;
+      mx += (tmx - mx) * .05;
+      c.clearRect(0, 0, w, h);
+      const col = color || pal.c1;
+      for (const d of drops) {
+        const L = d.L;
+        d.y += d.v * dt * warp * (L.size * .18);
+        if (Math.random() < .06) d.chars[(Math.random() * d.chars.length) | 0] = glyph();
+        const off = parallax ? mx * (L.size - 10) * 1.6 : 0;
+        c.font = `${L.size}px "JetBrains Mono", monospace`;
+        for (let k = 0; k < d.chars.length; k++) {
+          const y = d.y - k * L.size;
+          if (y < -L.size || y > h + L.size) continue;
+          const fade = 1 - k / d.chars.length;
+          if (k === 0) { // tête de colonne : blanche et lumineuse
+            c.fillStyle = `rgba(255,255,255,${.95 * L.a * alpha})`;
+            c.shadowColor = `rgba(${col},.9)`; c.shadowBlur = 10;
+          } else {
+            c.fillStyle = `rgba(${col},${fade * fade * L.a * alpha})`;
+            c.shadowBlur = 0;
+          }
+          c.fillText(d.chars[k], d.x + off, y);
+        }
+        c.shadowBlur = 0;
+        if (d.y - d.chars.length * L.size > h) Object.assign(d, makeDrop(L, false));
       }
     }
     fit();
     addEventListener("resize", fit);
+    if (parallax) addEventListener("mousemove", e => { tmx = e.clientX / innerWidth - .5; });
     return {
-      start() { if (running || reduce) return; running = true; raf = requestAnimationFrame(frame); },
+      start() { if (running || reduce) return; running = true; if (!drops.length) fit(); last = performance.now(); raf = requestAnimationFrame(frame); },
       stop() { running = false; cancelAnimationFrame(raf); },
+      warp(v) { warp = v; },
       fit,
     };
   }
   // boot
-  const bootRain = makeMatrix($("#bootMatrix"), { size: 14, fps: 28 });
+  const bootRain = makeMatrix($("#bootMatrix"), { density: 1.3, parallax: true });
+  bootRainRef = bootRain;
   if (!document.body.classList.contains("is-loading") || reduce) bootRain.stop(); else bootRain.start();
   new MutationObserver(() => { if (boot.classList.contains("done")) setTimeout(() => bootRain.stop(), 1200); }).observe(boot, { attributes: true });
   // section terminal
-  const secRain = makeMatrix($("#sectionMatrix"), { size: 15, fps: 18 });
+  const secRain = makeMatrix($("#sectionMatrix"), { density: .8, alpha: .9 });
+  // pluie de code en fond du haut de page
+  const heroRain = makeMatrix($("#heroRain"), { density: 1.25, parallax: true });
+  new IntersectionObserver(([e]) => e.isIntersecting && started ? heroRain.start() : heroRain.stop()).observe($("#heroRain"));
+  (function waitHero() { if (!started) return setTimeout(waitHero, 200); heroRain.fit(); heroRain.start(); })();
   new IntersectionObserver(([e]) => e.isIntersecting ? secRain.start() : secRain.stop()).observe($("#sectionMatrix"));
 
   /* ---- 12b. Globe 3D interactif ---- */
@@ -769,7 +823,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
 
   /* ---- 12g. Easter eggs : mode Matrix + mode hacker ---- */
   const mFull = $("#matrixFull"), mMsg = $("#matrixMsg");
-  const fullRain = makeMatrix($("#fullMatrix"), { size: 18, fps: 26, fade: "0,0,0" });
+  const fullRain = makeMatrix($("#fullMatrix"), { density: 1.6 });
   let mTimer;
   function matrixMode() {
     mFull.classList.add("on");

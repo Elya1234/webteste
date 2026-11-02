@@ -875,3 +875,21 @@ strong .price-live,.chat__msg .price-live,.chat__teaser .price-live{font-weight:
 .chat.open .chat__teaser{opacity:0;transform:translateX(14px) scale(.96);pointer-events:none}
 @media (max-width:420px){.chat__teaser{font-size:12.5px;padding:8px 12px}}
 @media (prefers-reduced-motion:reduce){.price-live{animation:none}.chat__online{animation:none}}
+
+
+/* =========================================================
+   PLUIE DE CODE : ouverture + haut de page
+   ========================================================= */
+.boot__matrix{opacity:.9;
+  mask-image:radial-gradient(ellipse 38% 34% at 50% 50%,transparent 30%,#000 100%);-webkit-mask-image:radial-gradient(ellipse 38% 34% at 50% 50%,transparent 30%,#000 100%)}
+.boot.leaving .boot__matrix{opacity:0;transition:opacity .9s .25s}
+.boot__name span.set{color:var(--text)}
+.boot__name span:not(.set){color:var(--cyan)}
+.hero__rain{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.8;
+  mask-image:linear-gradient(90deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.35) 40%,#000 70%),linear-gradient(#000 60%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.35) 40%,#000 70%);
+  mask-composite:intersect}
+.hero__canvas{z-index:1}
+.matrix{opacity:.3}
+@media (max-width:980px){.hero__rain{opacity:.35;mask-image:linear-gradient(#000 30%,transparent 90%);-webkit-mask-image:linear-gradient(#000 30%,transparent 90%)}}
+@media (prefers-reduced-motion:reduce){.hero__rain{display:none}}
