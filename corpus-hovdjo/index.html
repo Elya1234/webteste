@@ -18,6 +18,7 @@
 
 <!-- ============ BOOT LOADER ============ -->
 <div class="boot" id="boot" aria-hidden="true">
+  <canvas class="boot__matrix" id="bootMatrix"></canvas>
   <div class="boot__inner">
     <pre class="boot__log" id="bootLog"></pre>
     <div class="boot__bar"><span id="bootBar"></span></div>
@@ -74,6 +75,7 @@
     </div>
 
     <div class="hero__visual reveal">
+      <canvas id="globe" class="globe" aria-hidden="true"></canvas>
       <div class="editor tilt">
         <div class="editor__bar">
           <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
@@ -227,10 +229,19 @@
 <!-- ============ PROCESS ============ -->
 <section class="section" id="process">
   <div class="container">
-    <header class="section__head reveal">
-      <p class="kicker">// 03 — méthode</p>
-      <h2>Un process clair,<br><span class="grad">zéro mauvaise surprise.</span></h2>
-    </header>
+    <div class="head-row">
+      <header class="section__head reveal">
+        <p class="kicker">// 03 — méthode</p>
+        <h2>Un process clair,<br><span class="grad">zéro mauvaise surprise.</span></h2>
+      </header>
+      <div class="cube-wrap reveal" aria-hidden="true">
+        <div class="cube" id="cube">
+          <span class="f1">HTML</span><span class="f2">CSS</span><span class="f3">JS</span>
+          <span class="f4">SEO</span><span class="f5">UX</span><span class="f6">API</span>
+        </div>
+        <div class="cube-shadow"></div>
+      </div>
+    </div>
 
     <ol class="timeline" id="timeline">
       <span class="timeline__line"><i id="timelineFill"></i></span>
@@ -330,6 +341,7 @@
 
 <!-- ============ TERMINAL INTERACTIF ============ -->
 <section class="section" id="terminal">
+  <canvas class="matrix" id="sectionMatrix" aria-hidden="true"></canvas>
   <div class="container split">
     <div class="split__text reveal">
       <p class="kicker">// 05 — pourquoi nous</p>
@@ -427,6 +439,18 @@
     <p class="footer__copy">© <span id="year"></span> Corpus Hovdjo. Codé avec ♥ et beaucoup de café.</p>
   </div>
 </footer>
+
+<!-- transition entre sections -->
+<div class="wipe" id="wipe" aria-hidden="true">
+  <div class="wipe__cols"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i></div>
+  <div class="wipe__text" id="wipeText"></div>
+</div>
+
+<!-- mode matrix plein écran (easter egg) -->
+<div class="matrix-full" id="matrixFull" aria-hidden="true">
+  <canvas id="fullMatrix"></canvas>
+  <p id="matrixMsg"></p>
+</div>
 
 <script src="main.js"></script>
 </body>

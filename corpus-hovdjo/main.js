@@ -394,6 +394,8 @@
   <b>pourquoi</b>   pourquoi Corpus Hovdjo
   <b>contact</b>    nous écrire
   <b>devis</b>      aller au formulaire
+  <b>matrix</b>     ??? 👀
+  <b>hack</b>       mode hacker
   <b>clear</b>      vider l'écran`,
     services: () => `<span class="g">✔</span> Site vitrine
 <span class="g">✔</span> E-commerce
@@ -495,5 +497,284 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     formMsg.className = "form__msg";
     formMsg.textContent = "> ok : votre messagerie s'ouvre pour envoyer la demande ✓";
+  });
+
+  /* =========================================================
+     12. EFFETS AVANCÉS
+     ========================================================= */
+
+  /* ---- 12a. Pluie de code (Matrix) réutilisable ---- */
+  function makeMatrix(cv, { color = "61,255,154", size = 16, fps = 22, fade = "5,7,13" } = {}) {
+    const c = cv.getContext("2d");
+    const chars = "01アイウエオカキクケコサシスセソ<>/{}[]=;$#*+ABCDEF";
+    let w, h, drops, running = false, last = 0, raf;
+    function fit() {
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      w = cv.clientWidth; h = cv.clientHeight;
+      cv.width = w * dpr; cv.height = h * dpr;
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drops = Array.from({ length: Math.ceil(w / size) }, () => Math.random() * -h / size);
+      c.fillStyle = `rgb(${fade})`; c.fillRect(0, 0, w, h);
+    }
+    function frame(t) {
+      if (!running) return;
+      raf = requestAnimationFrame(frame);
+      if (t - last < 1000 / fps) return;
+      last = t;
+      c.fillStyle = `rgba(${fade},.09)`;
+      c.fillRect(0, 0, w, h);
+      c.font = `${size}px "JetBrains Mono", monospace`;
+      for (let i = 0; i < drops.length; i++) {
+        const ch = chars[(Math.random() * chars.length) | 0];
+        const y = drops[i] * size;
+        c.fillStyle = Math.random() < .04 ? "#ffffff" : `rgba(${color},${.55 + Math.random() * .45})`;
+        c.fillText(ch, i * size, y);
+        if (y > h && Math.random() > .975) drops[i] = 0;
+        drops[i] += 1;
+      }
+    }
+    fit();
+    addEventListener("resize", fit);
+    return {
+      start() { if (running || reduce) return; running = true; raf = requestAnimationFrame(frame); },
+      stop() { running = false; cancelAnimationFrame(raf); },
+      fit,
+    };
+  }
+  // boot
+  const bootRain = makeMatrix($("#bootMatrix"), { size: 14, fps: 28 });
+  if (!document.body.classList.contains("is-loading") || reduce) bootRain.stop(); else bootRain.start();
+  new MutationObserver(() => { if (boot.classList.contains("done")) bootRain.stop(); }).observe(boot, { attributes: true });
+  // section terminal
+  const secRain = makeMatrix($("#sectionMatrix"), { size: 15, fps: 18 });
+  new IntersectionObserver(([e]) => e.isIntersecting ? secRain.start() : secRain.stop()).observe($("#sectionMatrix"));
+
+  /* ---- 12b. Globe 3D interactif ---- */
+  const gcv = $("#globe"), g = gcv.getContext("2d");
+  let gw, gh, gR;
+  const gPts = [];
+  const N = 520;
+  for (let i = 0; i < N; i++) { // sphère de Fibonacci
+    const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = i * Math.PI * (3 - Math.sqrt(5));
+    gPts.push([Math.cos(th) * r, y, Math.sin(th) * r]);
+  }
+  const arcs = Array.from({ length: 9 }, () => [(Math.random() * N) | 0, (Math.random() * N) | 0, Math.random()]);
+  let rotY = 0, rotX = .35, tRotY = 0, tRotX = .35, gm = { x: 0, y: 0 };
+  function gFit() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    gw = gcv.clientWidth; gh = gcv.clientHeight;
+    gcv.width = gw * dpr; gcv.height = gh * dpr;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    gR = Math.min(gw, gh) * .36;
+  }
+  function rot([x, y, z]) {
+    const cy = Math.cos(rotY), sy = Math.sin(rotY), cx = Math.cos(rotX), sx = Math.sin(rotX);
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
+    const y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+    return [x1, y1, z2];
+  }
+  function proj(p) { const s = 1 / (1.9 - p[2] * .5); return [gw / 2 + p[0] * gR * s * 1.4, gh / 2 + p[1] * gR * s * 1.4, p[2]]; }
+  let gt = 0;
+  function gDraw() {
+    gt += 1;
+    tRotY += .0035; rotY += (tRotY + gm.x * .8 - rotY) * .06;
+    rotX += (tRotX + gm.y * .5 - rotX) * .06;
+    g.clearRect(0, 0, gw, gh);
+    // halo
+    const grd = g.createRadialGradient(gw / 2, gh / 2, gR * .2, gw / 2, gh / 2, gR * 1.5);
+    grd.addColorStop(0, "rgba(0,240,255,.07)"); grd.addColorStop(1, "rgba(0,240,255,0)");
+    g.fillStyle = grd; g.fillRect(0, 0, gw, gh);
+    // points
+    for (const p of gPts) {
+      const r = rot(p), [x, y, z] = proj(r);
+      const k = (z + 1) / 2;
+      g.fillStyle = z > 0 ? `rgba(0,240,255,${.15 + k * .75})` : `rgba(168,85,247,${.08 + k * .3})`;
+      g.beginPath(); g.arc(x, y, .6 + k * 1.5, 0, 6.283); g.fill();
+    }
+    // arcs de données entre deux points
+    for (const a of arcs) {
+      const A = gPts[a[0]], B = gPts[a[1]];
+      const prog = ((gt * .006 + a[2]) % 1);
+      g.beginPath();
+      let first = true;
+      for (let s = 0; s <= 1.0001; s += .05) {
+        const m = [A[0] + (B[0] - A[0]) * s, A[1] + (B[1] - A[1]) * s, A[2] + (B[2] - A[2]) * s];
+        const L = Math.hypot(...m) || 1, lift = 1 + Math.sin(s * Math.PI) * .35;
+        const pp = proj(rot(m.map(v => v / L * lift)));
+        first ? g.moveTo(pp[0], pp[1]) : g.lineTo(pp[0], pp[1]); first = false;
+      }
+      g.strokeStyle = "rgba(255,61,154,.35)"; g.lineWidth = 1; g.stroke();
+      // paquet qui voyage
+      const m = [A[0] + (B[0] - A[0]) * prog, A[1] + (B[1] - A[1]) * prog, A[2] + (B[2] - A[2]) * prog];
+      const L = Math.hypot(...m) || 1, lift = 1 + Math.sin(prog * Math.PI) * .35;
+      const pp = proj(rot(m.map(v => v / L * lift)));
+      g.fillStyle = "#ff3d9a"; g.shadowColor = "#ff3d9a"; g.shadowBlur = 12;
+      g.beginPath(); g.arc(pp[0], pp[1], 2.4, 0, 6.283); g.fill(); g.shadowBlur = 0;
+    }
+    // anneau en orbite + satellite
+    g.beginPath();
+    for (let s = 0; s <= 6.3; s += .05) {
+      const pp = proj(rot([Math.cos(s) * 1.45, Math.sin(s) * .18, Math.sin(s) * 1.45]));
+      s === 0 ? g.moveTo(pp[0], pp[1]) : g.lineTo(pp[0], pp[1]);
+    }
+    g.strokeStyle = "rgba(168,85,247,.35)"; g.stroke();
+    const sa = gt * .015, sp = proj(rot([Math.cos(sa) * 1.45, Math.sin(sa) * .18, Math.sin(sa) * 1.45]));
+    g.fillStyle = "#00f0ff"; g.shadowColor = "#00f0ff"; g.shadowBlur = 16;
+    g.beginPath(); g.arc(sp[0], sp[1], 3.5, 0, 6.283); g.fill(); g.shadowBlur = 0;
+  }
+  gFit(); addEventListener("resize", gFit);
+  addEventListener("mousemove", e => { gm.x = e.clientX / innerWidth - .5; gm.y = e.clientY / innerHeight - .5; });
+  if (reduce) gDraw(); else (function gl() { if (heroVisible) gDraw(); requestAnimationFrame(gl); })();
+
+  /* ---- 12c. Titres qui se décodent ---- */
+  const GL = "ABCDEF0123456789<>/{}#$%&*+=?";
+  function decode(el, speed = 1) {
+    if (reduce || el.dataset.decoding) return;
+    el.dataset.decoding = 1;
+    el.classList.add("decoding");
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push({ n: walker.currentNode, o: walker.currentNode.nodeValue });
+    const total = nodes.reduce((a, b) => a + b.o.length, 0);
+    let f = 0;
+    (function tick() {
+      let idx = 0;
+      for (const it of nodes) {
+        let out = "";
+        for (const ch of it.o) {
+          const at = idx * .55 / speed + 6;
+          out += (f >= at || ch === " " || ch === " ") ? ch : GL[(Math.random() * GL.length) | 0];
+          idx++;
+        }
+        it.n.nodeValue = out;
+      }
+      f++;
+      if (f < total * .55 / speed + 8) requestAnimationFrame(tick);
+      else { nodes.forEach(it => it.n.nodeValue = it.o); el.classList.remove("decoding"); delete el.dataset.decoding; }
+    })();
+  }
+  const titleIO = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { setTimeout(() => decode(e.target), 150); titleIO.unobserve(e.target); }
+  }), { threshold: .6 });
+  $$(".section h2, .estimator h3").forEach(h => titleIO.observe(h));
+  // liens du menu et kickers : décodage au survol
+  $$(".nav__links a:not(.btn), .kicker, .logo__text").forEach(a => a.addEventListener("mouseenter", () => decode(a, 2)));
+
+  /* ---- 12d. Transition « terminal » entre sections ---- */
+  const wipe = $("#wipe"), wipeText = $("#wipeText");
+  const names = { top: "accueil", services: "services", realisations: "exemples", process: "methode", tarifs: "tarifs", faq: "faq", contact: "contact", stack: "stack", terminal: "terminal" };
+  let wiping = false;
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || reduce || wiping) return;
+    const id = a.getAttribute("href").slice(1);
+    const target = id ? document.getElementById(id) : null;
+    if (!target) return;
+    e.preventDefault();
+    wiping = true;
+    wipe.classList.add("on");
+    const cmd = `$ cd ~/${names[id] || id}`;
+    let i = 0;
+    setTimeout(() => {
+      wipe.classList.add("text");
+      const t = setInterval(() => {
+        wipeText.textContent = cmd.slice(0, ++i) + "▌";
+        if (i >= cmd.length) {
+          clearInterval(t);
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: "instant", block: "start" });
+            window.history.replaceState(null, "", "#" + id);
+            wipe.classList.remove("text");
+            wipe.classList.remove("on");
+            setTimeout(() => { wiping = false; wipeText.textContent = ""; }, 700);
+          }, 220);
+        }
+      }, 22);
+    }, 420);
+  });
+
+  /* ---- 12e. Étincelles de code au clic + traînée du curseur ---- */
+  const sparkChars = ["{", "}", "<", "/>", ";", "0", "1", "#", "*", "()", "=>"];
+  const sparkCols = ["#00f0ff", "#a855f7", "#ff3d9a", "#3dff9a"];
+  document.addEventListener("pointerdown", e => {
+    if (reduce || e.target.closest("input, textarea, select, .term")) return;
+    for (let i = 0; i < 9; i++) {
+      const s = document.createElement("span");
+      s.className = "spark";
+      s.textContent = sparkChars[(Math.random() * sparkChars.length) | 0];
+      const ang = (i / 9) * Math.PI * 2 + Math.random() * .5, dist = 40 + Math.random() * 50;
+      s.style.cssText = `--x:${e.clientX}px;--y:${e.clientY}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist}px;--r:${(Math.random() - .5) * 180}deg;transform:translate(${e.clientX}px,${e.clientY}px);color:${sparkCols[i % 4]}`;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 850);
+    }
+  });
+  if (finePointer && !reduce) {
+    let lastT = 0;
+    addEventListener("mousemove", e => {
+      const now = performance.now();
+      if (now - lastT < 28) return;
+      lastT = now;
+      const d = document.createElement("i");
+      d.className = "trail";
+      const t = `translate(${e.clientX}px,${e.clientY}px)`;
+      d.style.transform = t; d.style.setProperty("--t", t);
+      d.style.background = sparkCols[(now / 100 | 0) % 3];
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 650);
+    });
+  }
+
+  /* ---- 12f. Cube 3D : on peut le faire tourner à la souris ---- */
+  const cube = $("#cube");
+  let drag = null, cRX = -22, cRY = 0;
+  cube.parentElement.addEventListener("pointerdown", e => {
+    drag = { x: e.clientX, y: e.clientY, rx: cRX, ry: cRY };
+    cube.style.animation = "none";
+    cube.parentElement.setPointerCapture(e.pointerId);
+  });
+  addEventListener("pointermove", e => {
+    if (!drag) return;
+    cRY = drag.ry + (e.clientX - drag.x) * .6;
+    cRX = drag.rx - (e.clientY - drag.y) * .6;
+    cube.style.transform = `rotateX(${cRX}deg) rotateY(${cRY}deg)`;
+  });
+  addEventListener("pointerup", () => { drag = null; });
+
+  /* ---- 12g. Easter eggs : mode Matrix + mode hacker ---- */
+  const mFull = $("#matrixFull"), mMsg = $("#matrixMsg");
+  const fullRain = makeMatrix($("#fullMatrix"), { size: 18, fps: 26, fade: "0,0,0" });
+  let mTimer;
+  function matrixMode() {
+    mFull.classList.add("on");
+    requestAnimationFrame(() => { fullRain.fit(); fullRain.start(); });
+    const msg = "Le code est partout… et votre site aussi bientôt.";
+    mMsg.textContent = "";
+    let i = 0;
+    clearInterval(mTimer);
+    mTimer = setInterval(() => { mMsg.textContent = msg.slice(0, ++i); if (i >= msg.length) clearInterval(mTimer); }, 45);
+    setTimeout(closeMatrix, 6500);
+  }
+  function closeMatrix() { mFull.classList.remove("on"); setTimeout(() => fullRain.stop(), 500); }
+  mFull.addEventListener("click", closeMatrix);
+  cmds.matrix = () => { setTimeout(matrixMode, 300); return '<span class="g">Initialisation de la Matrice…</span>'; };
+  cmds.hack = () => {
+    const lines = ["Connexion au serveur Corpus…", "Contournement du pare-feu… [OK]", "Téléchargement de bonnes idées… 100%", "Injection de créativité… [OK]",
+      '<span class="p">ACCÈS AUTORISÉ</span> : votre futur site vous attend 😎'];
+    lines.forEach((l, i) => setTimeout(() => {
+      const o = document.createElement("div"); o.className = "term__out"; o.innerHTML = '<span class="g">▸</span> ' + l;
+      termBody.appendChild(o); termBody.scrollTop = termBody.scrollHeight;
+    }, 350 * (i + 1)));
+    return '<span class="v">Mode hacker activé…</span>';
+  };
+  // code Konami (↑↑↓↓←→←→BA) ou taper « matrix » n'importe où
+  const konami = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+  let kPos = 0, typed = "";
+  addEventListener("keydown", e => {
+    if (e.target.closest && e.target.closest("input, textarea")) return;
+    kPos = e.key === konami[kPos] ? kPos + 1 : (e.key === konami[0] ? 1 : 0);
+    if (kPos === konami.length) { kPos = 0; matrixMode(); }
+    typed = (typed + e.key).slice(-6).toLowerCase();
+    if (typed === "matrix") matrixMode();
+    if (e.key === "Escape") closeMatrix();
   });
 })();
