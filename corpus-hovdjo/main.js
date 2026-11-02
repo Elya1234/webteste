@@ -882,12 +882,29 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
   $("#chatClose").addEventListener("click", closeChat);
   let closedBefore = false;
   try { closedBefore = sessionStorage.getItem("ch-chat-closed") === "1"; } catch (e) {}
-  // apparaît peu après l'ouverture du site
+  // le bouton reste petit en bas : une courte phrase sort puis se range,
+  // et de temps en temps le bouton « écrit » comme si quelqu'un était là
+  const teaser = $("#chatTeaser");
+  teaser.addEventListener("click", openChat);
+  void closedBefore;
+  function showTeaser(ms) {
+    if (chat.classList.contains("open")) return;
+    teaser.classList.add("show");
+    setTimeout(() => teaser.classList.remove("show"), ms);
+  }
   (function waitForSite() {
     if (!started) return setTimeout(waitForSite, 300);
     setTimeout(() => {
       chat.classList.add("ready");
-      if (!closedBefore) setTimeout(openChat, 900);
+      if (reduce) return;
+      setTimeout(() => showTeaser(4500), 900);
+      // petits signes de présence
+      setInterval(() => {
+        if (chat.classList.contains("open")) return;
+        launcher.classList.add("typing");
+        setTimeout(() => launcher.classList.remove("typing"), 1800);
+      }, 9000);
+      setInterval(() => showTeaser(3500), 45000);
     }, 2200);
   })();
 })();

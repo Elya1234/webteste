@@ -842,3 +842,36 @@ input[type=range]::-webkit-slider-thumb{box-shadow:none}
 @media (prefers-reduced-motion:reduce){.chat__launcher::before{display:none}}
 /* cube de la section méthode : faces opaques et nettes */
 .cube span{background:linear-gradient(140deg,rgba(var(--c1),.22),rgba(var(--c2),.14)),#111726;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+
+
+/* =========================================================
+   PRIX « VIVANT » + BOUTON DE DISCUSSION DISCRET
+   ========================================================= */
+.price-live{background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink),#ffffff,var(--cyan));background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  animation:priceFlow 5s linear infinite;filter:drop-shadow(0 0 14px rgba(var(--c1),.25));white-space:nowrap}
+@keyframes priceFlow{to{background-position:300% 0}}
+strong .price-live,.chat__msg .price-live,.chat__teaser .price-live{font-weight:700}
+
+/* bouton : plus petit, présent mais discret */
+.chat__dock{display:flex;align-items:center;gap:10px}
+.chat__launcher{width:54px;height:54px}
+.chat__launcher svg{width:23px;height:23px;transition:opacity .3s,transform .4s var(--soft)}
+.chat__launcher::before{animation:waRing 3.2s ease-out infinite}
+.chat__online{position:absolute;left:3px;bottom:3px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--bg);animation:onlineBlink 2.4s ease-in-out infinite}
+@keyframes onlineBlink{50%{opacity:.35}}
+.chat__dots{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:4px;opacity:0;transition:opacity .3s}
+.chat__dots i{width:5px;height:5px;border-radius:50%;background:currentColor;animation:typing 1.2s infinite}
+.chat__dots i:nth-child(2){animation-delay:.15s}.chat__dots i:nth-child(3){animation-delay:.3s}
+.chat__launcher.typing svg{opacity:0;transform:scale(.6)}
+.chat__launcher.typing .chat__dots{opacity:1}
+.chat.open .chat__online{display:none}
+
+/* petite phrase qui sort puis se range */
+.chat__teaser{border:1px solid var(--line-2);background:rgba(16,20,31,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  color:var(--text);font-size:13.5px;padding:9px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 14px 34px -14px rgba(0,0,0,.8);
+  opacity:0;transform:translateX(14px) scale(.96);pointer-events:none;transition:opacity .5s,transform .7s var(--soft)}
+.chat__teaser.show{opacity:1;transform:none;pointer-events:auto}
+.chat.open .chat__teaser{opacity:0;transform:translateX(14px) scale(.96);pointer-events:none}
+@media (max-width:420px){.chat__teaser{font-size:12.5px;padding:8px 12px}}
+@media (prefers-reduced-motion:reduce){.price-live{animation:none}.chat__online{animation:none}}

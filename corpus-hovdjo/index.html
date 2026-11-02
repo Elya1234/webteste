@@ -68,7 +68,7 @@
         <span class="hero__line">On code des sites qui</span>
         <span class="hero__rotate"><span id="scramble">impressionnent</span><i class="caret">_</i></span>
       </h1>
-      <p class="hero__sub reveal">Agence web de développement : design sur mesure, code propre, référencement et performance. Votre site professionnel livré clé en main, <strong>à partir de 800&nbsp;€</strong>.</p>
+      <p class="hero__sub reveal">Agence web de développement : design sur mesure, code propre, référencement et performance. Votre site professionnel livré clé en main, <strong>à partir de <span class="price-live">800&nbsp;€</span></strong>.</p>
       <div class="hero__cta reveal">
         <a href="devis.html" class="btn btn--glow magnetic">Faire mon devis <span class="arrow">→</span></a>
         <a href="#tarifs" class="btn btn--ghost magnetic">Voir les tarifs</a>
@@ -95,7 +95,7 @@
       </div>
       <div class="float-card float-card--a">
         <span class="fc__label">Prix de départ</span>
-        <span class="fc__value">800&nbsp;€</span>
+        <span class="fc__value price-live">800&nbsp;€</span>
       </div>
       <div class="float-card float-card--b">
         <span class="fc__label">Mobile-first</span>
@@ -112,7 +112,7 @@
 <!-- ============ STATS ============ -->
 <section class="stats-wrap" aria-label="Chiffres clés">
 <div class="stats container">
-  <div class="stat reveal"><b class="count" data-to="800" data-suffix=" €">0</b><span>Prix de départ d'un site complet</span></div>
+  <div class="stat reveal"><b class="count price-live" data-to="800" data-suffix=" €">0</b><span>Prix de départ d'un site complet</span></div>
   <div class="stat reveal"><b class="count" data-to="24" data-suffix=" h">0</b><span>Délai de réponse à votre demande</span></div>
   <div class="stat reveal"><b class="count" data-to="90" data-prefix="+" data-suffix="">0</b><span>Score de performance Lighthouse visé</span></div>
   <div class="stat reveal"><b class="count" data-to="100" data-suffix=" %">0</b><span>Responsive : mobile, tablette, ordinateur</span></div>
@@ -143,7 +143,7 @@
         <h3>Site vitrine</h3>
         <p>Présentez votre activité avec un site élégant, rapide et pensé pour transformer vos visiteurs en clients.</p>
         <ul><li>Jusqu'à 5 pages</li><li>Formulaire de contact</li><li>Google Maps &amp; réseaux</li><li>Design responsive</li><li>SEO de base</li></ul>
-        <div class="card__big"><small>à partir de</small><b>800&nbsp;€</b></div>
+        <div class="card__big"><small>à partir de</small><b class="price-live">800&nbsp;€</b></div>
         <a href="#tarifs" class="btn btn--glow btn--sm card__cta">Voir la formule</a>
       </article>
       <article class="card glow-card reveal card--2">
@@ -303,7 +303,7 @@
   <div class="container">
     <header class="section__head reveal">
       <p class="kicker">// 05 — tarifs</p>
-      <h2>Des prix transparents,<br><span class="grad">à partir de 800&nbsp;€.</span></h2>
+      <h2>Des prix transparents,<br><span class="grad">à partir de</span> <span class="price-live">800&nbsp;€.</span></h2>
       <p class="section__lead">Paiement en plusieurs fois possible. Le site vous appartient à 100&nbsp;% à la livraison.</p>
     </header>
 
@@ -311,7 +311,7 @@
       <article class="plan glow-card reveal">
         <h3>Essentiel</h3>
         <p class="plan__desc">Idéal pour lancer votre présence en ligne.</p>
-        <div class="plan__price"><small>à partir de</small><b>800</b><span>€</span></div>
+        <div class="plan__price"><small>à partir de</small><b class="price-live">800</b><span>€</span></div>
         <ul>
           <li>Site vitrine jusqu'à 5 pages</li>
           <li>Design sur mesure &amp; responsive</li>
@@ -490,7 +490,7 @@
     </div>
     <div class="chat__body" id="chatBody">
       <div class="chat__msg" data-i="0">Bonjour 👋 Vous avez un projet de site internet ?</div>
-      <div class="chat__msg" data-i="1">Site de présentation ou site commercial : faites votre devis en 2 minutes, <b>à partir de seulement 800&nbsp;€</b>.</div>
+      <div class="chat__msg" data-i="1">Site de présentation ou site commercial : faites votre devis en 2 minutes, à partir de seulement <b class="price-live">800&nbsp;€</b>.</div>
       <div class="chat__msg" data-i="2">On vous accompagne de A à Z pour lancer votre projet, avec un suivi après la mise en ligne.</div>
       <div class="chat__typing" id="chatTyping"><i></i><i></i><i></i></div>
     </div>
@@ -499,10 +499,15 @@
       <a class="btn btn--wa btn--sm" id="chatWa" href="https://wa.me/33600000000" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg> WhatsApp</a>
     </div>
   </div>
+  <div class="chat__dock">
+  <button type="button" class="chat__teaser" id="chatTeaser" tabindex="-1" aria-hidden="true"><span>Un projet ? Devis dès <b class="price-live">800&nbsp;€</b></span></button>
   <button type="button" class="chat__launcher" id="chatLauncher" aria-label="Ouvrir le message de Corpus Hovdjo" aria-expanded="false">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="chat__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="chat__online" aria-hidden="true"></span>
     <span class="chat__badge" id="chatBadge">1</span>
   </button>
+  </div>
 </div>
 
 <!-- sélecteur d'ambiance de couleurs -->
