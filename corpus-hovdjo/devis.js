@@ -4,8 +4,8 @@
 (() => {
   "use strict";
   // ⚠️ Remplacez par vos vraies coordonnées :
-  const WHATSAPP = "33600000000";            // numéro au format international, sans + ni espaces
-  const CONTACT_EMAIL = "contact@corpus-hovdjo.fr";
+  const WHATSAPP = "33766914597";            // numéro au format international, sans + ni espaces
+  const CONTACT_EMAIL = "corpushovdjo@gmail.com";
 
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];

@@ -457,7 +457,7 @@ Réponse devis   → <span class="v">sous 24 h</span>`,
 → Sites rapides, sécurisés et bien référencés
 → Prix clairs, dès 800 €
 → Un interlocuteur unique, réactif`,
-    contact: () => `email    <b>contact@corpus-hovdjo.fr</b>
+    contact: () => `email    <b>corpushovdjo@gmail.com</b>
 horaires lun – ven · 9h – 19h
 Tapez <b>devis</b> pour ouvrir le formulaire.`,
     devis: () => { setTimeout(() => $("#contact").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }), 300); return '<span class="g">Ouverture du formulaire…</span>'; },
@@ -510,7 +510,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
 
   /* ---------- 11. CONTACT FORM ---------- */
   // ⚠️ Remplacez cette adresse par votre email réel :
-  const CONTACT_EMAIL = "contact@corpus-hovdjo.fr";
+  const CONTACT_EMAIL = "corpushovdjo@gmail.com";
   const form = $("#contactForm"), formMsg = $("#formMsg");
   form.addEventListener("submit", e => {
     e.preventDefault();
@@ -901,7 +901,7 @@ Tapez <b>devis</b> pour ouvrir le formulaire.`,
      14. MESSAGE D'ACCUEIL (bulle de discussion) + WHATSAPP
      ========================================================= */
   // ⚠️ Remplacez par votre numéro WhatsApp (format international, sans + ni espaces) :
-  const WHATSAPP = "33600000000";
+  const WHATSAPP = "33766914597";
   const waLink = txt => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(txt)}`;
   $("#chatWa").href = waLink("Bonjour, je souhaite un devis pour mon site internet.");
   $("#contactWa").href = waLink("Bonjour, j'ai un projet de site internet et je souhaite en discuter.");
