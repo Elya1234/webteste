@@ -185,7 +185,11 @@
     err.className = "dv-error ok"; err.textContent = "Votre demande est prête. Envoyez-la, nous répondons sous 24 h.";
     return true;
   }
-  ["#sendWa", "#sendMail"].forEach(sel => $(sel).addEventListener("click", e => { if (!validate()) e.preventDefault(); }));
+  ["#sendWa", "#sendMail"].forEach(sel => $(sel).addEventListener("click", e => {
+    if (!validate()) { e.preventDefault(); return; }
+    done();
+    guideText.innerHTML = "<b>Merci !</b> Votre demande part. On vous répond sous 24 h avec votre devis exact.";
+  }));
   $("#copyRecap").addEventListener("click", () => {
     const txt = message(state(), price(state()));
     const done = () => { $("#sendErr").className = "dv-error ok"; $("#sendErr").textContent = "Récapitulatif copié."; };
@@ -201,8 +205,42 @@
 
   /* ---------- navigation entre étapes ---------- */
   const stepsEl = $$(".dv-step"), progBtns = $$("#progress button");
+  /* ---------- le cube guide tourne et parle ---------- */
+  const guideCube = $("#guideCube"), guideText = $("#guideText");
+  const narrow = matchMedia("(max-width:1000px)").matches;
+  const where = narrow ? "juste en dessous" : "à droite";
+  const SAY = [
+    `<b>Étape 1 sur 5.</b> Quel site voulez-vous ? Choisissez une carte, puis écrivez le nom de votre entreprise : il apparaît ${where}, dans l'aperçu.`,
+    `<b>Étape 2 sur 5.</b> Cochez les pages de votre site. Elles s'ajoutent au menu de l'aperçu, ${where}.`,
+    `<b>Étape 3 sur 5.</b> Choisissez l'ambiance de votre site. Tout l'aperçu change de couleurs et de style.`,
+    `<b>Étape 4 sur 5.</b> Ajoutez les options utiles. Le prix se met à jour à chaque clic.`,
+    `<b>Dernière étape.</b> Laissez votre nom et votre email, puis envoyez : on vous répond sous 24 h avec votre devis exact.`,
+  ];
+  const FACES = ["rotateY(0deg)", "rotateY(-90deg)", "rotateY(-180deg)", "rotateY(-270deg)", "rotateX(-90deg)"];
+  let sayTimer;
+  function say(i) {
+    clearTimeout(sayTimer);
+    guideCube.style.transform = `rotateX(-16deg) rotateY(22deg) ${FACES[i]}`;
+    const html = SAY[i];
+    if (reduce) { guideText.innerHTML = html; return; }
+    // écrit le message comme quelqu'un qui tape (les balises sont ajoutées d'un bloc)
+    const parts = html.split(/(<[^>]+>)/).filter(Boolean);
+    let out = "", pi = 0, ci = 0;
+    (function type() {
+      if (pi >= parts.length) { guideText.innerHTML = out; return; }
+      const p = parts[pi];
+      if (p.startsWith("<")) { out += p; pi++; return type(); }
+      out += p.slice(ci, ci + 2); ci += 2;
+      if (ci >= p.length) { pi++; ci = 0; }
+      guideText.innerHTML = out + '<span class="caret"></span>';
+      sayTimer = setTimeout(type, 16);
+    })();
+  }
+  function done() { guideCube.style.transform = "rotateX(-16deg) rotateY(22deg) rotateX(90deg)"; }
+
   function go(n) {
     step = Math.max(0, Math.min(stepsEl.length - 1, n));
+    say(step);
     stepsEl.forEach((el, i) => el.classList.toggle("on", i === step));
     progBtns.forEach((b, i) => { b.classList.toggle("on", i === step); b.classList.toggle("done", i < step); });
     $("#progressBar").style.width = ((step + 1) / stepsEl.length) * 100 + "%";
@@ -232,4 +270,69 @@
 
   update();
   go(0);
+
+  /* ---------- grand cube : on peut le faire tourner ---------- */
+  const big = $("#bigCube"), bigWrap = $("#bigCubeWrap");
+  let drag = null, rx = -20, ry = 0, resume;
+  bigWrap.addEventListener("pointerdown", e => {
+    drag = { x: e.clientX, y: e.clientY, rx, ry };
+    big.classList.remove("c3d--spin");
+    big.style.transition = "none";
+    bigWrap.setPointerCapture(e.pointerId);
+    clearTimeout(resume);
+  });
+  addEventListener("pointermove", e => {
+    if (!drag) return;
+    ry = drag.ry + (e.clientX - drag.x) * .6;
+    rx = drag.rx - (e.clientY - drag.y) * .6;
+    big.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+  addEventListener("pointerup", () => {
+    if (!drag) return;
+    drag = null;
+    big.style.transition = "";
+    resume = setTimeout(() => { big.style.transform = ""; big.classList.add("c3d--spin"); rx = -20; ry = 0; }, 4000);
+  });
+
+  /* ---------- fond : points connectés ---------- */
+  const cv = $("#dvNet"), cx = cv.getContext("2d");
+  let W, H, pts = [];
+  const mouse = { x: -999, y: -999 };
+  const acc = () => getComputedStyle(document.documentElement).getPropertyValue("--c1").trim().replace(/\s+/g, "") || "92,148,255";
+  let c1 = acc();
+  function fit() {
+    const d = Math.min(devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0);
+    pts = Array.from({ length: Math.round(Math.min(80, W * H / 18000)) }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25 }));
+  }
+  function draw() {
+    cx.clearRect(0, 0, W, H);
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i];
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < 0 || a.x > W) a.vx *= -1;
+      if (a.y < 0 || a.y > H) a.vy *= -1;
+      for (let k = i + 1; k < pts.length; k++) {
+        const b = pts[k], dd = Math.hypot(a.x - b.x, a.y - b.y);
+        if (dd < 130) { cx.strokeStyle = `rgba(${c1},${(1 - dd / 130) * .22})`; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); cx.stroke(); }
+      }
+      const dm = Math.hypot(mouse.x - a.x, mouse.y - a.y);
+      if (dm < 170) { cx.strokeStyle = `rgba(${c1},${(1 - dm / 170) * .45})`; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(mouse.x, mouse.y); cx.stroke(); }
+      cx.fillStyle = `rgba(${c1},.75)`; cx.beginPath(); cx.arc(a.x, a.y, 1.3, 0, 6.283); cx.fill();
+    }
+  }
+  fit(); addEventListener("resize", fit);
+  addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  if (reduce) draw(); else (function loop() { draw(); requestAnimationFrame(loop); })();
+
+  /* ---------- aperçu : léger relief qui suit la souris ---------- */
+  const prev = $(".dv-preview");
+  if (!reduce && matchMedia("(hover:hover)").matches) {
+    prev.addEventListener("mousemove", e => {
+      const r = prev.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+      prev.style.transform = `perspective(1200px) rotateY(${px * 5}deg) rotateX(${-py * 5}deg)`;
+    });
+    prev.addEventListener("mouseleave", () => { prev.style.transform = ""; });
+  }
 })();

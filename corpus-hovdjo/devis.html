@@ -16,7 +16,7 @@
 </head>
 <body class="dv-body">
 
-<div class="dv-bg" aria-hidden="true"></div>
+<div class="dv-bg" aria-hidden="true"><canvas id="dvNet"></canvas></div>
 
 <header class="dv-nav">
   <a href="index.html" class="logo" aria-label="Corpus Hovdjo, retour au site">
@@ -27,15 +27,56 @@
 </header>
 
 <main class="dv">
-  <header class="dv-head">
-    <p class="kicker">$ ./devis --sur-mesure</p>
-    <h1>Construisez votre site,<br><span class="grad">voyez-le prendre forme.</span></h1>
-    <p class="section__lead">Choisissez vos options : l'aperçu se dessine en direct et le prix se calcule instantanément. À partir de <b>800&nbsp;€</b>, avec un suivi de A à Z.</p>
+  <header class="dv-hero">
+    <div class="dv-hero__txt">
+      <p class="kicker">$ ./creer --mon-site</p>
+      <h1>Créez votre site,<br><span class="grad">on s'occupe du reste.</span></h1>
+      <p class="section__lead">Votre devis en 2 minutes, <b>à partir de 800&nbsp;€</b>. Gratuit et sans engagement.</p>
+      <ol class="dv-how">
+        <li><b>1</b><span><strong>Choisissez</strong> votre type de site, vos pages et votre style.</span></li>
+        <li><b>2</b><span><strong>Regardez</strong> votre site se construire en direct, avec son prix.</span></li>
+        <li><b>3</b><span><strong>Envoyez</strong> votre demande : réponse sous 24&nbsp;h.</span></li>
+      </ol>
+      <a href="#builder" class="btn btn--glow dv-start">Commencer mon site →</a>
+    </div>
+    <div class="dv-hero__stage" aria-hidden="true">
+      <div class="c3d-wrap c3d-wrap--big" id="bigCubeWrap">
+        <div class="c3d c3d--spin" id="bigCube">
+          <span class="f1"><small>site</small>Vitrine</span>
+          <span class="f2"><small>site</small>Boutique</span>
+          <span class="f3"><small>option</small>Réservation</span>
+          <span class="f4"><small>option</small>Design</span>
+          <span class="f5"><small>inclus</small>SEO</span>
+          <span class="f6"><small>dès</small>800 €</span>
+        </div>
+        <div class="c3d-shadow"></div>
+      </div>
+      <span class="dv-orbit dv-orbit--1">sur mesure</span>
+      <span class="dv-orbit dv-orbit--2">responsive</span>
+      <span class="dv-orbit dv-orbit--3">suivi A → Z</span>
+      <p class="dv-hero__hint">Faites tourner le cube ↻</p>
+    </div>
   </header>
 
-  <div class="dv-grid">
+  <div class="dv-grid" id="builder">
     <!-- ================= ÉTAPES ================= -->
     <section class="dv-steps" aria-label="Configuration du site">
+      <div class="dv-guide">
+        <div class="c3d-wrap c3d-wrap--guide" aria-hidden="true">
+          <div class="c3d" id="guideCube">
+            <span class="f1"><small>étape 1</small>Projet</span>
+            <span class="f2"><small>étape 2</small>Pages</span>
+            <span class="f3"><small>étape 3</small>Style</span>
+            <span class="f4"><small>étape 4</small>Options</span>
+            <span class="f5"><small>étape 5</small>Envoi</span>
+            <span class="f6"><small>prêt</small>✓</span>
+          </div>
+        </div>
+        <div class="dv-say" role="status" aria-live="polite">
+          <span class="dv-say__who">Votre guide · Corpus Hovdjo</span>
+          <p id="guideText"></p>
+        </div>
+      </div>
       <ol class="dv-progress" id="progress">
         <li><button type="button" data-go="0" class="on"><span>1</span>Projet</button></li>
         <li><button type="button" data-go="1"><span>2</span>Pages</button></li>

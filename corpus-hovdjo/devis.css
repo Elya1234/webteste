@@ -234,3 +234,71 @@
 @media (prefers-reduced-motion:reduce){.wa-float::before{display:none}}
 
 [hidden]{display:none!important}
+
+
+/* =========================================================
+   MONDE « CRÉATION » : cubes 3D, guide qui parle, fond animé
+   ========================================================= */
+.dv-bg canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.55}
+
+/* hero */
+.dv-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;margin-bottom:56px;min-height:min(560px,70vh)}
+.dv-hero__txt{animation:dvIn 1s var(--soft,ease) both}
+.dv-hero h1{font-size:clamp(36px,5.2vw,64px);margin:6px 0 10px}
+.dv-hero .section__lead b{color:var(--text)}
+.dv-how{list-style:none;margin:28px 0 30px;padding:0;display:flex;flex-direction:column;gap:12px}
+.dv-how li{display:flex;align-items:center;gap:14px;font-size:16px;color:var(--muted);animation:dvIn .9s var(--soft,ease) both}
+.dv-how li:nth-child(1){animation-delay:.25s}.dv-how li:nth-child(2){animation-delay:.4s}.dv-how li:nth-child(3){animation-delay:.55s}
+.dv-how b{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--mono);font-size:14px;color:var(--on-accent);background:linear-gradient(135deg,var(--cyan),var(--violet))}
+.dv-how strong{color:var(--text);font-weight:600}
+.dv-start{width:auto}
+.dv-hero__stage{position:relative;height:420px;display:grid;place-items:center;animation:dvIn 1.2s .2s var(--soft,ease) both}
+.dv-hero__stage::before{content:"";position:absolute;width:420px;height:420px;max-width:100%;border-radius:50%;background:radial-gradient(circle,rgba(var(--c2),.18),transparent 65%);filter:blur(10px)}
+.dv-hero__hint{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.dv-orbit{position:absolute;padding:7px 14px;border-radius:99px;border:1px solid var(--line-2);background:rgba(16,20,31,.8);backdrop-filter:blur(8px);font-family:var(--mono);font-size:12px;color:var(--text);animation:float 7s ease-in-out infinite}
+.dv-orbit--1{top:14%;left:4%}
+.dv-orbit--2{top:22%;right:2%;animation-delay:-2.3s}
+.dv-orbit--3{bottom:16%;left:10%;animation-delay:-4.6s}
+@media (max-width:1000px){.dv-hero{grid-template-columns:1fr;min-height:0}.dv-hero__stage{height:340px}}
+@media (max-width:480px){.dv-hero__stage{height:300px}.dv-orbit{font-size:11px}.dv-orbit--2{right:0}}
+
+/* cube générique */
+.c3d-wrap{--s:150px;position:relative;width:var(--s);height:var(--s);perspective:1000px;flex:none}
+.c3d-wrap--big{--s:min(230px,52vw);cursor:grab;touch-action:none}
+.c3d-wrap--big:active{cursor:grabbing}
+.c3d-wrap--guide{--s:92px}
+.c3d{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1.2s cubic-bezier(.65,0,.25,1)}
+.c3d--spin{animation:c3dSpin 20s linear infinite}
+@keyframes c3dSpin{from{transform:rotateX(-20deg) rotateY(0)}50%{transform:rotateX(18deg) rotateY(180deg)}to{transform:rotateX(-20deg) rotateY(360deg)}}
+.c3d span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-family:var(--sans);font-weight:700;font-size:calc(var(--s) * .15);color:var(--text);letter-spacing:-.01em;
+  border:1px solid rgba(var(--c1),.5);background:linear-gradient(140deg,rgba(var(--c1),.16),rgba(var(--c2),.12));
+  box-shadow:inset 0 0 calc(var(--s) * .25) rgba(var(--c1),.14);backdrop-filter:blur(2px)}
+.c3d span small{font-family:var(--mono);font-weight:500;font-size:max(9px,calc(var(--s) * .07));letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+.c3d .f1{transform:translateZ(calc(var(--s) / 2))}
+.c3d .f2{transform:rotateY(90deg) translateZ(calc(var(--s) / 2))}
+.c3d .f3{transform:rotateY(180deg) translateZ(calc(var(--s) / 2))}
+.c3d .f4{transform:rotateY(-90deg) translateZ(calc(var(--s) / 2))}
+.c3d .f5{transform:rotateX(90deg) translateZ(calc(var(--s) / 2))}
+.c3d .f6{transform:rotateX(-90deg) translateZ(calc(var(--s) / 2))}
+.c3d-shadow{position:absolute;left:12%;right:12%;bottom:calc(var(--s) * -.45);height:18px;border-radius:50%;background:radial-gradient(rgba(var(--c1),.35),transparent 70%);filter:blur(6px);animation:shadowPulse 5s ease-in-out infinite}
+
+/* guide qui parle */
+.dv-guide{display:flex;align-items:center;gap:22px;margin-bottom:24px;padding:18px 18px 18px 26px;border-radius:20px;border:1px solid var(--line-2);
+  background:radial-gradient(circle at 0% 50%,rgba(var(--c1),.12),transparent 55%),rgba(10,13,20,.55)}
+.c3d-wrap--guide{animation:float 6s ease-in-out infinite}
+.dv-guide .c3d span{font-size:15px}
+.dv-guide .c3d span small{font-size:8.5px}
+.dv-say{position:relative;flex:1;min-width:0;padding:14px 16px;border-radius:16px 16px 16px 4px;background:var(--bg-3);border:1px solid var(--line)}
+.dv-say::before{content:"";position:absolute;left:-7px;bottom:12px;width:12px;height:12px;background:var(--bg-3);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.dv-say__who{display:block;font-family:var(--mono);font-size:11px;color:var(--green);margin-bottom:4px}
+.dv-say p{margin:0;font-size:15px;line-height:1.55;min-height:3.1em}
+.dv-say p b{color:var(--cyan);font-weight:600}
+.dv-say p .caret{display:inline-block;width:2px;height:1em;margin-left:2px;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@media (max-width:560px){.dv-guide{flex-direction:column;align-items:flex-start;padding:18px}.dv-say::before{left:24px;top:-7px;bottom:auto;transform:rotate(135deg)}.c3d-wrap--guide{margin-left:12px}}
+
+/* aperçu en léger relief 3D */
+.dv-preview{transform-style:preserve-3d;transition:transform .8s var(--soft,ease)}
+@media (prefers-reduced-motion:reduce){.c3d--spin{animation:none}.c3d{transition:none}}
+/* faces opaques : plus de texte vu à l'envers à travers le cube */
+.c3d span{background:linear-gradient(140deg,rgba(var(--c1),.24),rgba(var(--c2),.16)),#111726;backdrop-filter:none;backface-visibility:hidden;-webkit-backface-visibility:hidden}
