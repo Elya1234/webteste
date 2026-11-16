@@ -322,7 +322,7 @@
 
     // Annonces
     h += '<section class="glass sd-col sd-ann"><h2 class="serif gold-text">Annonces <span class="hebrew">הודעות</span></h2><div class="hair"></div>' +
-      (CFG.announcements.length ? "<ul>" + CFG.announcements.slice(0, 3).map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>"
+      (CFG.announcements.length ? "<ul>" + CFG.announcements.slice(0, 5).map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>"
                                 : '<div class="sd-empty">Aucune annonce pour le moment</div>') + "</section>";
 
     // Pied
@@ -341,6 +341,9 @@
     // beaucoup d'offices : la liste rétrécit jusqu'à tenir dans le cadre
     var groups = stage.querySelector(".sd-groups");
     for (var fs = 11; fs > 6 && groups.scrollHeight > groups.clientHeight + 1; fs -= 0.25) groups.style.fontSize = (fs - 0.25) + "px";
+    // beaucoup d'annonces : le texte rétrécit jusqu'à tenir dans le cadre
+    var ann = stage.querySelector(".sd-ann"), annList = ann && ann.querySelector("ul");
+    if (annList) for (var as = 22; as > 14 && ann.scrollHeight > ann.clientHeight + 1; as -= 1) annList.style.fontSize = (as - 1) + "px";
   }
   function clockHtml(np) { return pad(np.h) + ":" + pad(np.m) + (CFG.showSeconds ? '<span class="sd-sec">:' + pad(np.s) + "</span>" : ""); }
   function tile(label, he, item, tz) {
