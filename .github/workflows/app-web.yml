@@ -1,13 +1,11 @@
-# Site de l'application (version web) : construit et publié sur GitHub Pages à chaque changement de app/ sur main.
+# Site de l'application (version web, utile plus tard pour le retour après paiement) : publié sur GitHub Pages.
 # Réglage à faire une fois : Settings › Pages › Source : « GitHub Actions ».
 # Quand Supabase sera prêt : Settings › Secrets and variables › Actions › Variables : VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_WEB_URL
 # (ce ne sont pas des secrets : la clé « anon » est faite pour être dans l'application).
 name: Site de l'application
 
+# Lancement à la main seulement (onglet Actions), tant que la version web n'est pas utilisée.
 on:
-  push:
-    branches: [main]
-    paths: ["app/**", ".github/workflows/app-web.yml"]
   workflow_dispatch:
 
 permissions:
