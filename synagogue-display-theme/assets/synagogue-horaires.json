@@ -1,5 +1,5 @@
 {
- "source": "Feuille des horaires du 26/09 au 23/10/2026",
+ "source": "Feuilles des horaires du 26/09 au 23/10/2026 et du 23/10 au 11/12/2026",
  "days": [
   {
    "date": "2026-09-26",
@@ -569,11 +569,1010 @@
    "chaharit": {
     "times": [
      "07:00"
-    ]
+    ],
+    "note": "Début Talith & Tefilines à 7h21"
    },
    "minha": {
     "times": [
      "18:25"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-10-24",
+   "title": "Parachat Lekha-Lekha",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Début Talith à 7h22"
+   },
+   "minha": {
+    "times": [
+     "17:50"
+    ],
+    "note": "Cours du Rav 17h05 · Séoudat Chélichit de 18h25 à 18h40 · Chiour mixte 18h45"
+   },
+   "arvit": {
+    "times": [
+     "19:27"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "19:32"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-10-25",
+   "title": "Heure d'hiver",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 6h24"
+   },
+   "minha": {
+    "times": [
+     "17:25"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:42"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-26",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h25"
+   },
+   "minha": {
+    "times": [
+     "17:20"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:40"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-27",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h26"
+   },
+   "minha": {
+    "times": [
+     "17:20"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:38"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-28",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h28"
+   },
+   "minha": {
+    "times": [
+     "17:20"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:37"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-29",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h29"
+   },
+   "minha": {
+    "times": [
+     "17:15"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:35"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-30",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h31"
+   },
+   "minha": {
+    "times": [
+     "17:15"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-10-31",
+   "title": "Parachat Vayèra",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Début Talith à 6h32"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ],
+    "note": "Séoudat Chélichit de 17h10 à 17h25 · Chiour mixte 17h30"
+   },
+   "arvit": {
+    "times": [
+     "18:15"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "18:21"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-11-01",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 6h34"
+   },
+   "minha": {
+    "times": [
+     "17:10"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:30"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h35"
+   },
+   "minha": {
+    "times": [
+     "17:10"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:28"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-03",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h37"
+   },
+   "minha": {
+    "times": [
+     "17:10"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:27"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-04",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h38"
+   },
+   "minha": {
+    "times": [
+     "17:05"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:25"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-05",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h39"
+   },
+   "minha": {
+    "times": [
+     "17:05"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:24"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-06",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h41"
+   },
+   "minha": {
+    "times": [
+     "17:05"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-11-07",
+   "title": "Parachat Hayè-Sarah · Bénédiction du mois",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Début Talith à 6h42"
+   },
+   "minha": {
+    "times": [
+     "16:25"
+    ],
+    "note": "Séoudat Chélichit de 17h00 à 17h15 · Chiour mixte 17h20"
+   },
+   "arvit": {
+    "times": [
+     "18:05"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "18:11"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-11-08",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 6h44"
+   },
+   "minha": {
+    "times": [
+     "17:00"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:19"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-09",
+   "title": "Ce soir c'est Roch Hodech",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h45"
+   },
+   "minha": {
+    "times": [
+     "17:00"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:18"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-10",
+   "title": "1er jour de Roch Hodech",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h46"
+   },
+   "minha": {
+    "times": [
+     "17:00"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:16"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-11",
+   "title": "2e jour de Roch Hodech",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 6h48"
+   },
+   "minha": {
+    "times": [
+     "17:00"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:15"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-12",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h49"
+   },
+   "minha": {
+    "times": [
+     "16:55"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:14"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-13",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h51"
+   },
+   "minha": {
+    "times": [
+     "16:55"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-11-14",
+   "title": "Parachat Toledot",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Début Talith à 6h52"
+   },
+   "minha": {
+    "times": [
+     "16:15"
+    ],
+    "note": "Séoudat Chélichit de 16h50 à 17h05 · Chiour mixte 17h10"
+   },
+   "arvit": {
+    "times": [
+     "17:57"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "18:03"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-11-15",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 6h53"
+   },
+   "minha": {
+    "times": [
+     "16:50"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:10"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-16",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h55"
+   },
+   "minha": {
+    "times": [
+     "16:50"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:09"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-17",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h56"
+   },
+   "minha": {
+    "times": [
+     "16:50"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:08"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-18",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 6h57"
+   },
+   "minha": {
+    "times": [
+     "16:45"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:06"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-19",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 6h59"
+   },
+   "minha": {
+    "times": [
+     "16:45"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:05"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-20",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h00"
+   },
+   "minha": {
+    "times": [
+     "16:45"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-11-21",
+   "title": "Parachat Vayètsé",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Début Talith à 7h01"
+   },
+   "minha": {
+    "times": [
+     "16:05"
+    ],
+    "note": "Séoudat Chélichit de 16h40 à 16h55 · Chiour mixte 17h00"
+   },
+   "arvit": {
+    "times": [
+     "17:50"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "17:56"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-11-22",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 7h03"
+   },
+   "minha": {
+    "times": [
+     "16:45"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:02"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-23",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 7h04"
+   },
+   "minha": {
+    "times": [
+     "16:45"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:02"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-24",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h05"
+   },
+   "minha": {
+    "times": [
+     "16:40"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:01"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-25",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h06"
+   },
+   "minha": {
+    "times": [
+     "16:40"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "17:00"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-26",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 7h08"
+   },
+   "minha": {
+    "times": [
+     "16:40"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:59"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-27",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h09"
+   },
+   "minha": {
+    "times": [
+     "16:40"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-11-28",
+   "title": "Parachat Vayichlah",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Début Talith à 7h10"
+   },
+   "minha": {
+    "times": [
+     "16:05"
+    ],
+    "note": "Séoudat Chélichit de 16h40 à 16h55 · Chiour mixte 17h00"
+   },
+   "arvit": {
+    "times": [
+     "17:45"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "17:51"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-11-29",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 7h11"
+   },
+   "minha": {
+    "times": [
+     "16:40"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:57"
+    ]
+   }
+  },
+  {
+   "date": "2026-11-30",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 7h12"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:56"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-01",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h14"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:56"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-02",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h15"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:55"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-03",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 7h16"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:55"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-04",
+   "title": "1er allumage de Hanouka · On allume les lumières de Hanouka et ensuite celles de Chabbat",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h17"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [],
+    "text": "Suivi"
+   }
+  },
+  {
+   "date": "2026-12-05",
+   "title": "Parachat Vayèchev · Hanouka 1er jour · Bénédiction du mois · À partir de ce soir on dit Barekh Alénou dans la Amida",
+   "chaharit": {
+    "times": [
+     "07:00",
+     "08:45"
+    ],
+    "note": "Début Talith à 7h18"
+   },
+   "minha": {
+    "times": [
+     "16:00"
+    ],
+    "note": "Séoudat Chélichit de 16h35 à 16h50 · Chiour mixte 16h55"
+   },
+   "arvit": {
+    "times": [
+     "17:42"
+    ]
+   },
+   "sortie": {
+    "times": [
+     "17:49"
+    ]
+   },
+   "sortieLabel": "Sortie de Chabbat"
+  },
+  {
+   "date": "2026-12-06",
+   "title": "2e jour de Hanouka · Ce soir on allume à partir de 17h39",
+   "chaharit": {
+    "times": [
+     "07:30"
+    ],
+    "note": "Début Talith & Tefilines à 7h19"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:54"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-07",
+   "title": "3e jour de Hanouka · Ce soir on allume à partir de 17h39",
+   "chaharit": {
+    "times": [
+     "06:45"
+    ],
+    "note": "Début Talith & Tefilines à 7h20"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:54"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-08",
+   "title": "4e jour de Hanouka · Ce soir on allume à partir de 17h39",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h21"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:54"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-09",
+   "title": "5e jour de Hanouka · Ce soir on allume à partir de 17h39 · Ce soir c'est Roch Hodech",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h22"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:53"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-10",
+   "title": "6e jour de Hanouka · 1er jour de Roch Hodech · Ce soir on allume à partir de 17h39",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h23"
+   },
+   "minha": {
+    "times": [
+     "16:35"
+    ]
+   },
+   "arvit": {
+    "times": [
+     "16:53"
+    ]
+   }
+  },
+  {
+   "date": "2026-12-11",
+   "title": "7e jour de Hanouka · 2e jour de Roch Hodech · Ce soir on allume à partir de 17h39 · On allume les lumières de Hanouka et ensuite celles de Chabbat",
+   "chaharit": {
+    "times": [
+     "07:00"
+    ],
+    "note": "Début Talith & Tefilines à 7h24"
+   },
+   "minha": {
+    "times": [
+     "16:35"
     ]
    },
    "arvit": {
