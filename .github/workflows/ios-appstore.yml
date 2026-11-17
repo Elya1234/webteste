@@ -45,6 +45,32 @@ jobs:
           mkdir -p "$RUNNER_TEMP/keys"
           printf '%s\n' "$P8" > "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
 
+      - name: Vérification de la clé auprès d'Apple
+        env:
+          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
+          TEAM: ${{ vars.APPLE_TEAM_ID }}
+        run: |
+          # Explique un refus d'Apple sans jamais afficher la clé : longueur des codes, forme du fichier, réponse de l'API.
+          echo "Team ID : ${#TEAM} caractères (attendu 10) ; Key ID : ${#KEY_ID} (attendu 10) ; Issuer ID : ${#ISSUER} (attendu 36)"
+          F="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
+          head -1 "$F" | grep -q "BEGIN PRIVATE KEY" && echo "Fichier de clé : début correct" || echo "::error::Le secret APPLE_API_KEY_P8 ne commence pas par -----BEGIN PRIVATE KEY-----"
+          tail -1 "$F" | grep -q "END PRIVATE KEY" && echo "Fichier de clé : fin correcte" || echo "::error::Le secret APPLE_API_KEY_P8 ne finit pas par -----END PRIVATE KEY-----"
+          python3 -m pip install --quiet --break-system-packages pyjwt cryptography
+          python3 - "$F" "$KEY_ID" "$ISSUER" <<'PY'
+          import json, sys, time, urllib.request, urllib.error, jwt
+          f, kid, iss = sys.argv[1:4]
+          tok = jwt.encode({"iss": iss, "iat": int(time.time()), "exp": int(time.time()) + 600, "aud": "appstoreconnect-v1"},
+                           open(f).read(), algorithm="ES256", headers={"kid": kid, "typ": "JWT"})
+          req = urllib.request.Request("https://api.appstoreconnect.apple.com/v1/apps?limit=5", headers={"Authorization": "Bearer " + tok})
+          try:
+              r = json.load(urllib.request.urlopen(req))
+              print("Apple accepte la clé. Apps du compte :", [a["attributes"]["bundleId"] for a in r.get("data", [])])
+          except urllib.error.HTTPError as e:
+              print("::error::Apple refuse la clé (HTTP %s) : %s" % (e.code, e.read().decode()[:600]))
+              sys.exit(1)
+          PY
+
       - name: Fabrication et signature (archive)
         working-directory: app/ios/App
         env:
