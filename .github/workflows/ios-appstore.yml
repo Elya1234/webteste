@@ -2,7 +2,7 @@
 # Lancement : onglet Actions › « Application iPhone (App Store) » › Run workflow.
 # Secrets (Settings › Secrets and variables › Actions › Secrets) :
 #   APPLE_API_KEY_P8      contenu complet du fichier AuthKey_XXXXXXXXXX.p8
-#   APPLE_API_KEY_ID      Key ID de la clé (10 caractères)
+#   (Key ID : pas secret, écrit ci-dessous dans le fichier ; variable APPLE_API_KEY_ID pour le changer)
 #   APPLE_API_ISSUER_ID   Issuer ID (en haut de la page des clés)
 # Variable (onglet Variables) : APPLE_TEAM_ID (Team ID, 10 caractères). Quand Supabase sera prêt : VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_WEB_URL.
 name: Application iPhone (App Store)
@@ -39,7 +39,7 @@ jobs:
       - name: Clé App Store Connect
         env:
           P8: ${{ secrets.APPLE_API_KEY_P8 }}
-          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
         run: |
           test -n "$P8" -a -n "$KEY_ID" || { echo "::error::Secrets APPLE_API_KEY_P8 / APPLE_API_KEY_ID manquants"; exit 1; }
           mkdir -p "$RUNNER_TEMP/keys"
@@ -47,7 +47,7 @@ jobs:
 
       - name: Vérification de la clé auprès d'Apple
         env:
-          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
           ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
           TEAM: ${{ vars.APPLE_TEAM_ID }}
         run: |
@@ -74,7 +74,7 @@ jobs:
       - name: Fabrication et signature (archive)
         working-directory: app/ios/App
         env:
-          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
           ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
           TEAM: ${{ vars.APPLE_TEAM_ID }}
         run: |
@@ -88,7 +88,7 @@ jobs:
       - name: Envoi vers App Store Connect
         working-directory: app/ios/App
         env:
-          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
           ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
           TEAM: ${{ vars.APPLE_TEAM_ID }}
         run: |
