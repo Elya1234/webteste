@@ -183,3 +183,10 @@ select.sd-in option { color: #111; }
 .sd-admin .sd-save-top { margin: 4px 0 14px; }
 .sd-bar { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 .sd-admin { padding-bottom: 200px; }
+/* Administration : feuille des horaires (PDF) */
+.sd-upload { border-color: rgba(217,191,140,.6); }
+.sd-sched { max-height: 420px; overflow: auto; margin: 8px 0 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); }
+.sd-sched table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sd-sched th { position: sticky; top: 0; background: #0a1633; color: var(--gold); text-align: left; padding: 6px; font-weight: 600; }
+.sd-sched td { padding: 6px; border-top: 1px solid rgba(255,255,255,.07); vertical-align: top; }
+.sd-sched small { opacity: .75; }

@@ -169,12 +169,19 @@
   /* Calendrier des offices (assets/synagogue-horaires.json) : prioritaire sur les horaires de la semaine type */
   var K_SCHED = "sd.schedule.v1";
   var schedule = read(K_SCHED);
+  // Fichier des horaires du site + feuille déposée en PDF depuis l'administration (base Google, prioritaire)
   function loadSchedule() {
     if (!CFG.scheduleUrl) return;
-    fetch(CFG.scheduleUrl, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (j) {
-      var by = {}; (j.days || []).forEach(function (d) { by[d.date] = d; });
+    var getJ = function (u) { return fetch(u, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); };
+    var remoteSched = BASE_CFG.remoteUrl ? getJ(BASE_CFG.remoteUrl + (BASE_CFG.remoteUrl.indexOf("?") < 0 ? "?" : "&") + "what=schedule&t=" + Date.now())
+      .then(function (j) { return j && j.ok && j.schedule ? j.schedule : null; }, function () { return undefined; }) : Promise.resolve(null);
+    Promise.all([getJ(CFG.scheduleUrl).catch(function () { return undefined; }), remoteSched]).then(function (r) {
+      if (r[0] === undefined && r[1] === undefined) return; // hors connexion : on garde la copie locale
+      var by = {};
+      (r[0] ? r[0].days || [] : []).forEach(function (d) { by[d.date] = d; });
+      (r[1] ? r[1].days || [] : []).forEach(function (d) { by[d.date] = d; });
       schedule = { url: CFG.scheduleUrl, byDate: by }; write(K_SCHED, schedule); render(true);
-    }).catch(function () { /* hors connexion : on garde la copie locale */ });
+    });
   }
   if (schedule && schedule.url !== CFG.scheduleUrl) schedule = null;
   var SROWS = [["chaharit", "Chaharit", "שחרית"], ["minha", "Minha", "מנחה"], ["arvit", "Arvit", "ערבית"], ["sortie", "", ""]];
@@ -395,11 +402,14 @@
     else if (!schedule || schedule.url !== CFG.scheduleUrl) loadSchedule();
     render(true);
   }
+  var lastScheduleStamp = null;
   function checkRemote() {
     if (!BASE_CFG.remoteUrl) return;
     fetch(BASE_CFG.remoteUrl + (BASE_CFG.remoteUrl.indexOf("?") < 0 ? "?" : "&") + "t=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.ok) return;
+        // nouvelle feuille des horaires déposée depuis l'administration
+        if (j.scheduleUpdated && j.scheduleUpdated !== lastScheduleStamp) { if (lastScheduleStamp !== null) loadSchedule(); lastScheduleStamp = j.scheduleUpdated; }
         if (JSON.stringify(j.settings || null) !== JSON.stringify(remoteSettings || null)) {
           try { localStorage.setItem(K_REMOTE, JSON.stringify(j.settings || null)); } catch (e) { /* page sans stockage */ }
           applyShared(j.settings || null);
