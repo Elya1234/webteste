@@ -320,7 +320,9 @@
     h += '<div class="sd-cal">';
     if (up && up.roshChodesh) h += '<div class="gold sd-rc">' + esc(clean(up.roshChodesh.title)) + '</div><div class="sd-rcd">' +
       esc(new Intl.DateTimeFormat("fr-FR", { timeZone: tz, weekday: "long", day: "numeric", month: "long" }).format(new Date(up.roshChodesh.date.slice(0, 10) + "T12:00:00Z"))) + "</div>";
-    if (up && up.holidays && up.holidays[0]) h += '<div class="sd-hol">' + esc(clean(up.holidays[0].title)) + "</div>";
+    // prochaine fête avec sa date (ex. Hanoucca : 1re bougie, vendredi 4 décembre)
+    if (up && up.holidays && up.holidays[0]) h += '<div class="sd-hol">' + esc(clean(up.holidays[0].title)) + '</div><div class="sd-rcd">' +
+      esc(new Intl.DateTimeFormat("fr-FR", { timeZone: tz, weekday: "long", day: "numeric", month: "long" }).format(new Date(up.holidays[0].date.slice(0, 10) + "T12:00:00Z"))) + "</div>";
     h += "</div></section>";
 
     // Annonces

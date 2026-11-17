@@ -98,9 +98,9 @@ a { color: inherit; }
 .sd-zmanim li { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.07); }
 .sd-zmanim li:last-child { border-bottom: 0; }
 .sd-zl { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-.sd-zfr { font-size: 20px; line-height: 1; white-space: nowrap; }
-.sd-zhe { font-size: 21px; color: var(--gold); opacity: .95; white-space: nowrap; direction: ltr; }
-.sd-zt { font-size: 27px; line-height: 1; }
+.sd-zfr { font-size: 22px; line-height: 1; white-space: nowrap; }
+.sd-zhe { font-size: 19px; color: var(--gold); opacity: .95; white-space: nowrap; direction: ltr; }
+.sd-zt { font-size: 30px; line-height: 1; flex: none; margin-left: 10px; }
 .sd-wait { font-size: 28px; opacity: .7; margin-top: 40px; }
 
 .sd-shabbat { right: 56px; top: 206px; width: 400px; height: 470px; padding: 20px 20px; }
@@ -109,23 +109,23 @@ a { color: inherit; }
 .sd-pbig .hebrew { font-size: 28px; margin-top: 4px; direction: ltr; }
 .sd-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .sd-tile { border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.05); padding: 12px; text-align: center; }
-.sd-tl { font-size: 14px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.sd-tl { font-size: 16px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
 .sd-tv { font-size: 42px; line-height: 1; margin: 4px 0; }
-.sd-ts { display: flex; justify-content: space-between; font-size: 15px; opacity: .75; }
+.sd-ts { display: flex; justify-content: space-between; font-size: 16px; opacity: .75; }
 .sd-ts span:first-child { text-transform: capitalize; }
 .sd-cal { margin-top: auto; text-align: center; line-height: 1.25; }
-.sd-rc { font-size: 21px; }
-.sd-rcd { font-size: 18px; opacity: .8; text-transform: capitalize; }
-.sd-hol { font-size: 19px; opacity: .85; margin-top: 4px; }
+.sd-rc { font-size: 25px; }
+.sd-rcd { font-size: 21px; opacity: .8; text-transform: capitalize; }
+.sd-hol { font-size: 23px; opacity: .95; margin-top: 8px; color: var(--gold); }
 
 .sd-ann { right: 56px; top: 696px; width: 400px; height: 222px; padding: 16px 20px; overflow: hidden; }
 .sd-ann h2 { font-size: 27px; }
 .sd-ann h2 .hebrew { font-size: 28px; }
-.sd-ann ul { font-size: 20px; line-height: 1.35; }
+.sd-ann ul { font-size: 23px; line-height: 1.35; }
 .sd-ann li { white-space: pre-line; margin-bottom: 8px; }
 .sd-empty { font-size: 22px; opacity: .55; margin-top: 32px; text-align: center; }
 
-.sd-foot { position: absolute; left: 56px; right: 56px; bottom: 8px; display: flex; justify-content: space-between; font-size: 15px; letter-spacing: .04em; color: rgba(247,242,231,.6); }
+.sd-foot { position: absolute; left: 56px; right: 56px; bottom: 8px; display: flex; justify-content: space-between; font-size: 17px; letter-spacing: .04em; color: rgba(247,242,231,.6); }
 /* Dédicace (léilouy nichmat) */
 .sd-ded { position: absolute; left: 56px; right: 56px; top: 926px; text-align: center; }
 .sd-ded .hair { width: 640px; margin: 0 auto 6px; }
