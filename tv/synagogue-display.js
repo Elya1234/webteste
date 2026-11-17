@@ -183,15 +183,30 @@
           rows.push({ id: d.date + k[0], label: k[0] === "sortie" ? (d.sortieLabel || "Sortie") : k[1], labelHe: k[2],
                       times: (c.times || []).filter(validTime), text: c.text || "", note: c.note || "", counts: k[0] !== "sortie" });
         });
-        groups.push({ title: (i === 0 ? "Aujourd'hui · " : i === 1 ? "Demain · " : "") + wdn, he: HE_DAY[dt.getUTCDay()],
+        groups.push({ date: d.date, title: (i === 0 ? "Aujourd'hui · " : i === 1 ? "Demain · " : "") + wdn, he: HE_DAY[dt.getUTCDay()],
                       sub: [d.event, d.title].filter(Boolean).join(" · "), isToday: i === 0, rows: rows });
       });
       return groups;
     }
     return GROUPS.map(function (g) {
-      return { title: g.title + (g.key === group ? " · aujourd'hui" : ""), he: g.he, sub: "", isToday: g.key === group,
+      // date du jour concerné : aujourd'hui, ou le prochain vendredi / samedi
+      var wdToday = new Date(today + "T12:00:00Z").getUTCDay(), want = g.key === "friday" ? 5 : g.key === "shabbat" ? 6 : wdToday;
+      var gdate = g.key === group ? today : addDays(today, (want - wdToday + 7) % 7 || 7);
+      return { date: gdate, title: g.title + (g.key === group ? " · aujourd'hui" : ""), he: g.he, sub: "", isToday: g.key === group,
                rows: prayers.filter(function (p) { return p.group === g.key; }).map(function (p) { return { id: p.id, label: p.label, labelHe: p.labelHe, times: p.times, counts: true }; }) };
     }).filter(function (g) { return g.rows.length; });
+  }
+
+  /* Temps de l'office, de son début à sa fin (zmanim du jour du groupe) :
+     Chaharit : Hanetz → Sof Zman Tefila (GR"A) ; Minha : Minha Guedola → Chkia ; Arvit : Tsét → Hatsot Laila.
+     Méthodes à faire valider par le Rav, comme les autres zmanim. */
+  function prayerWindow(p, date, tz) {
+    var b = state.bundle; if (!b || !b.days || !date || p.counts === false) return "";
+    var t = b.days[date] || {}, next = b.days[addDays(date, 1)] || {};
+    var key = /chaharit|chah/i.test(p.id + " " + p.label) ? "chaharit" : /minha/i.test(p.id + " " + p.label) ? "minha" : /arvit/i.test(p.id + " " + p.label) ? "arvit" : "";
+    var w = key === "chaharit" ? [t.sunrise, t.sofZmanTfilla] : key === "minha" ? [t.minchaGedola, t.sunset] : key === "arvit" ? [t.tzeit85deg, next.chatzotNight] : null;
+    if (!w || !w[0] || !w[1]) return "";
+    return '<span class="sd-pwin">De <b>' + hm(w[0], tz) + "</b> à <b>" + hm(w[1], tz) + "</b></span>";
   }
 
   var GROUPS = [{ key: "weekday", title: "Semaine", he: "חול" }, { key: "friday", title: "Vendredi", he: "ערב שבת" }, { key: "shabbat", title: "Chabbat", he: "שבת" }];
@@ -293,7 +308,8 @@
       g.rows.forEach(function (p) {
         var isNext = g.isToday && next && next.id === p.id;
         h += '<div class="sd-row ' + (isNext ? "next-glow" : "") + '"><div class="sd-rl"><div class="serif sd-plabel">' + esc(p.label) + "</div>" +
-          (p.labelHe ? '<div class="hebrew sd-phe">' + esc(p.labelHe) + "</div>" : "") +
+          // nom hébreu et temps de l'office (début → fin) sur la même ligne, pour garder les grandes tailles
+          '<div class="sd-psub">' + (p.labelHe ? '<span class="hebrew sd-phe">' + esc(p.labelHe) + "</span>" : "") + prayerWindow(p, g.date, tz) + "</div>" +
           (p.note ? '<div class="sd-pnote">' + esc(p.note) + "</div>" : "") + "</div>" +
           '<div class="num sd-ptimes">' + p.times.map(function (t) { return '<span class="' + (isNext && next.t === t ? "gold-text" : "") + '">' + t + "</span>"; }).join("") +
           (p.text ? '<span class="sd-ptext">' + esc(p.text) + "</span>" : "") + "</div></div>";
@@ -320,7 +336,9 @@
     h += '<div class="sd-cal">';
     if (up && up.roshChodesh) h += '<div class="gold sd-rc">' + esc(clean(up.roshChodesh.title)) + '</div><div class="sd-rcd">' +
       esc(new Intl.DateTimeFormat("fr-FR", { timeZone: tz, weekday: "long", day: "numeric", month: "long" }).format(new Date(up.roshChodesh.date.slice(0, 10) + "T12:00:00Z"))) + "</div>";
-    if (up && up.holidays && up.holidays[0]) h += '<div class="sd-hol">' + esc(clean(up.holidays[0].title)) + "</div>";
+    // prochaine fête avec sa date (ex. Hanoucca : 1re bougie, vendredi 4 décembre)
+    if (up && up.holidays && up.holidays[0]) h += '<div class="sd-hol">' + esc(clean(up.holidays[0].title)) + '</div><div class="sd-rcd">' +
+      esc(new Intl.DateTimeFormat("fr-FR", { timeZone: tz, weekday: "long", day: "numeric", month: "long" }).format(new Date(up.holidays[0].date.slice(0, 10) + "T12:00:00Z"))) + "</div>";
     h += "</div></section>";
 
     // Annonces

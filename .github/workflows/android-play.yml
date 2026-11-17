@@ -1,0 +1,81 @@
+# Application Android : fabrication du paquet (.aab) signé avec la clé d'envoi, puis envoi au Play Store (test interne).
+# Lancement : onglet Actions › « Application Android (Play Store) » › Run workflow.
+# Secrets : ANDROID_KEYSTORE_BASE64 (clé d'envoi, en texte), ANDROID_KEYSTORE_PASSWORD (son mot de passe),
+#           GOOGLE_PLAY_JSON (clé du compte de service Google, pour l'envoi automatique ; sans lui, le .aab est
+#           seulement disponible en téléchargement en bas de la page de la fabrication).
+# La toute première version doit être envoyée à la main dans Play Console (règle de Google), ensuite tout est automatique.
+name: Application Android (Play Store)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+      HAS_PLAY: ${{ secrets.GOOGLE_PLAY_JSON != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Site intégré à l'application
+        working-directory: app
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          VITE_WEB_URL: ${{ vars.VITE_WEB_URL }}
+        run: |
+          npm ci
+          npm run build
+          npx cap sync android
+
+      - name: Clé d'envoi
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KS" ]; then
+            printf '%s' "$KS" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          else
+            # sans la vraie clé : clé jetable, pour vérifier que la fabrication marche (paquet non envoyable)
+            echo "::warning::Secret ANDROID_KEYSTORE_BASE64 absent : paquet de vérification seulement"
+            keytool -genkeypair -keystore "$RUNNER_TEMP/upload.jks" -alias upload -keyalg RSA -keysize 2048 -validity 30 \
+              -storepass verification -keypass verification -dname "CN=Verification" -noprompt
+            echo "ANDROID_KEYSTORE_PASSWORD=verification" >> "$GITHUB_ENV"
+          fi
+
+      - name: Fabrication du paquet signé (.aab)
+        working-directory: app/android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/upload.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD || env.ANDROID_KEYSTORE_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+        run: ./gradlew --no-daemon bundleRelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beth-chalom-android-${{ github.run_number }}
+          path: app/android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Envoi au Play Store (test interne)
+        if: env.HAS_PLAY == 'true' && env.HAS_KEY == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_JSON }}
+          packageName: fr.bethchalom.app
+          releaseFiles: app/android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
+
+      - name: Nettoyage de la clé
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks"

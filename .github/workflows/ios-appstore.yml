@@ -2,7 +2,7 @@
 # Lancement : onglet Actions › « Application iPhone (App Store) » › Run workflow.
 # Secrets (Settings › Secrets and variables › Actions › Secrets) :
 #   APPLE_API_KEY_P8      contenu complet du fichier AuthKey_XXXXXXXXXX.p8
-#   APPLE_API_KEY_ID      Key ID de la clé (10 caractères)
+#   (Key ID : pas secret, écrit ci-dessous dans le fichier ; variable APPLE_API_KEY_ID pour le changer)
 #   APPLE_API_ISSUER_ID   Issuer ID (en haut de la page des clés)
 # Variable (onglet Variables) : APPLE_TEAM_ID (Team ID, 10 caractères). Quand Supabase sera prêt : VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_WEB_URL.
 name: Application iPhone (App Store)
@@ -39,30 +39,55 @@ jobs:
       - name: Clé App Store Connect
         env:
           P8: ${{ secrets.APPLE_API_KEY_P8 }}
-          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
         run: |
           test -n "$P8" -a -n "$KEY_ID" || { echo "::error::Secrets APPLE_API_KEY_P8 / APPLE_API_KEY_ID manquants"; exit 1; }
           mkdir -p "$RUNNER_TEMP/keys"
           printf '%s\n' "$P8" > "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
 
-      - name: Fabrication et signature (archive)
-        working-directory: app/ios/App
+      - name: Vérification de la clé auprès d'Apple
         env:
-          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
           ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
           TEAM: ${{ vars.APPLE_TEAM_ID }}
         run: |
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
-            -destination "generic/platform=iOS" -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER" \
-            DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
-            archive
+          # Explique un refus d'Apple sans jamais afficher la clé : longueur des codes, forme du fichier, réponse de l'API.
+          echo "Team ID : ${#TEAM} caractères (attendu 10) ; Key ID : ${#KEY_ID} (attendu 10) ; Issuer ID : ${#ISSUER} (attendu 36)"
+          F="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
+          head -1 "$F" | grep -q "BEGIN PRIVATE KEY" && echo "Fichier de clé : début correct" || echo "::error::Le secret APPLE_API_KEY_P8 ne commence pas par -----BEGIN PRIVATE KEY-----"
+          tail -1 "$F" | grep -q "END PRIVATE KEY" && echo "Fichier de clé : fin correcte" || echo "::error::Le secret APPLE_API_KEY_P8 ne finit pas par -----END PRIVATE KEY-----"
+          python3 -m pip install --quiet --break-system-packages pyjwt cryptography
+          python3 - "$F" "$KEY_ID" "$ISSUER" <<'PY'
+          import json, sys, time, urllib.request, urllib.error, jwt
+          f, kid, iss = sys.argv[1:4]
+          tok = jwt.encode({"iss": iss, "iat": int(time.time()), "exp": int(time.time()) + 600, "aud": "appstoreconnect-v1"},
+                           open(f).read(), algorithm="ES256", headers={"kid": kid, "typ": "JWT"})
+          req = urllib.request.Request("https://api.appstoreconnect.apple.com/v1/apps?limit=5", headers={"Authorization": "Bearer " + tok})
+          try:
+              r = json.load(urllib.request.urlopen(req))
+              print("Apple accepte la clé. Apps du compte :", [a["attributes"]["bundleId"] for a in r.get("data", [])])
+          except urllib.error.HTTPError as e:
+              print("::error::Apple refuse la clé (HTTP %s) : %s" % (e.code, e.read().decode()[:600]))
+              sys.exit(1)
+          PY
 
-      - name: Envoi vers App Store Connect
+      - name: Fabrication (archive, sans signature)
         working-directory: app/ios/App
         env:
-          KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          TEAM: ${{ vars.APPLE_TEAM_ID }}
+        run: |
+          # Pas de signature ici : la signature « développement » exigerait un iPhone de test enregistré.
+          # La signature App Store est faite à l'étape suivante, par Apple (certificat de distribution géré dans le cloud).
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -destination "generic/platform=iOS" -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            DEVELOPMENT_TEAM="$TEAM" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            archive
+
+      - name: Signature App Store et envoi vers App Store Connect
+        working-directory: app/ios/App
+        env:
+          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
           ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
           TEAM: ${{ vars.APPLE_TEAM_ID }}
         run: |
