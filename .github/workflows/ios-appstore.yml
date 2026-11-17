@@ -71,21 +71,20 @@ jobs:
               sys.exit(1)
           PY
 
-      - name: Fabrication et signature (archive)
+      - name: Fabrication (archive, sans signature)
         working-directory: app/ios/App
         env:
-          KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
-          ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
           TEAM: ${{ vars.APPLE_TEAM_ID }}
         run: |
+          # Pas de signature ici : la signature « développement » exigerait un iPhone de test enregistré.
+          # La signature App Store est faite à l'étape suivante, par Apple (certificat de distribution géré dans le cloud).
           xcodebuild -project App.xcodeproj -scheme App -configuration Release \
             -destination "generic/platform=iOS" -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER" \
-            DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            DEVELOPMENT_TEAM="$TEAM" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             archive
 
-      - name: Envoi vers App Store Connect
+      - name: Signature App Store et envoi vers App Store Connect
         working-directory: app/ios/App
         env:
           KEY_ID: ${{ vars.APPLE_API_KEY_ID || 'DCY9G24UA7' }}
