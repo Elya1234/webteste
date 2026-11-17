@@ -154,9 +154,12 @@
   /* Calendrier des offices (assets/synagogue-horaires.json) : prioritaire sur les horaires de la semaine type */
   var K_SCHED = "sd.schedule.v1";
   var schedule = read(K_SCHED);
+  // Feuille des horaires : la version en ligne (mise à jour chaque mois, la même que l'application), sinon le fichier du thème
+  var SCHEDULE_LIVE = "https://raw.githubusercontent.com/Elya1234/webteste/main/synagogue-display-theme/assets/synagogue-horaires.json";
+  function getSchedule(url) { return fetch(url, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
   function loadSchedule() {
     if (!CFG.scheduleUrl) return;
-    fetch(CFG.scheduleUrl, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (j) {
+    getSchedule(SCHEDULE_LIVE + "?t=" + Date.now()).catch(function () { return getSchedule(CFG.scheduleUrl); }).then(function (j) {
       var by = {}; (j.days || []).forEach(function (d) { by[d.date] = d; });
       schedule = { url: CFG.scheduleUrl, byDate: by }; write(K_SCHED, schedule); render(true);
     }).catch(function () { /* hors connexion : on garde la copie locale */ });

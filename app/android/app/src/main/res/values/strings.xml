@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Beth Chalom</string>
+    <string name="title_activity_main">Beth Chalom</string>
+    <string name="package_name">fr.bethchalom.app</string>
+    <string name="custom_url_scheme">fr.bethchalom.app</string>
+</resources>
