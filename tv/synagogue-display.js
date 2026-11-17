@@ -280,7 +280,7 @@
     var up = b ? upcoming(b.calendar, tz, now) : null;
     var loc = b ? b.location : null;
     var h = "";
-    // Événement du jour (feuille des horaires, sinon calendrier Hebcal) : affiché en grand en haut
+    // Événement du jour (feuille des horaires, sinon calendrier Hebcal) : affiché en tête des annonces
     var sd0 = schedule && schedule.byDate && schedule.byDate[today];
     var evs = sd0 ? [sd0.title, sd0.event].filter(Boolean) : [];
     if (!evs.length && b) b.calendar.forEach(function (i) {
@@ -294,9 +294,8 @@
       '<div class="serif gold-text sd-name">' + esc(CFG.name) + "</div>" +
       '<div class="sd-sub"><span class="hebrew">' + esc(CFG.nameHe) + "</span>" +
       (loc ? '<span class="sd-city">' + esc(CFG.cityLabel || loc.city) + " · " + esc(loc.country) + "</span>" : "") + "</div></div></div>" +
-      '<div class="sd-dates' + (evText ? " has-ev" : "") + '"><div class="serif sd-greg">' + esc(frenchDate(tz, now)) + "</div>" +
-      '<div class="sd-hdate"><span class="gold">' + esc(hd.fr) + '</span><span class="hebrew">' + esc(hd.he) + "</span></div>" +
-      (evText ? '<div class="next-glow sd-ev"><span>' + esc(evText) + "</span></div>" : "") + "</div>" +
+      '<div class="sd-dates"><div class="serif sd-greg">' + esc(frenchDate(tz, now)) + "</div>" +
+      '<div class="sd-hdate"><span class="gold">' + esc(hd.fr) + '</span><span class="hebrew">' + esc(hd.he) + "</span></div></div>" +
       '<div class="sd-right"><div class="num gold-text sd-clock" data-clock>' + clockHtml(np) + "</div>" +
       (up && up.parasha ? '<div class="sd-par"><span>Paracha</span><span class="serif">' + esc(parashaName(up.parasha)) + '</span><span class="hebrew">' + esc(up.parasha.hebrew) + "</span></div>" : "") +
       "</div></header><div class=\"hair sd-hair\"></div>";
@@ -347,7 +346,8 @@
 
     // Annonces
     h += '<section class="glass sd-col sd-ann"><h2 class="serif gold-text">Annonces <span class="hebrew">הודעות</span></h2><div class="hair"></div>' +
-      (CFG.announcements.length ? "<ul>" + CFG.announcements.slice(0, 5).map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>"
+      (evText || CFG.announcements.length ? "<ul>" + (evText ? '<li class="sd-ann-ev">' + esc(evText) + "</li>" : "") +
+        CFG.announcements.slice(0, 5).map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>"
                                 : '<div class="sd-empty">Aucune annonce pour le moment</div>') + "</section>";
 
     // Pied
@@ -366,9 +366,6 @@
     // beaucoup d'offices : la liste rétrécit jusqu'à tenir dans le cadre
     var groups = stage.querySelector(".sd-groups");
     for (var fs = 11; fs > 6 && groups.scrollHeight > groups.clientHeight + 1; fs -= 0.25) groups.style.fontSize = (fs - 0.25) + "px";
-    // événement du jour : le texte rétrécit jusqu'à tenir sur deux lignes
-    var ev = stage.querySelector(".sd-ev span");
-    if (ev) for (var es = 34; es > 18 && ev.parentNode.scrollHeight > ev.parentNode.clientHeight + 1; es -= 1) ev.style.fontSize = (es - 1) + "px";
     // beaucoup d'annonces : le texte rétrécit jusqu'à tenir dans le cadre
     var ann = stage.querySelector(".sd-ann"), annList = ann && ann.querySelector("ul");
     if (annList) for (var as = 22; as > 14 && ann.scrollHeight > ann.clientHeight + 1; as -= 1) annList.style.fontSize = (as - 1) + "px";
