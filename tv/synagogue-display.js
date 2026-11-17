@@ -58,6 +58,21 @@
     return t[def.m[method]] || null;
   }
 
+  /* Fenêtre de chaque office : début et fin permis (méthodes choisies pour les zmanim de l'écran) */
+  function zMethod(id) { var z = (CFG.zmanim || []).find(function (x) { return x.id === id; }); return z ? z.method : ""; }
+  // Chaharit : Talit & Téfilines → fin de la Tefila (GR"A) ; Minha : Minha Guedola → Chkia ; Arvit : Plag HaMinha → Hatsot
+  var WINDOWS = { chaharit: ["misheyakir", "tefilaGRA"], minha: ["minchaG", "sunset"], arvit: ["plag", "chatzotNight"] };
+  function officeWindow(key, t, tz) {
+    var w = WINDOWS[key]; if (!w || !t) return "";
+    var a = resolveZman(t, w[0], zMethod(w[0])), b = resolveZman(t, w[1], zMethod(w[1]));
+    return a && b ? "Permis de " + hm(a, tz) + " à " + hm(b, tz) : "";
+  }
+  function windowKey(label) {
+    var l = String(label || "").toLowerCase();
+    if (l.indexOf("-") >= 0 || l.indexOf("\u2011") >= 0) return "";
+    return /chaharit|shacharit|cha?harit/.test(l) ? "chaharit" : /minh?a/.test(l) ? "minha" : /arvit|maariv/.test(l) ? "arvit" : "";
+  }
+
   /* ───────── Dates & fuseaux (lib/hebcal.ts, lib/format.ts) ───────── */
   function todayIn(tz, d) { return new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(d || new Date()); }
   function addDays(ymd, n) { var d = new Date(ymd + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
@@ -174,20 +189,21 @@
         var d = sd[addDays(today, i)]; if (!d) return;
         var dt = new Date(d.date + "T12:00:00Z");
         var wdn = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(dt);
-        var rows = [];
+        var rows = [], zt = state.bundle && state.bundle.days ? state.bundle.days[d.date] : null;
         SROWS.forEach(function (k) {
           var c = d[k[0]]; if (!c) return;
           rows.push({ id: d.date + k[0], label: k[0] === "sortie" ? (d.sortieLabel || "Sortie") : k[1], labelHe: k[2],
-                      times: (c.times || []).filter(validTime), text: c.text || "", note: c.note || "", counts: k[0] !== "sortie" });
+                      times: (c.times || []).filter(validTime), text: c.text || "", note: c.note || "", win: i === 0 ? officeWindow(k[0], zt, tz) : "", counts: k[0] !== "sortie" });
         });
         groups.push({ title: (i === 0 ? "Aujourd'hui · " : i === 1 ? "Demain · " : "") + wdn, he: HE_DAY[dt.getUTCDay()],
-                      sub: [d.event, d.title].filter(Boolean).join(" · "), isToday: i === 0, rows: rows });
+                      sub: i === 0 ? "" : [d.event, d.title].filter(Boolean).join(" · "), isToday: i === 0, rows: rows });
       });
       return groups;
     }
     return GROUPS.map(function (g) {
       return { title: g.title + (g.key === group ? " · aujourd'hui" : ""), he: g.he, sub: "", isToday: g.key === group,
-               rows: prayers.filter(function (p) { return p.group === g.key; }).map(function (p) { return { id: p.id, label: p.label, labelHe: p.labelHe, times: p.times, counts: true }; }) };
+               rows: prayers.filter(function (p) { return p.group === g.key; }).map(function (p) { return { id: p.id, label: p.label, labelHe: p.labelHe, times: p.times, counts: true,
+        win: g.key === group ? officeWindow(windowKey(p.label), state.bundle && state.bundle.days ? state.bundle.days[today] : null, tz) : "" }; }) };
     }).filter(function (g) { return g.rows.length; });
   }
 
@@ -264,6 +280,13 @@
     var up = b ? upcoming(b.calendar, tz, now) : null;
     var loc = b ? b.location : null;
     var h = "";
+    // Événement du jour (feuille des horaires, sinon calendrier Hebcal) : affiché en grand en haut
+    var sd0 = schedule && schedule.byDate && schedule.byDate[today];
+    var evs = sd0 ? [sd0.title, sd0.event].filter(Boolean) : [];
+    if (!evs.length && b) b.calendar.forEach(function (i) {
+      if (i.date.slice(0, 10) === today && (i.category === "holiday" || i.category === "roshchodesh")) evs.push(clean(i.title));
+    });
+    var evText = evs.join(" · ");
 
     // En-tête
     h += '<header class="sd-header"><div class="sd-brand">' +
@@ -271,8 +294,9 @@
       '<div class="serif gold-text sd-name">' + esc(CFG.name) + "</div>" +
       '<div class="sd-sub"><span class="hebrew">' + esc(CFG.nameHe) + "</span>" +
       (loc ? '<span class="sd-city">' + esc(CFG.cityLabel || loc.city) + " · " + esc(loc.country) + "</span>" : "") + "</div></div></div>" +
-      '<div class="sd-dates"><div class="serif sd-greg">' + esc(frenchDate(tz, now)) + "</div>" +
-      '<div class="sd-hdate"><span class="gold">' + esc(hd.fr) + '</span><span class="hebrew">' + esc(hd.he) + "</span></div></div>" +
+      '<div class="sd-dates' + (evText ? " has-ev" : "") + '"><div class="serif sd-greg">' + esc(frenchDate(tz, now)) + "</div>" +
+      '<div class="sd-hdate"><span class="gold">' + esc(hd.fr) + '</span><span class="hebrew">' + esc(hd.he) + "</span></div>" +
+      (evText ? '<div class="next-glow sd-ev"><span>' + esc(evText) + "</span></div>" : "") + "</div>" +
       '<div class="sd-right"><div class="num gold-text sd-clock" data-clock>' + clockHtml(np) + "</div>" +
       (up && up.parasha ? '<div class="sd-par"><span>Paracha</span><span class="serif">' + esc(parashaName(up.parasha)) + '</span><span class="hebrew">' + esc(up.parasha.hebrew) + "</span></div>" : "") +
       "</div></header><div class=\"hair sd-hair\"></div>";
@@ -285,13 +309,14 @@
     }
     h += '</div><div class="hair"></div><div class="sd-groups">';
     view.forEach(function (g) {
-      h += '<div class="' + (g.isToday ? "" : "dim") + '"><div class="sd-gtitle"><span>' + esc(g.title) + '</span><span class="hebrew">' + esc(g.he) + "</span></div>" +
+      h += '<div><div class="sd-gtitle"><span>' + esc(g.title) + '</span><span class="hebrew">' + esc(g.he) + "</span></div>" +
         (g.sub ? '<div class="sd-gsub">' + esc(g.sub) + "</div>" : "");
       g.rows.forEach(function (p) {
         var isNext = g.isToday && next && next.id === p.id;
-        h += '<div class="sd-row ' + (isNext ? "next-glow" : "") + '"><div class="sd-rl"><div class="serif sd-plabel">' + esc(p.label) + "</div>" +
-          (p.labelHe ? '<div class="hebrew sd-phe">' + esc(p.labelHe) + "</div>" : "") +
-          (p.note ? '<div class="sd-pnote">' + esc(p.note) + "</div>" : "") + "</div>" +
+        var info = [p.note, p.win].filter(Boolean).join(" · ");
+        h += '<div class="sd-row ' + (isNext ? "next-glow" : "") + '"><div class="sd-rl"><div class="sd-plabel"><span class="serif">' + esc(p.label) + "</span>" +
+          (p.labelHe ? '<span class="hebrew sd-phe">' + esc(p.labelHe) + "</span>" : "") + "</div>" +
+          (info ? '<div class="sd-pnote">' + esc(info) + "</div>" : "") + "</div>" +
           '<div class="num sd-ptimes">' + p.times.map(function (t) { return '<span class="' + (isNext && next.t === t ? "gold-text" : "") + '">' + t + "</span>"; }).join("") +
           (p.text ? '<span class="sd-ptext">' + esc(p.text) + "</span>" : "") + "</div></div>";
       });
@@ -341,6 +366,9 @@
     // beaucoup d'offices : la liste rétrécit jusqu'à tenir dans le cadre
     var groups = stage.querySelector(".sd-groups");
     for (var fs = 11; fs > 6 && groups.scrollHeight > groups.clientHeight + 1; fs -= 0.25) groups.style.fontSize = (fs - 0.25) + "px";
+    // événement du jour : le texte rétrécit jusqu'à tenir sur deux lignes
+    var ev = stage.querySelector(".sd-ev span");
+    if (ev) for (var es = 34; es > 18 && ev.parentNode.scrollHeight > ev.parentNode.clientHeight + 1; es -= 1) ev.style.fontSize = (es - 1) + "px";
     // beaucoup d'annonces : le texte rétrécit jusqu'à tenir dans le cadre
     var ann = stage.querySelector(".sd-ann"), annList = ann && ann.querySelector("ul");
     if (annList) for (var as = 22; as > 14 && ann.scrollHeight > ann.clientHeight + 1; as -= 1) annList.style.fontSize = (as - 1) + "px";
