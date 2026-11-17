@@ -17,15 +17,37 @@
 <div id="sd-root"></div>
 <script type="application/json" id="sd-config">{"name": "Beth Chalom", "nameHe": "בית שלום", "geonameid": 2988507, "cityLabel": "", "elevation": false, "candleMinutes": 18, "havdalah": "", "validatedByRav": false, "showSeconds": true, "showCountdown": true, "scheduleUrl": "synagogue-horaires.json", "footerLeft": "Société Corpus Hovdjo", "footerRight": "hovadia26@gmail.com", "dedication": "לעלוי נשמת ציון בר סעדה לבית חורי ליזה בר חנינה דידו ואחיו משה בני ליזה לבית חורי", "dedicationNames": "רבי פראזי בר צלטנה לבית ביתאן ואשתו מזינה בת זוריא\nנורא בת חותה ומעתוק המכונה מותקי בר מזינה לבית ביתאן", "adminUrl": "ecran-admin.html", "remoteUrl": "https://script.google.com/macros/s/AKfycbxfsUIHwUQCGC3oQvioq3IJFXLBZQHobTr0K2SOBB-LliZ7ZisnSNGuMlHQnEep_Lswdw/exec", "prayers": [{"id": "prayer_w1", "group": "weekday", "label": "Chaharit", "labelHe": "שחרית", "times": "07:00 / 08:00 / 08:45"}, {"id": "prayer_w2", "group": "weekday", "label": "Minha-Arvit", "labelHe": "מנחה־ערבית", "times": "19:00"}, {"id": "prayer_w3", "group": "weekday", "label": "Arvit", "labelHe": "ערבית", "times": "20:05"}, {"id": "prayer_f1", "group": "friday", "label": "Minha", "labelHe": "מנחה", "times": "18:30"}, {"id": "prayer_s1", "group": "shabbat", "label": "Chaharit", "labelHe": "שחרית", "times": "07:00 / 09:00 / 09:50"}, {"id": "prayer_s2", "group": "shabbat", "label": "Minha", "labelHe": "מנחה", "times": "18:30"}, {"id": "prayer_s3", "group": "shabbat", "label": "Arvit", "labelHe": "ערבית", "times": "19:58"}], "announcements": [], "zmanim": [{"id": "alot", "method": "alot16.1"}, {"id": "misheyakir", "method": "mish11.5"}, {"id": "sunrise", "method": ""}, {"id": "shemaMGA", "method": "mga16.1"}, {"id": "shemaGRA", "method": "gra"}, {"id": "tefilaMGA", "method": "mga16.1"}, {"id": "tefilaGRA", "method": "gra"}, {"id": "chatzot", "method": ""}, {"id": "minchaG", "method": "gra"}, {"id": "minchaK", "method": "gra"}, {"id": "plag", "method": "gra"}, {"id": "sunset", "method": ""}, {"id": "tzeit", "method": "deg8.5"}, {"id": "rt", "method": "rt72"}, {"id": "chatzotNight", "method": ""}]}</script>
 <script>
+/* Les fichiers de l'écran viennent de GitHub (version publiée dans ecran-live.json) : une amélioration enregistrée
+   sur GitHub arrive sur toutes les télés sans retoucher Shopify. Sans Internet ou si GitHub ne répond pas :
+   les fichiers déposés dans Shopify, comme avant. */
 (function () {
-  function go(v) {
-    var q = "?v=" + encodeURIComponent(v);
-    var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "synagogue-display.css" + q; document.head.appendChild(l);
+  var LIVE = "https://raw.githubusercontent.com/Elya1234/webteste/main/synagogue-display-theme/assets/ecran-live.json";
+  var CDN = "https://cdn.jsdelivr.net/gh/Elya1234/webteste@";
+  function load(base, q, fallback) {
+    var l = document.createElement("link"); l.rel = "stylesheet"; l.href = base + "synagogue-display.css" + q; document.head.appendChild(l);
     var files = ["hebcal-core.js", "synagogue-display.js"], i = 0;
-    (function next() { if (i >= files.length) return; var s = document.createElement("script"); s.src = files[i++] + q; s.onload = next; document.body.appendChild(s); })();
+    (function next() {
+      if (i >= files.length) return;
+      var s = document.createElement("script"); s.src = base + files[i++] + q; s.onload = next;
+      s.onerror = function () { if (fallback) { l.remove(); fallback(); } };
+      document.body.appendChild(s);
+    })();
   }
-  fetch("ecran-version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); })
-    .then(function (j) { go(j.v || "0"); }, function () { go("0"); });
+  function local() {
+    fetch("ecran-version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); })
+      .then(function (j) { load("", "?v=" + encodeURIComponent(j.v || "0")); }, function () { load("", "?v=0"); });
+  }
+  var current = null;
+  fetch(LIVE + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
+    if (!j || !/^[0-9a-f]{40}$/.test(j.sha || "")) throw new Error("version");
+    current = j.sha;
+    load(CDN + j.sha + "/synagogue-display-theme/assets/", "", local);
+  }).catch(local);
+  // nouvelle version publiée sur GitHub : la télé se recharge seule (vérifié toutes les 30 minutes)
+  setInterval(function () {
+    fetch(LIVE + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); })
+      .then(function (j) { if (current && j && j.sha && j.sha !== current) window.location.reload(); }).catch(function () {});
+  }, 30 * 60 * 1000);
 })();
 </script>
 </body>
