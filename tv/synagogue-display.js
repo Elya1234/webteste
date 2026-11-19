@@ -409,7 +409,7 @@
     // noms de zmanim trop longs : ils rétrécissent un peu au lieu de toucher les heures
     var zul = stage.querySelector(".sd-zmanim ul"), zls = stage.querySelectorAll(".sd-zmanim .sd-zl");
     var zOver = function () { return Array.prototype.some.call(zls, function (e) { return e.scrollWidth > e.clientWidth + 1; }); };
-    if (zul) for (var zs = 21; zs > 15 && zOver(); zs -= 0.5) zul.style.fontSize = (zs - 0.5) + "px";
+    if (zul) for (var zs = 23; zs > 15 && zOver(); zs -= 0.5) zul.style.fontSize = (zs - 0.5) + "px";
     var spT = stage.querySelector(".sd-sp-text"), spB = stage.querySelector(".sd-sponsor");
     if (spT) for (var ss = 22; ss > 13 && spB.scrollHeight > spB.clientHeight + 1; ss -= 1) spT.style.fontSize = (ss - 1) + "px";
     // beaucoup d'annonces : le texte rétrécit jusqu'à tenir dans le cadre

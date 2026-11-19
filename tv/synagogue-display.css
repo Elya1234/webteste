@@ -26,7 +26,7 @@ a { color: inherit; }
     linear-gradient(180deg, rgba(4,10,28,.42) 0%, rgba(4,10,28,.1) 30%, rgba(4,10,28,.12) 70%, rgba(4,10,28,.4) 100%); }
 .sd-stage > * { z-index: 1; }
 .sd-header, .sd-hair, .sd-foot { position: absolute; }
-.glass { background: linear-gradient(180deg, rgba(46,72,136,.5), rgba(28,48,102,.56));
+.glass { background: linear-gradient(180deg, rgba(86,118,182,.5), rgba(64,96,162,.56));
   border: 1px solid rgba(217,191,140,.28); border-radius: 22px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 50px rgba(0,0,0,.35); }
 .gold-text { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -62,9 +62,9 @@ a { color: inherit; }
 .sd-col h2 .hebrew { font-size: 32px; margin-inline-start: 12px; color: var(--gold); -webkit-text-fill-color: var(--gold); }
 .sd-col > .hair { margin-bottom: 12px; }
 
-.sd-prayers { left: 56px; top: 206px; width: 860px; height: 754px; padding: 26px 36px;
+.sd-prayers { left: 56px; top: 206px; width: 860px; height: 778px; padding: 26px 36px;
   border: 2px solid rgba(217,191,140,.75);
-  background: linear-gradient(180deg, rgba(80,68,48,.56), rgba(36,56,110,.6) 40%, rgba(44,70,132,.6));
+  background: linear-gradient(180deg, rgba(118,102,74,.52), rgba(72,102,164,.56) 40%, rgba(80,112,176,.56));
   box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(217,191,140,.12), 0 0 80px rgba(217,191,140,.22), 0 24px 60px rgba(0,0,0,.45); }
 .sd-prayers h2 { font-size: 52px; }
 .sd-prayers h2 .hebrew { font-size: 42px; }
@@ -79,7 +79,7 @@ a { color: inherit; }
 .sd-row > div:first-child { line-height: 1; }
 .sd-gsub { font-size: 2.1em; color: var(--ivory); margin: -2px 0 6px; line-height: 1.25; }
 .sd-rl { min-width: 0; flex: 1; padding-right: 1.6em; }
-.sd-pnote { font-size: 2.2em; line-height: 1.3; color: var(--ivory); margin-top: .2em; }
+.sd-pnote { font-size: 2.2em; line-height: 1.3; color: var(--ivory); margin-top: .2em; font-weight: 600; }
 .sd-pnote { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .sd-ptext { font-size: .62em; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); }
 .sd-plabel { display: flex; align-items: baseline; gap: .5em; font-size: 5.3em; line-height: 1; font-weight: 600; color: var(--ivory); }
@@ -90,17 +90,17 @@ a { color: inherit; }
 .sd-cd { font-size: 52px; line-height: 1; }
 .sd-nlabel b { font-size: 22px; letter-spacing: .04em; }
 
-.sd-zmanim { left: 940px; top: 206px; width: 500px; height: 754px; padding: 20px 22px; }
+.sd-zmanim { left: 940px; top: 206px; width: 500px; height: 778px; padding: 20px 22px; }
 .sd-zmanim h2, .sd-shabbat h2 { font-size: 30px; }
 .sd-zmanim h2 .hebrew, .sd-shabbat h2 .hebrew { font-size: 25px; }
 .sd-zmanim > .hair { margin-bottom: 4px; }
-.sd-zmanim ul { font-size: 21px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.sd-zmanim ul { font-size: 23px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .sd-zmanim li { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.07); }
 .sd-zmanim li:last-child { border-bottom: 0; }
 .sd-zl { display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden; margin-right: 10px; }
-.sd-zfr { font-size: 1em; line-height: 1; white-space: nowrap; }
+.sd-zfr { font-size: 1em; line-height: 1; white-space: nowrap; font-weight: 600; }
 .sd-zhe { font-size: .95em; color: var(--gold); opacity: .95; white-space: nowrap; direction: ltr; }
-.sd-zt { font-size: 31px; line-height: 1; }
+.sd-zt { font-size: 34px; line-height: 1; }
 .sd-wait { font-size: 28px; opacity: .7; margin-top: 40px; }
 
 .sd-shabbat { right: 56px; top: 206px; width: 400px; height: 306px; padding: 16px 20px; }
@@ -118,7 +118,7 @@ a { color: inherit; }
 .sd-evl { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 18px; white-space: nowrap; line-height: 1.35; text-align: left; }
 .sd-evl span:last-child { text-transform: capitalize; opacity: .9; white-space: nowrap; }
 /* Case à dédier (parrainage) */
-.sd-sponsor { right: 56px; top: 822px; width: 400px; height: 138px; padding: 12px 20px; overflow: hidden; border: 1.5px dashed rgba(217,191,140,.7); }
+.sd-sponsor { right: 56px; top: 838px; width: 400px; height: 146px; padding: 12px 20px; overflow: hidden; border: 1.5px dashed rgba(217,191,140,.7); }
 .sd-sponsor.is-on { border-style: solid; box-shadow: 0 0 0 1px rgba(217,191,140,.2), 0 0 40px rgba(217,191,140,.25); }
 .sd-sp-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
 .sd-sp-head .serif { font-size: 27px; font-weight: 600; }
@@ -129,7 +129,7 @@ a { color: inherit; }
 .sd-rcd { font-size: 16px; opacity: .8; text-transform: capitalize; }
 .sd-hol { font-size: 17px; opacity: .85; margin-top: 2px; }
 
-.sd-ann { right: 56px; top: 526px; width: 400px; height: 282px; padding: 16px 20px; overflow: hidden; }
+.sd-ann { right: 56px; top: 526px; width: 400px; height: 298px; padding: 16px 20px; overflow: hidden; }
 .sd-ann h2 { font-size: 27px; }
 .sd-ann h2 .hebrew { font-size: 28px; }
 .sd-ann ul { font-size: 25px; line-height: 1.35; }
@@ -139,10 +139,10 @@ a { color: inherit; }
 
 .sd-foot { position: absolute; left: 56px; right: 56px; bottom: 6px; display: flex; justify-content: space-between; font-size: 15px; letter-spacing: .04em; color: rgba(247,242,231,.6); }
 /* Dédicace (léilouy nichmat) */
-.sd-ded { position: absolute; left: 56px; right: 56px; top: 970px; text-align: center; }
+.sd-ded { position: absolute; left: 56px; right: 56px; top: 994px; text-align: center; }
 .sd-ded .hair { display: none; }
-.sd-ded-main { font-size: 31px; font-weight: 700; line-height: 1.12; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
-.sd-ded-sep { display: flex; align-items: center; justify-content: center; gap: 14px; height: 12px; margin: 1px 0; }
+.sd-ded-main { font-size: 23px; font-weight: 700; line-height: 1.12; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+.sd-ded-sep { display: flex; align-items: center; justify-content: center; gap: 14px; height: 8px; margin: 1px 0; }
 .sd-ded-sep i { display: block; width: 140px; height: 1px; }
 .sd-ded-sep i:first-child { background: linear-gradient(90deg, transparent, rgba(217,191,140,.8)); }
 .sd-ded-sep i:last-child { background: linear-gradient(90deg, rgba(217,191,140,.8), transparent); }
@@ -237,3 +237,7 @@ select.sd-in option { color: #111; }
 .bg-light .sd-ded-main { text-shadow: none; }
 .bg-light .sd-ded-sep span { color: #8a6a2c; text-shadow: none; }
 .bg-light .sd-foot { color: rgba(20,36,74,.7); }
+
+/* Lettres nettes sur les cases claires : ombre fine sous le texte (et sous le doré) */
+.sd-stage[data-bg="photo"] .sd-col, .sd-stage[data-bg="photo"] .sd-header { text-shadow: 0 1px 3px rgba(0,10,40,.6); }
+.sd-stage[data-bg="photo"] .sd-col .gold-text, .sd-stage[data-bg="photo"] .sd-header .gold-text { text-shadow: none; filter: drop-shadow(0 1px 2px rgba(0,10,40,.6)); }
