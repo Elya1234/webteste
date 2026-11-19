@@ -75,6 +75,7 @@
       elevation: !!s.elevation, candleMinutes: Number(s.candleMinutes), havdalah: s.havdalah || "",
       validatedByRav: !!s.validatedByRav, showSeconds: !!s.showSeconds, showCountdown: !!s.showCountdown,
       dedication: s.dedication || "", dedicationNames: s.dedicationNames || "", useSchedule: s.useSchedule !== false,
+      sponsor: s.sponsor || "", sponsorContact: s.sponsorContact || "",
       prayers: s.prayers.map(function (p) { return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe, times: p.times }; }),
       announcements: s.announcements.filter(function (a) { return a.trim(); }).slice(0, 3),
       zmanim: s.zmanim.filter(function (z) { return z.visible; }).map(function (z) { return { id: z.id, method: z.method }; }) };
@@ -323,9 +324,10 @@
       '<label class="sd-lab">Ligne principale (grande)<input class="sd-in" dir="rtl" data-k="dedication" value="' + esc(s.dedication) + '" placeholder="לעלוי נשמת…"></label>' +
       '<label class="sd-lab">Noms (plus petits, un par ligne)<textarea class="sd-in" dir="rtl" rows="3" data-k="dedicationNames">' + esc(s.dedicationNames) + "</textarea></label></section>";
 
-    h += '<section class="sd-card"><h2>Dédicace (bas de l\'écran)</h2>' +
-      '<label class="sd-lab">Ligne principale (grande)<input class="sd-in" dir="rtl" data-k="dedication" value="' + esc(s.dedication) + '" placeholder="לעלוי נשמת…"></label>' +
-      '<label class="sd-lab">Noms (plus petits, un par ligne)<textarea class="sd-in" dir="rtl" rows="3" data-k="dedicationNames">' + esc(s.dedicationNames) + "</textarea></label></section>";
+    h += '<section class="sd-card"><h2>Case à dédier (parrainage)</h2>' +
+      '<label class="sd-lab">Texte de la dédicace<textarea class="sd-in" rows="3" data-k="sponsor" placeholder="Ex. : Cette semaine, l\'écran est dédié à l\'anniversaire de…">' + esc(s.sponsor) + "</textarea>" +
+      '<span class="sd-help">Vide : la case affiche « Espace à dédier » pour trouver un donateur.</span></label>' +
+      '<label class="sd-lab">Contact affiché quand la case est libre<input class="sd-in" data-k="sponsorContact" value="' + esc(s.sponsorContact) + '" placeholder="Téléphone ou e-mail"></label></section>';
 
     h += '<section class="sd-card"><h2>Annonces</h2><textarea class="sd-in" rows="4" data-k="announcements" placeholder="Une annonce par ligne (3 maximum)">' +
       esc(s.announcements.join("\n")) + "</textarea>" +

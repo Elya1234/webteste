@@ -12,7 +12,7 @@
   if (/sd=/.test(window.location.hash)) history.replaceState(null, "", window.location.pathname + window.location.search);
   var K_REMOTE = "sd.remote.v1";
   var SHARED_KEYS = ["name", "nameHe", "geonameid", "cityLabel", "elevation", "candleMinutes", "havdalah", "validatedByRav",
-    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim"];
+    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim", "sponsor", "sponsorContact"];
   function withShared(base, rs) {
     var c = Object.assign({}, base);
     if (!rs) return c;
@@ -294,6 +294,18 @@
       if (i.date.slice(0, 10) === today && (i.category === "holiday" || i.category === "roshchodesh")) evs.push(clean(i.title));
     });
     var evText = evs.join(" · ");
+    var shortDate = function (iso) { return new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(iso.slice(0, 10) + "T12:00:00Z")); };
+    var longDate = function (iso) { return new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(new Date(iso.slice(0, 10) + "T12:00:00Z")); };
+    // Hanouka : prochaine bougie (Hebcal), annoncée 3 semaines avant le 1er allumage puis chaque soir
+    var han = null;
+    if (b) b.calendar.forEach(function (i) {
+      var m = clean(i.title).match(/^Hanouk?ah?\s*:\s*(\d)\s*Bougie/i);
+      if (m && !han && i.date.slice(0, 10) >= today) han = { n: +m[1], date: i.date.slice(0, 10) };
+    });
+    var hanLabel = function (h) { return (h.n === 1 ? "1re" : h.n + "e") + " bougie de Hanouka"; };
+    var hanAnn = "";
+    if (han && han.date === today) hanAnn = "Ce soir : allumage de la " + hanLabel(han);
+    else if (han && han.n === 1 && han.date <= addDays(today, 21)) hanAnn = "Hanouka : 1er allumage " + longDate(han.date);
 
     // En-tête
     h += '<header class="sd-header"><div class="sd-brand">' +
@@ -345,17 +357,29 @@
     h += '<section class="glass sd-col sd-shabbat"><h2 class="serif gold-text">Chabbat <span class="hebrew">שבת</span></h2><div class="hair"></div>';
     if (up && up.parasha) h += '<div class="sd-pbig"><div class="serif">' + esc(parashaName(up.parasha)) + '</div><div class="hebrew gold">' + esc(up.parasha.hebrew) + "</div></div>";
     h += '<div class="sd-tiles">' + tile("Entrée", "הדלקת נרות", up && up.candles, tz) + tile("Sortie", "הבדלה", up && up.havdalah, tz) + "</div>";
-    h += '<div class="sd-cal">';
-    if (up && up.roshChodesh) h += '<div class="gold sd-rc">' + esc(clean(up.roshChodesh.title)) + '</div><div class="sd-rcd">' +
-      esc(new Intl.DateTimeFormat("fr-FR", { timeZone: tz, weekday: "long", day: "numeric", month: "long" }).format(new Date(up.roshChodesh.date.slice(0, 10) + "T12:00:00Z"))) + "</div>";
-    if (up && up.holidays && up.holidays[0]) h += '<div class="sd-hol">' + esc(clean(up.holidays[0].title)) + "</div>";
-    h += "</div></section>";
+    // prochains événements avec leur date (Hanouka, Roch Hodech, fêtes)
+    var nextEv = [];
+    if (han) nextEv.push({ t: hanLabel(han), d: han.date });
+    if (up && up.roshChodesh) nextEv.push({ t: clean(up.roshChodesh.title), d: up.roshChodesh.date.slice(0, 10) });
+    if (up) (up.holidays || []).forEach(function (i) { if (!/bougie/i.test(i.title)) nextEv.push({ t: clean(i.title), d: i.date.slice(0, 10) }); });
+    nextEv.sort(function (a, c) { return a.d.localeCompare(c.d); });
+    h += '<div class="sd-cal">' + nextEv.filter(function (e, k) { return nextEv.findIndex(function (x) { return x.t === e.t; }) === k; }).slice(0, 2).map(function (e) {
+      return '<div class="sd-evl"><span class="gold">' + esc(e.t) + "</span><span>" + esc(e.d === today ? "ce soir" : shortDate(e.d)) + "</span></div>";
+    }).join("") + "</div></section>";
 
     // Annonces
     h += '<section class="glass sd-col sd-ann"><h2 class="serif gold-text">Annonces <span class="hebrew">הודעות</span></h2><div class="hair"></div>' +
-      (evText || CFG.announcements.length ? "<ul>" + (evText ? '<li class="sd-ann-ev">' + esc(evText) + "</li>" : "") +
+      (evText || hanAnn || CFG.announcements.length ? "<ul>" + (hanAnn ? '<li class="sd-ann-ev">' + esc(hanAnn) + "</li>" : "") + (evText ? '<li class="sd-ann-ev">' + esc(evText) + "</li>" : "") +
         CFG.announcements.slice(0, 5).map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>"
                                 : '<div class="sd-empty">Aucune annonce pour le moment</div>') + "</section>";
+
+    // Case à dédier (parrainage payant), texte modifiable dans l'administration
+    var sp = String(CFG.sponsor || "").trim();
+    h += '<section class="glass sd-col sd-sponsor' + (sp ? " is-on" : "") + '"><div class="sd-sp-head"><span class="serif gold-text">' + (sp ? "Dédicace" : "Espace à dédier") +
+      '</span><span class="hebrew gold">הקדשה</span></div>' +
+      (sp ? '<div class="sd-sp-text">' + esc(sp) + "</div>"
+          : '<div class="sd-sp-text sd-sp-empty">Anniversaire, Azkara, Bar Mitsva, mariage… Dédiez cet écran à un proche.' +
+            (CFG.sponsorContact || CFG.footerRight ? '<br><b>' + esc(CFG.sponsorContact || CFG.footerRight) + "</b>" : "") + "</div>") + "</section>";
 
     // Pied
     // Dédicace : grande ligne, puis les noms en plus petit
@@ -377,9 +401,11 @@
     var zul = stage.querySelector(".sd-zmanim ul"), zls = stage.querySelectorAll(".sd-zmanim .sd-zl");
     var zOver = function () { return Array.prototype.some.call(zls, function (e) { return e.scrollWidth > e.clientWidth + 1; }); };
     if (zul) for (var zs = 21; zs > 15 && zOver(); zs -= 0.5) zul.style.fontSize = (zs - 0.5) + "px";
+    var spT = stage.querySelector(".sd-sp-text"), spB = stage.querySelector(".sd-sponsor");
+    if (spT) for (var ss = 22; ss > 13 && spB.scrollHeight > spB.clientHeight + 1; ss -= 1) spT.style.fontSize = (ss - 1) + "px";
     // beaucoup d'annonces : le texte rétrécit jusqu'à tenir dans le cadre
     var ann = stage.querySelector(".sd-ann"), annList = ann && ann.querySelector("ul");
-    if (annList) for (var as = 25; as > 14 && ann.scrollHeight > ann.clientHeight + 1; as -= 1) annList.style.fontSize = (as - 1) + "px";
+    if (annList) for (var as = 25; as > 12 && ann.scrollHeight > ann.clientHeight + 1; as -= 1) annList.style.fontSize = (as - 1) + "px";
   }
   function clockHtml(np) { return pad(np.h) + ":" + pad(np.m) + (CFG.showSeconds ? '<span class="sd-sec">:' + pad(np.s) + "</span>" : ""); }
   function tile(label, he, item, tz) {
