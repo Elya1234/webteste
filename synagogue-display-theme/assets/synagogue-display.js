@@ -12,7 +12,7 @@
   if (/sd=/.test(window.location.hash)) history.replaceState(null, "", window.location.pathname + window.location.search);
   var K_REMOTE = "sd.remote.v1";
   var SHARED_KEYS = ["name", "nameHe", "geonameid", "cityLabel", "elevation", "candleMinutes", "havdalah", "validatedByRav",
-    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim", "sponsor", "sponsorContact"];
+    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim", "sponsor", "sponsorContact", "background"];
   function withShared(base, rs) {
     var c = Object.assign({}, base);
     if (!rs) return c;
@@ -218,6 +218,15 @@
 
   var stage = document.createElement("div");
   stage.className = "sd-stage";
+  // Fond de l'écran (réglage « background » ; ?fond=… dans l'adresse pour un aperçu)
+  var BGS = { photo: 0, ciel: 1, ivoire: 1, pierre: 1, "bleu-doux": 0, nuit: 0 };
+  function applyBg() {
+    var q = (window.location.search.match(/[?&]fond=([\w-]+)/) || [])[1];
+    var bg = q in BGS ? q : CFG.background in BGS ? CFG.background : "photo";
+    stage.setAttribute("data-bg", bg);
+    stage.classList.toggle("bg-light", BGS[bg] === 1);
+  }
+  applyBg();
   root.appendChild(stage);
   /* Mise à l'échelle : certains navigateurs de télévision annoncent une taille de fenêtre fausse,
      on prend donc la plus petite taille visible connue. Réglage manuel à la télécommande :
@@ -379,7 +388,7 @@
       '</span><span class="hebrew gold">הקדשה</span></div>' +
       (sp ? '<div class="sd-sp-text">' + esc(sp) + "</div>"
           : '<div class="sd-sp-text sd-sp-empty">Anniversaire, Azkara, Bar Mitsva, mariage… Dédiez cet écran à un proche.' +
-            (CFG.sponsorContact || CFG.footerRight ? '<br><b>' + esc(CFG.sponsorContact || CFG.footerRight) + "</b>" : "") + "</div>") + "</section>";
+            '<br><b>' + esc(CFG.sponsorContact || "Parlez-en à M. Zarka, responsable de la synagogue") + "</b></div>") + "</section>";
 
     // Pied
     // Dédicace : grande ligne, puis les noms en plus petit
@@ -428,6 +437,7 @@
     // changement de ville ou de bougies : il faut d'autres données Hebcal, on repart de zéro
     if ([CFG.geonameid, CFG.candleMinutes, CFG.havdalah, CFG.elevation].join("|") !== before) { window.location.reload(); return; }
     prayers = buildPrayers();
+    applyBg();
     if (!CFG.scheduleUrl) schedule = null;
     else if (!schedule || schedule.url !== CFG.scheduleUrl) loadSchedule();
     render(true);
