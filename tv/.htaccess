@@ -1,0 +1,6 @@
+# Écran synagogue : les télés doivent toujours recevoir la dernière version des fichiers
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|css|json)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
