@@ -23,11 +23,10 @@ a { color: inherit; }
 .sd-stage::before { content: ""; position: absolute; inset: 0; background: url("synagogue-bg.jpg") center / cover no-repeat; }
 .sd-stage::after { content: ""; position: absolute; inset: 0;
   background:
-    radial-gradient(1100px 650px at 50% 45%, rgba(4,10,28,.08), rgba(4,10,28,.28) 75%),
-    linear-gradient(180deg, rgba(4,10,28,.5) 0%, rgba(4,10,28,.1) 28%, rgba(4,10,28,.12) 75%, rgba(2,5,15,.6) 100%); }
+    linear-gradient(180deg, rgba(4,10,28,.32) 0%, rgba(255,255,255,.06) 30%, rgba(255,255,255,.04) 70%, rgba(4,10,28,.3) 100%); }
 .sd-stage > * { z-index: 1; }
 .sd-header, .sd-hair, .sd-foot { position: absolute; }
-.glass { background: linear-gradient(180deg, rgba(10,22,51,.5), rgba(5,11,31,.6));
+.glass { background: linear-gradient(180deg, rgba(56,84,150,.42), rgba(36,60,120,.48));
   border: 1px solid rgba(217,191,140,.28); border-radius: 22px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 50px rgba(0,0,0,.35); }
 .gold-text { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -63,9 +62,9 @@ a { color: inherit; }
 .sd-col h2 .hebrew { font-size: 32px; margin-inline-start: 12px; color: var(--gold); -webkit-text-fill-color: var(--gold); }
 .sd-col > .hair { margin-bottom: 12px; }
 
-.sd-prayers { left: 56px; top: 206px; width: 860px; height: 712px; padding: 26px 36px;
+.sd-prayers { left: 56px; top: 206px; width: 860px; height: 754px; padding: 26px 36px;
   border: 2px solid rgba(217,191,140,.75);
-  background: linear-gradient(180deg, rgba(40,34,26,.62), rgba(8,16,40,.68) 40%, rgba(16,32,80,.68));
+  background: linear-gradient(180deg, rgba(92,78,56,.5), rgba(44,68,128,.52) 40%, rgba(52,82,150,.52));
   box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(217,191,140,.12), 0 0 80px rgba(217,191,140,.22), 0 24px 60px rgba(0,0,0,.45); }
 .sd-prayers h2 { font-size: 52px; }
 .sd-prayers h2 .hebrew { font-size: 42px; }
@@ -91,17 +90,17 @@ a { color: inherit; }
 .sd-cd { font-size: 52px; line-height: 1; }
 .sd-nlabel b { font-size: 22px; letter-spacing: .04em; }
 
-.sd-zmanim { left: 940px; top: 206px; width: 500px; height: 712px; padding: 20px 22px; }
+.sd-zmanim { left: 940px; top: 206px; width: 500px; height: 754px; padding: 20px 22px; }
 .sd-zmanim h2, .sd-shabbat h2 { font-size: 30px; }
 .sd-zmanim h2 .hebrew, .sd-shabbat h2 .hebrew { font-size: 25px; }
 .sd-zmanim > .hair { margin-bottom: 4px; }
-.sd-zmanim ul { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.sd-zmanim ul { font-size: 21px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .sd-zmanim li { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.07); }
 .sd-zmanim li:last-child { border-bottom: 0; }
-.sd-zl { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-.sd-zfr { font-size: 20px; line-height: 1; white-space: nowrap; }
-.sd-zhe { font-size: 21px; color: var(--gold); opacity: .95; white-space: nowrap; direction: ltr; }
-.sd-zt { font-size: 27px; line-height: 1; }
+.sd-zl { display: flex; align-items: baseline; gap: 8px; min-width: 0; overflow: hidden; margin-right: 10px; }
+.sd-zfr { font-size: 1em; line-height: 1; white-space: nowrap; }
+.sd-zhe { font-size: .95em; color: var(--gold); opacity: .95; white-space: nowrap; direction: ltr; }
+.sd-zt { font-size: 31px; line-height: 1; }
 .sd-wait { font-size: 28px; opacity: .7; margin-top: 40px; }
 
 .sd-shabbat { right: 56px; top: 206px; width: 400px; height: 350px; padding: 16px 20px; }
@@ -119,20 +118,20 @@ a { color: inherit; }
 .sd-rcd { font-size: 16px; opacity: .8; text-transform: capitalize; }
 .sd-hol { font-size: 17px; opacity: .85; margin-top: 2px; }
 
-.sd-ann { right: 56px; top: 576px; width: 400px; height: 342px; padding: 16px 20px; overflow: hidden; }
+.sd-ann { right: 56px; top: 576px; width: 400px; height: 384px; padding: 16px 20px; overflow: hidden; }
 .sd-ann h2 { font-size: 27px; }
 .sd-ann h2 .hebrew { font-size: 28px; }
-.sd-ann ul { font-size: 22px; line-height: 1.35; }
+.sd-ann ul { font-size: 25px; line-height: 1.35; }
 .sd-ann li { white-space: pre-line; margin-bottom: 10px; }
 .sd-ann li.sd-ann-ev { font-weight: 600; color: var(--gold-hi); }
 .sd-empty { font-size: 22px; opacity: .55; margin-top: 90px; text-align: center; }
 
-.sd-foot { position: absolute; left: 56px; right: 56px; bottom: 8px; display: flex; justify-content: space-between; font-size: 15px; letter-spacing: .04em; color: rgba(247,242,231,.6); }
+.sd-foot { position: absolute; left: 56px; right: 56px; bottom: 6px; display: flex; justify-content: space-between; font-size: 15px; letter-spacing: .04em; color: rgba(247,242,231,.6); }
 /* Dédicace (léilouy nichmat) */
-.sd-ded { position: absolute; left: 56px; right: 56px; top: 926px; text-align: center; }
-.sd-ded .hair { width: 640px; margin: 0 auto 6px; }
-.sd-ded-main { font-size: 40px; font-weight: 700; line-height: 1.15; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
-.sd-ded-sep { display: flex; align-items: center; justify-content: center; gap: 14px; height: 18px; margin: 2px 0; }
+.sd-ded { position: absolute; left: 56px; right: 56px; top: 970px; text-align: center; }
+.sd-ded .hair { display: none; }
+.sd-ded-main { font-size: 31px; font-weight: 700; line-height: 1.12; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+.sd-ded-sep { display: flex; align-items: center; justify-content: center; gap: 14px; height: 12px; margin: 1px 0; }
 .sd-ded-sep i { display: block; width: 140px; height: 1px; }
 .sd-ded-sep i:first-child { background: linear-gradient(90deg, transparent, rgba(217,191,140,.8)); }
 .sd-ded-sep i:last-child { background: linear-gradient(90deg, rgba(217,191,140,.8), transparent); }

@@ -373,9 +373,13 @@
     // beaucoup d'offices : la liste rétrécit jusqu'à tenir dans le cadre
     var groups = stage.querySelector(".sd-groups");
     for (var fs = 11; fs > 6 && groups.scrollHeight > groups.clientHeight + 1; fs -= 0.25) groups.style.fontSize = (fs - 0.25) + "px";
+    // noms de zmanim trop longs : ils rétrécissent un peu au lieu de toucher les heures
+    var zul = stage.querySelector(".sd-zmanim ul"), zls = stage.querySelectorAll(".sd-zmanim .sd-zl");
+    var zOver = function () { return Array.prototype.some.call(zls, function (e) { return e.scrollWidth > e.clientWidth + 1; }); };
+    if (zul) for (var zs = 21; zs > 15 && zOver(); zs -= 0.5) zul.style.fontSize = (zs - 0.5) + "px";
     // beaucoup d'annonces : le texte rétrécit jusqu'à tenir dans le cadre
     var ann = stage.querySelector(".sd-ann"), annList = ann && ann.querySelector("ul");
-    if (annList) for (var as = 22; as > 14 && ann.scrollHeight > ann.clientHeight + 1; as -= 1) annList.style.fontSize = (as - 1) + "px";
+    if (annList) for (var as = 25; as > 14 && ann.scrollHeight > ann.clientHeight + 1; as -= 1) annList.style.fontSize = (as - 1) + "px";
   }
   function clockHtml(np) { return pad(np.h) + ":" + pad(np.m) + (CFG.showSeconds ? '<span class="sd-sec">:' + pad(np.s) + "</span>" : ""); }
   function tile(label, he, item, tz) {
