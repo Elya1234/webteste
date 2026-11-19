@@ -176,7 +176,8 @@
     var remoteSched = BASE_CFG.remoteUrl ? getJ(BASE_CFG.remoteUrl + (BASE_CFG.remoteUrl.indexOf("?") < 0 ? "?" : "&") + "what=schedule&t=" + Date.now())
       .then(function (j) { return j && j.ok && j.schedule ? j.schedule : null; }, function () { return undefined; }) : Promise.resolve(null);
     Promise.all([getJ(CFG.scheduleUrl).catch(function () { return undefined; }), remoteSched]).then(function (r) {
-      if (r[0] === undefined && r[1] === undefined) return; // hors connexion : on garde la copie locale
+      // un fichier illisible (hors connexion, page de vérification…) : on garde la copie locale plutôt que de tout perdre
+      if (r[0] === undefined && !(r[1] && r[1].days && r[1].days.length)) { setTimeout(loadSchedule, 60000); return; }
       var by = {};
       (r[0] ? r[0].days || [] : []).forEach(function (d) { by[d.date] = d; });
       (r[1] ? r[1].days || [] : []).forEach(function (d) { by[d.date] = d; });
