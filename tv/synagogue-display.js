@@ -4,6 +4,9 @@
  * l'éditeur de thème Shopify (= l'administration) et sont injectés dans #sd-config. */
 (function () {
   "use strict";
+  // version de ce fichier (lien « …synagogue-display.js?v=… ») : sert à savoir si une nouvelle version est en ligne
+  var MY_VERSION = ((document.currentScript && document.currentScript.src || "").match(/[?&]v=([^&]+)/) || [])[1] || "";
+  var LOADED_AT = Date.now();
   var BASE = "https://www.hebcal.com";
   var BASE_CFG = JSON.parse(document.getElementById("sd-config").textContent);
   // Réglages : ceux du thème Shopify, remplacés par ceux de la base partagée (Google) modifiés depuis
@@ -12,7 +15,7 @@
   if (/sd=/.test(window.location.hash)) history.replaceState(null, "", window.location.pathname + window.location.search);
   var K_REMOTE = "sd.remote.v1";
   var SHARED_KEYS = ["name", "nameHe", "geonameid", "cityLabel", "elevation", "candleMinutes", "havdalah", "validatedByRav",
-    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim", "sponsor", "sponsorContact", "background"];
+    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim", "sponsor", "sponsorContact", "background", "reloadTimes"];
   function withShared(base, rs) {
     var c = Object.assign({}, base);
     if (!rs) return c;
@@ -467,6 +470,27 @@
     var d = todayIn(tz); if (day && d !== day) refresh(); day = d;
   }, 60000);
   window.addEventListener("online", refresh);
+
+  /* Rafraîchissement automatique de la page entière :
+     - dès qu'une nouvelle version du site est en ligne (fichier de version vérifié toutes les 2 min) ;
+     - chaque jour aux heures choisies dans l'administration (par défaut 04:00 et 07:00).
+     On ne recharge que si le site répond, pour ne jamais laisser une page d'erreur sur la télé. */
+  var VERSION_URL = /ecran\.html$/.test(window.location.pathname) ? "ecran-version.json" : "version.json";
+  function siteVersion() {
+    return fetch(VERSION_URL + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  }
+  function reloadIfOnline() { siteVersion().then(function () { window.location.reload(); }, function () { /* hors connexion : on réessaiera */ }); }
+  setInterval(function () {
+    if (!MY_VERSION || Date.now() - LOADED_AT < 10 * 60 * 1000) return; // au plus une fois toutes les 10 min (jamais de boucle)
+    siteVersion().then(function (j) { if (j && j.v && String(j.v) !== MY_VERSION) window.location.reload(); }, function () {});
+  }, 2 * 60 * 1000);
+  var lastAuto = "";
+  setInterval(function () {
+    var tz = state.bundle ? state.bundle.location.tzid : Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var np = nowParts(tz, new Date()), hhmm = pad(np.h) + ":" + pad(np.m), stamp = todayIn(tz) + " " + hhmm;
+    var times = String(CFG.reloadTimes || "04:00 / 07:00").split(/[\/,;\s]+/).filter(validTime);
+    if (times.indexOf(hhmm) >= 0 && stamp !== lastAuto && Date.now() - LOADED_AT > 2 * 60 * 1000) { lastAuto = stamp; reloadIfOnline(); }
+  }, 20 * 1000);
 
   // Les TV se mettent à jour d'elles-mêmes quand l'admin enregistre dans l'éditeur de thème Shopify.
   if (!window.Shopify || !window.Shopify.designMode) {

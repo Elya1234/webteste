@@ -75,7 +75,7 @@
       elevation: !!s.elevation, candleMinutes: Number(s.candleMinutes), havdalah: s.havdalah || "",
       validatedByRav: !!s.validatedByRav, showSeconds: !!s.showSeconds, showCountdown: !!s.showCountdown,
       dedication: s.dedication || "", dedicationNames: s.dedicationNames || "", useSchedule: s.useSchedule !== false,
-      sponsor: s.sponsor || "", sponsorContact: s.sponsorContact || "", background: s.background || "photo",
+      sponsor: s.sponsor || "", sponsorContact: s.sponsorContact || "", background: s.background || "photo", reloadTimes: s.reloadTimes || "04:00 / 07:00",
       prayers: s.prayers.map(function (p) { return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe, times: p.times }; }),
       announcements: s.announcements.filter(function (a) { return a.trim(); }).slice(0, 3),
       zmanim: s.zmanim.filter(function (z) { return z.visible; }).map(function (z) { return { id: z.id, method: z.method }; }) };
@@ -331,7 +331,9 @@
 
     h += '<section class="sd-card"><h2>Fond de l\'écran</h2><select class="sd-in" data-k="background">' +
       [["photo", "Photo de la synagogue"], ["ciel", "Ciel clair"], ["ivoire", "Ivoire et étoiles"], ["pierre", "Pierre de Jérusalem"], ["bleu-doux", "Bleu doux"], ["nuit", "Bleu nuit"]].map(function (o) {
-        return '<option value="' + o[0] + '"' + ((s.background || "photo") === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></section>";
+        return '<option value="' + o[0] + '"' + ((s.background || "photo") === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>" +
+      '<label class="sd-lab">Rafraîchir l\'écran chaque jour à<input class="sd-in" data-k="reloadTimes" value="' + esc(s.reloadTimes || "04:00 / 07:00") + '" placeholder="04:00 / 07:00"></label>' +
+      '<span class="sd-help">La télé recharge aussi toute seule dès qu\'une nouvelle version du site est en ligne.</span></section>';
 
     h += '<section class="sd-card"><h2>Annonces</h2><textarea class="sd-in" rows="4" data-k="announcements" placeholder="Une annonce par ligne (3 maximum)">' +
       esc(s.announcements.join("\n")) + "</textarea>" +
