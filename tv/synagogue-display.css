@@ -245,7 +245,7 @@ select.sd-in option { color: #111; }
 
 /* ───────── Style « clair et rouge » (fond gris très clair, cases blanches, écriture noire, titres rouges) ───────── */
 .sd-stage[data-bg="ohel"] { --ivory: #141414; --gold: #b3202a; --gold-hi: #c8303a; color: #141414;
-  background: radial-gradient(1400px 800px at 50% 0%, #ffffff, transparent 70%), linear-gradient(180deg, #f3f3f5 0%, #e7e7eb 100%); }
+  background: #e9e9ec url("synagogue-marbre.jpg") center / cover no-repeat; }
 .sd-stage[data-bg="ohel"] .glass { background: rgba(255,255,255,.97); border: 1px solid #dcdce2; box-shadow: 0 8px 24px rgba(20,20,40,.08);
   backdrop-filter: none; -webkit-backdrop-filter: none; }
 .sd-stage[data-bg="ohel"] .sd-prayers { background: #ffffff; border: 2px solid #b3202a; box-shadow: 0 10px 30px rgba(20,20,40,.1); }
