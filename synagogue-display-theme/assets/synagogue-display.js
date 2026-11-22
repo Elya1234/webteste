@@ -223,7 +223,7 @@
   var stage = document.createElement("div");
   stage.className = "sd-stage";
   // Fond de l'écran (réglage « background » ; ?fond=… dans l'adresse pour un aperçu)
-  var BGS = { photo: 0, ciel: 1, ivoire: 1, pierre: 1, "bleu-doux": 0, nuit: 0 };
+  var BGS = { photo: 0, ciel: 1, ivoire: 1, pierre: 1, "bleu-doux": 0, nuit: 0, ohel: 2 };
   function applyBg() {
     var q = (window.location.search.match(/[?&]fond=([\w-]+)/) || [])[1];
     var bg = q in BGS ? q : CFG.background in BGS ? CFG.background : "photo";
