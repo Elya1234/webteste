@@ -330,7 +330,7 @@
       '<label class="sd-lab">Contact affiché quand la case est libre<input class="sd-in" data-k="sponsorContact" value="' + esc(s.sponsorContact) + '" placeholder="Vide : « Parlez-en à M. Zarka, responsable de la synagogue »"></label></section>';
 
     h += '<section class="sd-card"><h2>Fond de l\'écran</h2><select class="sd-in" data-k="background">' +
-      [["ohel", "Clair : blanc, noir et rouge"], ["photo", "Photo de la synagogue"], ["ciel", "Ciel clair"], ["ivoire", "Ivoire et étoiles"], ["pierre", "Pierre de Jérusalem"], ["bleu-doux", "Bleu doux"], ["nuit", "Bleu nuit"]].map(function (o) {
+      [["ohel", "Clair : blanc, noir et rouge"], ["marbre-nuit", "Marbre gris, cases bleu nuit"], ["photo", "Photo de la synagogue"], ["ciel", "Ciel clair"], ["ivoire", "Ivoire et étoiles"], ["pierre", "Pierre de Jérusalem"], ["bleu-doux", "Bleu doux"], ["nuit", "Bleu nuit"]].map(function (o) {
         return '<option value="' + o[0] + '"' + ((s.background || "photo") === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>" +
       '<label class="sd-lab">Rafraîchir l\'écran chaque jour à<input class="sd-in" data-k="reloadTimes" value="' + esc(s.reloadTimes || "04:00 / 07:00") + '" placeholder="04:00 / 07:00"></label>' +
       '<span class="sd-help">La télé recharge aussi toute seule dès qu\'une nouvelle version du site est en ligne.</span></section>';

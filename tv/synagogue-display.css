@@ -216,6 +216,7 @@ select.sd-in option { color: #111; }
   radial-gradient(900px 500px at 20% 10%, rgba(255,255,255,.55), transparent 70%),
   radial-gradient(900px 600px at 85% 90%, rgba(160,120,70,.18), transparent 70%),
   linear-gradient(160deg, #f1e7d4 0%, #e3d2b2 55%, #d2bb92 100%); }
+.sd-stage[data-bg="marbre-nuit"] { background: #e9e9ec url("synagogue-marbre.jpg") center / cover no-repeat; }
 .sd-stage[data-bg="bleu-doux"] { background:
   radial-gradient(1300px 700px at 50% -15%, rgba(255,255,255,.35), transparent 65%),
   linear-gradient(180deg, #5b7fc2 0%, #46699f 55%, #34558c 100%); }
