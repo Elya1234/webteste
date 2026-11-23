@@ -13,6 +13,17 @@ Petite application (page web installable sur le téléphone) pour noter ses rend
 - Sauvegarder / restaurer ses rendez-vous dans un fichier.
 - Fonctionne sans internet ; les données restent dans l'appareil.
 
+## 📝 Pense-bêtes (choses à faire avec rappel chaque jour)
+Deuxième onglet en haut de l'appli. Pour chaque pense-bête :
+- un **sujet** (ex. « Réparation de la voiture ») ;
+- **la liste de ce qu'il faut faire**, une chose par ligne, qu'on coche au fur et à mesure ;
+- **pourquoi / détails** : qui prévenir, pourquoi, combien de temps ça prend, combien ça coûte… ;
+- une **date limite** (optionnelle) : l'appli affiche « Encore 3 jours », « Limite demain », « En retard de 2 jours » ;
+- un **rappel chaque jour** à l'heure choisie (9h par défaut) qui montre **ce qu'il reste à faire**,
+  tant que tout n'est pas coché. On peut cocher directement dans le rappel, ou « Me rappeler dans 1 h ».
+- Création rapide : « Réparer la voiture avant jeudi » remplit le sujet et la date limite.
+- Quand tout est coché, le pense-bête passe dans « Terminés ».
+
 ## Important pour les rappels
 Une page web ne peut sonner que si elle est ouverte (ou en arrière-plan récent).
 Pour être sûr d'être prévenu même téléphone verrouillé, ouvrez le rendez-vous et touchez **📅 Agenda du téléphone** :

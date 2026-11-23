@@ -21,6 +21,13 @@
     <button id="btn-notif" class="chip" title="Activer les rappels">🔔 Activer les rappels</button>
   </header>
 
+  <!-- Deux espaces -->
+  <div class="mode-switch" role="tablist">
+    <button data-mode="rdv" class="active">📅 Rendez-vous</button>
+    <button data-mode="memo">📝 Pense-bêtes <span id="memo-count" class="count" hidden></span></button>
+  </div>
+
+  <div id="mode-rdv">
   <!-- Ajout rapide -->
   <form id="quick" class="quick" autocomplete="off">
     <input id="quick-input" type="text" placeholder="Ex : demain 14h30 dentiste avec Dr Cohen">
@@ -43,9 +50,25 @@
   <input id="search" class="search" type="search" placeholder="🔎 Rechercher (nom, lieu, note…)">
 
   <main id="list" class="list"></main>
+  </div>
+
+  <!-- ===== Pense-bêtes ===== -->
+  <div id="mode-memo" hidden>
+    <form id="memo-quick" class="quick" autocomplete="off">
+      <input id="memo-quick-input" type="text" placeholder="Ex : Réparer la voiture avant vendredi">
+      <button type="submit" class="btn primary">Créer</button>
+    </form>
+    <p class="quick-preview muted">Chaque jour, je vous rappelle ce qu'il reste à faire jusqu'à ce que ce soit fini.</p>
+    <section class="summary memo-summary" id="memo-summary"></section>
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-mview="open">En cours</button>
+      <button class="tab" data-mview="done">Terminés</button>
+    </div>
+    <main id="memo-list" class="list"></main>
+  </div>
 
   <footer class="foot">
-    <button id="btn-export" class="link">Sauvegarder mes rendez-vous</button> ·
+    <button id="btn-export" class="link">Sauvegarder mes données</button> ·
     <button id="btn-import" class="link">Restaurer une sauvegarde</button>
     <input id="import-file" type="file" accept="application/json" hidden>
   </footer>
@@ -59,6 +82,7 @@
       <div id="alarm-text"></div>
       <div class="row">
         <button id="alarm-snooze" class="btn">Me rappeler dans 10 min</button>
+        <button id="alarm-open" class="btn" hidden>Ouvrir</button>
         <button id="alarm-ok" class="btn primary">OK</button>
       </div>
     </div>
@@ -124,8 +148,44 @@
     </form>
   </dialog>
 
+  <!-- Formulaire pense-bête -->
+  <dialog id="memo-dlg">
+    <form id="memo-form" method="dialog">
+      <h2 id="memo-form-title">Nouveau pense-bête</h2>
+      <label>Sujet
+        <input name="title" required placeholder="Ex : Réparation de la voiture">
+      </label>
+      <div class="field">
+        <span class="lbl">Ce qu'il faut faire (une chose par ligne)</span>
+        <div id="memo-steps" class="steps"></div>
+        <button type="button" id="memo-add-step" class="btn small">＋ Ajouter une chose à faire</button>
+      </div>
+      <label>Pourquoi, détails, à qui prévenir, combien de temps…
+        <textarea name="notes" rows="4" placeholder="Ex : Prévenir le garage parce que la pièce doit être commandée. Ça prend 3 jours. Prévoir 250 €."></textarea>
+      </label>
+      <div class="row">
+        <label>Date limite
+          <input name="deadline" type="date">
+        </label>
+        <label>Rappel chaque jour à
+          <input name="time" type="time" value="09:00">
+        </label>
+      </div>
+      <label class="inline"><input name="daily" type="checkbox" checked> Me rappeler <b>chaque jour</b> ce qu'il reste à faire</label>
+      <div class="row end">
+        <button type="button" id="memo-cancel" class="btn">Annuler</button>
+        <button type="submit" class="btn primary grow">Enregistrer</button>
+      </div>
+      <div class="row end" id="memo-edit-actions">
+        <button type="button" id="memo-done" class="btn">✅ Tout est fait</button>
+        <button type="button" id="memo-delete" class="btn danger" style="margin-left:auto">Supprimer</button>
+      </div>
+    </form>
+  </dialog>
+
   <div id="toast" class="toast" hidden></div>
 
   <script src="app.js"></script>
+  <script src="memos.js"></script>
 </body>
 </html>

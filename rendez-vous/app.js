@@ -1,6 +1,7 @@
 /* Mes Rendez-vous — tout est enregistré dans le téléphone / l'ordinateur (localStorage). */
 (() => {
   'use strict';
+  const RDV = window.RDV = window.RDV || { tickers: [], backups: [], openers: [], renderers: [] };
 
   const KEY = 'rdv.items.v1';
   const CATS = [
@@ -316,7 +317,7 @@
     render();
   }
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
-  $('#fab').addEventListener('click', () => openForm());
+  $('#fab').addEventListener('click', () => { if (document.body.dataset.mode !== 'memo') openForm(); });
 
   // ---------- Rappels ----------
   let swReg = null;
@@ -371,25 +372,40 @@
       const when = s <= now ? 'maintenant' : relative(s - now);
       const body = `${fmtTime(s)} (${when})${it.person ? ' · avec ' + it.person : ''}${it.place ? ' · ' + it.place : ''}${it.notes ? '\n' + it.notes : ''}`;
       notify('⏰ ' + it.title, body, it.id);
-      queue.push({ id: it.id, title: it.title, body });
+      const id = it.id;
+      queue.push({ title: it.title, body, snoozeLabel: 'Me rappeler dans 10 min',
+        onSnooze: () => {
+          const x = items.find(y => y.id === id);
+          if (x) { x.snooze = Date.now() + 10 * 60000; x.notified = false; localStorage.setItem(KEY, JSON.stringify(items)); }
+          toast('Rappel dans 10 minutes');
+        } });
     }
     if (changed) { localStorage.setItem(KEY, JSON.stringify(items)); render(); }
+    for (const fn of RDV.tickers) { try { fn(now); } catch (e) { console.error(e); } }
     showNextAlarm();
   }
 
   function showNextAlarm() {
     if (showing || !queue.length) return;
     showing = queue.shift();
-    $('#alarm-text').innerHTML = `<h2 style="margin:6px 0">${esc(showing.title)}</h2><p class="muted" style="white-space:pre-wrap">${esc(showing.body)}</p>`;
+    $('#alarm-text').innerHTML = `<h2 style="margin:6px 0">${esc(showing.title)}</h2>` +
+      (showing.html || `<p class="muted" style="white-space:pre-wrap">${esc(showing.body)}</p>`);
+    $('#alarm-snooze').textContent = showing.snoozeLabel || 'Me rappeler dans 10 min';
+    $('#alarm-snooze').hidden = !showing.onSnooze;
+    $('#alarm-open').hidden = !showing.onOpen;
     $('#alarm').hidden = false;
     beep();
   }
-  $('#alarm-ok').addEventListener('click', () => { $('#alarm').hidden = true; showing = null; showNextAlarm(); });
-  $('#alarm-snooze').addEventListener('click', () => {
-    const it = items.find(x => x.id === showing.id);
-    if (it) { it.snooze = Date.now() + 10 * 60000; it.notified = false; localStorage.setItem(KEY, JSON.stringify(items)); }
-    $('#alarm').hidden = true; showing = null; toast('Rappel dans 10 minutes'); showNextAlarm();
-  });
+  function closeAlarm(action) {
+    const cur = showing;
+    $('#alarm').hidden = true; showing = null;
+    if (cur && action && cur[action]) cur[action]();
+    showNextAlarm();
+  }
+  $('#alarm-ok').addEventListener('click', () => closeAlarm('onOk'));
+  $('#alarm-snooze').addEventListener('click', () => closeAlarm('onSnooze'));
+  $('#alarm-open').addEventListener('click', () => closeAlarm('onOpen'));
+  $('#alarm-text').addEventListener('click', e => { if (showing && showing.onClick) showing.onClick(e); });
 
   setInterval(() => { checkReminders(); renderSummary(); }, 20000);
   setInterval(render, 60000);
@@ -418,7 +434,8 @@
 
   // ---------- Sauvegarde ----------
   $('#btn-export').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify({ app: 'mes-rendez-vous', version: 1, items }, null, 2)], { type: 'application/json' });
+    const extra = {}; for (const b of RDV.backups) Object.assign(extra, b.get());
+    const blob = new Blob([JSON.stringify({ app: 'mes-rendez-vous', version: 1, items, ...extra }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = `rendez-vous-${dayKey(new Date())}.json`; a.click();
   });
@@ -427,12 +444,13 @@
     const file = e.target.files[0]; if (!file) return;
     try {
       const data = JSON.parse(await file.text());
-      const list = Array.isArray(data) ? data : data.items;
+      const list = Array.isArray(data) ? data : (data.items || []);
       if (!Array.isArray(list)) throw 0;
       const ids = new Set(items.map(x => x.id));
       let n = 0;
       for (const it of list) if (it && it.id && it.start && !ids.has(it.id)) { items.push(newItem(it)); n++; }
-      save(); toast(`${n} rendez-vous restauré(s)`);
+      let m = 0; for (const b of RDV.backups) m += b.restore(data) || 0;
+      save(); toast(`${n} rendez-vous et ${m} pense-bête(s) restauré(s)`);
     } catch { alert('Fichier de sauvegarde illisible.'); }
     e.target.value = '';
   });
@@ -447,11 +465,33 @@
   }
 
   // Ouvrir un rendez-vous depuis une notification
-  navigator.serviceWorker?.addEventListener('message', e => { if (e.data?.open) { const it = items.find(x => x.id === e.data.open); if (it) openForm(it.id); } });
+  navigator.serviceWorker?.addEventListener('message', e => {
+    if (!e.data?.open) return;
+    const it = items.find(x => x.id === e.data.open);
+    if (it) { setMode('rdv'); openForm(it.id); } else for (const fn of RDV.openers) fn(e.data.open);
+  });
+
+  // ---------- Deux espaces : Rendez-vous / Pense-bêtes ----------
+  function setMode(m) {
+    document.body.dataset.mode = m;
+    $('#mode-rdv').hidden = m !== 'rdv';
+    $('#mode-memo').hidden = m !== 'memo';
+    document.querySelectorAll('.mode-switch button').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+    $('#fab').setAttribute('aria-label', m === 'memo' ? 'Nouveau pense-bête' : 'Nouveau rendez-vous');
+    localStorage.setItem('rdv.mode', m);
+    for (const fn of RDV.renderers) fn();
+  }
+  document.querySelectorAll('.mode-switch button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+  // Outils partagés avec memos.js
+  Object.assign(RDV, { esc, pad, dayKey, fmtDay, fmtTime, startOfDay, addDays, norm, uid, notify, toast, setMode, askNotifOnce,
+    pushAlarm: a => { queue.push(a); showNextAlarm(); }, checkReminders });
 
   // Exposé pour les tests
   window.__rdv = { parseQuick };
 
   render();
-  checkReminders();
+  setMode(localStorage.getItem('rdv.mode') === 'memo' ? 'memo' : 'rdv');
+  // laisser memos.js s'installer avant la première vérification
+  window.addEventListener('load', checkReminders);
 })();

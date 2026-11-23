@@ -1,6 +1,6 @@
 // Mes Rendez-vous — fonctionne même sans internet, et ouvre l'appli quand on touche un rappel.
-const CACHE = 'rdv-v1';
-const FILES = ['./', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png'];
+const CACHE = 'rdv-v2';
+const FILES = ['./', 'index.html', 'style.css', 'app.js', 'memos.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
