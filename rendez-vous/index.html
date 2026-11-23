@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mes RDV">
+  <title>Mes Rendez-vous</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Mes Rendez-vous</h1>
+      <p id="today-label" class="muted"></p>
+    </div>
+    <button id="btn-notif" class="chip" title="Activer les rappels">🔔 Activer les rappels</button>
+  </header>
+
+  <!-- Ajout rapide -->
+  <form id="quick" class="quick" autocomplete="off">
+    <input id="quick-input" type="text" placeholder="Ex : demain 14h30 dentiste avec Dr Cohen">
+    <button type="submit" class="btn primary">Ajouter</button>
+  </form>
+  <p id="quick-preview" class="quick-preview muted"></p>
+
+  <!-- Bande de la semaine -->
+  <nav id="week" class="week" aria-label="Semaine"></nav>
+
+  <!-- Résumé -->
+  <section class="summary" id="summary"></section>
+
+  <!-- Onglets -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-view="upcoming">À venir</button>
+    <button class="tab" data-view="day">Jour choisi</button>
+    <button class="tab" data-view="past">Passés</button>
+  </div>
+  <input id="search" class="search" type="search" placeholder="🔎 Rechercher (nom, lieu, note…)">
+
+  <main id="list" class="list"></main>
+
+  <footer class="foot">
+    <button id="btn-export" class="link">Sauvegarder mes rendez-vous</button> ·
+    <button id="btn-import" class="link">Restaurer une sauvegarde</button>
+    <input id="import-file" type="file" accept="application/json" hidden>
+  </footer>
+
+  <button id="fab" class="fab" aria-label="Nouveau rendez-vous">＋</button>
+
+  <!-- Bandeau de rappel -->
+  <div id="alarm" class="alarm" hidden>
+    <div class="alarm-box">
+      <div class="alarm-icon">⏰</div>
+      <div id="alarm-text"></div>
+      <div class="row">
+        <button id="alarm-snooze" class="btn">Me rappeler dans 10 min</button>
+        <button id="alarm-ok" class="btn primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <dialog id="dlg">
+    <form id="form" method="dialog">
+      <h2 id="form-title">Nouveau rendez-vous</h2>
+      <label>Quoi ?
+        <input name="title" required placeholder="Dentiste, réunion, appel…">
+      </label>
+      <div class="row">
+        <label>Date
+          <input name="date" type="date" required>
+        </label>
+        <label>Heure
+          <input name="time" type="time" required>
+        </label>
+        <label>Durée
+          <select name="duration">
+            <option value="15">15 min</option>
+            <option value="30">30 min</option>
+            <option value="60" selected>1 h</option>
+            <option value="90">1 h 30</option>
+            <option value="120">2 h</option>
+            <option value="240">½ journée</option>
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <label>Avec qui ?
+          <input name="person" placeholder="Nom de la personne">
+        </label>
+        <label>Où ?
+          <input name="place" placeholder="Adresse, lieu, lien visio…">
+        </label>
+      </div>
+      <label>Catégorie
+        <div class="cats" id="cats"></div>
+      </label>
+      <label>Me rappeler
+        <select name="remind">
+          <option value="-1">Pas de rappel</option>
+          <option value="0">À l'heure du rendez-vous</option>
+          <option value="10">10 minutes avant</option>
+          <option value="30" selected>30 minutes avant</option>
+          <option value="60">1 heure avant</option>
+          <option value="120">2 heures avant</option>
+          <option value="1440">La veille (24 h avant)</option>
+        </select>
+      </label>
+      <label>Notes
+        <textarea name="notes" rows="4" placeholder="Ce qu'il faut préparer, apporter, dire…"></textarea>
+      </label>
+      <div class="row end">
+        <button type="button" id="btn-cancel" class="btn">Annuler</button>
+        <button type="submit" class="btn primary grow">Enregistrer</button>
+      </div>
+      <div class="row end" id="edit-actions">
+        <button type="button" id="btn-delete" class="btn danger">Supprimer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
