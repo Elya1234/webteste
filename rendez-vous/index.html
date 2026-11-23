@@ -2,6 +2,10 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Adresse sans « / » final (ex. monsite.fr/rendez-vous) : on ajoute le « / » pour que la page trouve ses fichiers.
+    if (!/\/$|\.html$/.test(location.pathname)) location.replace(location.pathname + '/' + location.search + location.hash);
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#4f46e5">
   <meta name="apple-mobile-web-app-capable" content="yes">

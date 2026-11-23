@@ -1,0 +1,11 @@
+# Mes Rendez-vous — réglages pour Hostinger
+DirectoryIndex index.html
+<IfModule mod_headers.c>
+  # Toujours vérifier s'il y a une nouvelle version de l'appli
+  <FilesMatch "(sw\.js|index\.html|manifest\.webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+</IfModule>
