@@ -75,7 +75,7 @@
       elevation: !!s.elevation, candleMinutes: Number(s.candleMinutes), havdalah: s.havdalah || "",
       validatedByRav: !!s.validatedByRav, showSeconds: !!s.showSeconds, showCountdown: !!s.showCountdown,
       dedication: s.dedication || "", dedicationNames: s.dedicationNames || "", useSchedule: s.useSchedule !== false,
-      sponsor: s.sponsor || "", sponsorContact: s.sponsorContact || "", background: s.background || "photo", reloadTimes: s.reloadTimes || "04:00 / 07:00",
+      sponsor: s.sponsor || "", sponsorContact: s.sponsorContact || "", background: s.background || "ohel", reloadTimes: s.reloadTimes || "04:00 / 07:00", reloadEvery: Number(s.reloadEvery) > 0 ? Number(s.reloadEvery) : 2,
       prayers: s.prayers.map(function (p) { return { id: p.id, group: p.group, label: p.label, labelHe: p.labelHe, times: p.times }; }),
       announcements: s.announcements.filter(function (a) { return a.trim(); }).slice(0, 3),
       zmanim: s.zmanim.filter(function (z) { return z.visible; }).map(function (z) { return { id: z.id, method: z.method }; }) };
@@ -327,12 +327,13 @@
     h += '<section class="sd-card"><h2>Case à dédier (parrainage)</h2>' +
       '<label class="sd-lab">Texte de la dédicace<textarea class="sd-in" rows="3" data-k="sponsor" placeholder="Ex. : Cette semaine, l\'écran est dédié à l\'anniversaire de…">' + esc(s.sponsor) + "</textarea>" +
       '<span class="sd-help">Vide : la case affiche « Espace à dédier » pour trouver un donateur.</span></label>' +
-      '<label class="sd-lab">Contact affiché quand la case est libre<input class="sd-in" data-k="sponsorContact" value="' + esc(s.sponsorContact) + '" placeholder="Vide : « Parlez-en à M. Zarka, responsable de la synagogue »"></label></section>';
+      '<label class="sd-lab">Contact affiché quand la case est libre<input class="sd-in" data-k="sponsorContact" value="' + esc(s.sponsorContact) + '" placeholder="Vide : « Contactez M. Zarka, responsable de la synagogue »"></label></section>';
 
     h += '<section class="sd-card"><h2>Fond de l\'écran</h2><select class="sd-in" data-k="background">' +
       [["ohel", "Clair : blanc, noir et rouge"], ["marbre-nuit", "Marbre gris, cases bleu nuit"], ["photo", "Photo de la synagogue"], ["ciel", "Ciel clair"], ["ivoire", "Ivoire et étoiles"], ["pierre", "Pierre de Jérusalem"], ["bleu-doux", "Bleu doux"], ["nuit", "Bleu nuit"]].map(function (o) {
-        return '<option value="' + o[0] + '"' + ((s.background || "photo") === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>" +
-      '<label class="sd-lab">Rafraîchir l\'écran chaque jour à<input class="sd-in" data-k="reloadTimes" value="' + esc(s.reloadTimes || "04:00 / 07:00") + '" placeholder="04:00 / 07:00"></label>' +
+        return '<option value="' + o[0] + '"' + ((s.background || "ohel") === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>" +
+      '<label class="sd-lab">Rafraîchir l\'écran toutes les (heures)<input class="sd-in" type="number" min="1" max="24" data-k="reloadEvery" value="' + esc(Number(s.reloadEvery) > 0 ? s.reloadEvery : 2) + '"></label>' +
+      '<label class="sd-lab">Et aussi chaque jour à<input class="sd-in" data-k="reloadTimes" value="' + esc(s.reloadTimes || "04:00 / 07:00") + '" placeholder="04:00 / 07:00"></label>' +
       '<span class="sd-help">La télé recharge aussi toute seule dès qu\'une nouvelle version du site est en ligne.</span></section>';
 
     h += '<section class="sd-card"><h2>Annonces</h2><textarea class="sd-in" rows="4" data-k="announcements" placeholder="Une annonce par ligne (3 maximum)">' +

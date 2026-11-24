@@ -15,7 +15,7 @@
   if (/sd=/.test(window.location.hash)) history.replaceState(null, "", window.location.pathname + window.location.search);
   var K_REMOTE = "sd.remote.v1";
   var SHARED_KEYS = ["name", "nameHe", "geonameid", "cityLabel", "elevation", "candleMinutes", "havdalah", "validatedByRav",
-    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim", "sponsor", "sponsorContact", "background", "reloadTimes"];
+    "showSeconds", "showCountdown", "dedication", "dedicationNames", "footerLeft", "footerRight", "prayers", "announcements", "zmanim", "sponsor", "sponsorContact", "background", "reloadTimes", "reloadEvery"];
   function withShared(base, rs) {
     var c = Object.assign({}, base);
     if (!rs) return c;
@@ -226,7 +226,7 @@
   var BGS = { photo: 0, ciel: 1, ivoire: 1, pierre: 1, "bleu-doux": 0, nuit: 0, ohel: 2, "marbre-nuit": 1 };
   function applyBg() {
     var q = (window.location.search.match(/[?&]fond=([\w-]+)/) || [])[1];
-    var bg = q in BGS ? q : CFG.background in BGS ? CFG.background : "photo";
+    var bg = q in BGS ? q : CFG.background in BGS ? CFG.background : "ohel";
     stage.setAttribute("data-bg", bg);
     stage.classList.toggle("bg-light", BGS[bg] === 1);
   }
@@ -392,7 +392,7 @@
       '</span><span class="hebrew gold">הקדשה</span></div>' +
       (sp ? '<div class="sd-sp-text">' + esc(sp) + "</div>"
           : '<div class="sd-sp-text sd-sp-empty">Anniversaire, Azkara, Bar Mitsva, mariage… Dédiez cet écran à un proche.' +
-            '<br><b>' + esc(CFG.sponsorContact || "Parlez-en à M. Zarka, responsable de la synagogue") + "</b></div>") + "</section>";
+            '<b class="sd-sp-contact">' + esc(CFG.sponsorContact || "Contactez M. Zarka, responsable de la synagogue") + "</b></div>") + "</section>";
 
     // Pied
     // Dédicace : grande ligne, puis les noms en plus petit
@@ -490,6 +490,9 @@
     var np = nowParts(tz, new Date()), hhmm = pad(np.h) + ":" + pad(np.m), stamp = todayIn(tz) + " " + hhmm;
     var times = String(CFG.reloadTimes || "04:00 / 07:00").split(/[\/,;\s]+/).filter(validTime);
     if (times.indexOf(hhmm) >= 0 && stamp !== lastAuto && Date.now() - LOADED_AT > 2 * 60 * 1000) { lastAuto = stamp; reloadIfOnline(); }
+    // écran allumé en permanence : rechargement complet toutes les N heures (réglage « reloadEvery », 2 h par défaut)
+    var every = Number(CFG.reloadEvery); if (!(every > 0)) every = 2;
+    if (Date.now() - LOADED_AT > every * 3600 * 1000 && stamp !== lastAuto) { lastAuto = stamp; reloadIfOnline(); }
   }, 20 * 1000);
 
   // Les TV se mettent à jour d'elles-mêmes quand l'admin enregistre dans l'éditeur de thème Shopify.
