@@ -2,6 +2,7 @@ import { loc, t } from "../lib/i18n";
 import { useNow, useSynagogue } from "../lib/synagogue";
 import { clean, frenchDate, hebrewDate, hm, nextOffice, nowParts, officeView, parashaName, resolveZman, todayIn, upcoming, wdName, weekdayIn, type OfficeGroup } from "../lib/zmanim";
 import { go } from "../lib/router";
+import { LITE } from "../lib/backend";
 
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -99,10 +100,10 @@ export default function Home() {
               : <div className="muted">{t("Aucune annonce pour le moment.")}</div>}
           </section>
 
-          <section className="card cta">
+          {!LITE && <section className="card cta">
             <div><b className="serif">{t("Soutenir la synagogue")}</b><div className="small muted">{t("Don, cotisation, kibboud, dédicace.")}</div></div>
             <button className="btn" onClick={() => go("dons")}>{t("Faire un don")}</button>
-          </section>
+          </section>}
         </div>
       </div>
 

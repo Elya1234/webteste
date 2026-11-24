@@ -14,6 +14,12 @@ export const supabase: SupabaseClient | null = URL_ && KEY
   ? createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: "bethchalom.session" } })
   : null;
 export const DEMO = !supabase;
+/** Version simple (sans base de données ni paiement) : celle qu'on publie tant que Supabase/Stripe ne sont pas branchés.
+ *  Seules les rubriques qui marchent pour de vrai restent : horaires, zmanim, Siddour, calendrier, étude, annonces.
+ *  La démo en ligne (VITE_DEMO=1) garde tout. */
+export const LITE = DEMO && import.meta.env.VITE_DEMO !== "1";
+/** Rubriques qui demandent des comptes, des contenus ajoutés par l'administration ou des paiements. */
+export const FULL_ONLY = ["boutique", "panier", "dons", "compte", "messages", "paiement", "recu", "recu-annuel", "admin", "conditions", "cours", "videos", "galerie"];
 
 export type Product = {
   id: string; ref: string; name: string; description: string; category: string;
