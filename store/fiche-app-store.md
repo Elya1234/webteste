@@ -31,7 +31,7 @@ synagogue,zmanim,siddour,chabbat,horaires,offices,calendrier juif,halakha,parach
 
 ## Images (dossier store/ios)
 
-Captures iPhone 6,9 pouces (1320 × 2868) : 01-accueil.png … 06-dons.png
+Captures iPhone 6,9 pouces (1320 × 2868) : 01-accueil.png … 05-zmanim.png
 (App Store Connect les réutilise pour les autres tailles d'iPhone.)
 
 ## Informations de l'app

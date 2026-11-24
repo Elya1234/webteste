@@ -29,7 +29,7 @@ Les horaires sont les mêmes que sur l'écran de la synagogue et se mettent à j
 |---|---|
 | Icône de l'application (512 × 512) | icone-512.png |
 | Image de présentation (1024 × 500) | banniere-1024x500.png |
-| Captures d'écran du téléphone (2 à 8) | 01-accueil.png … 06-dons.png |
+| Captures d'écran du téléphone (2 à 8) | 01-accueil.png … 05-zmanim.png |
 
 ## Catégorie et coordonnées
 
