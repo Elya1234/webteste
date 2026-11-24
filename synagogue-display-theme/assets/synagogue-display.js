@@ -475,9 +475,10 @@
      - dès qu'une nouvelle version du site est en ligne (fichier de version vérifié toutes les 2 min) ;
      - chaque jour aux heures choisies dans l'administration (par défaut 04:00 et 07:00).
      On ne recharge que si le site répond, pour ne jamais laisser une page d'erreur sur la télé. */
+  // (paramètre « v » : le seul dont le cache de Shopify tient compte)
   var VERSION_URL = /ecran\.html$/.test(window.location.pathname) ? "ecran-version.json" : "version.json";
   function siteVersion() {
-    return fetch(VERSION_URL + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+    return fetch(VERSION_URL + "?v=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
   }
   function reloadIfOnline() { siteVersion().then(function () { window.location.reload(); }, function () { /* hors connexion : on réessaiera */ }); }
   setInterval(function () {

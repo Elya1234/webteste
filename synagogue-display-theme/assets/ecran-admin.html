@@ -35,7 +35,7 @@
     var files = ["synagogue-admin.js"], i = 0;
     (function next() { if (i >= files.length) return; var s = document.createElement("script"); s.src = files[i++] + q; s.onload = next; document.body.appendChild(s); })();
   }
-  fetch("ecran-version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); })
+  fetch("ecran-version.json?v=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); })
     .then(function (j) { go(j.v || "0"); }, function () { go("0"); });
 })();
 </script>
