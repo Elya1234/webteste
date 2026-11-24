@@ -19,9 +19,7 @@ L'application de la synagogue Beth Chalom (Paris) : toute la vie de la communaut
 • Siddour séfarade (Edot HaMizrah), lisible même sans Internet
 • Calendrier juif : fêtes, Roch Hodech, jeûnes, avec la date hébraïque
 • Halakha Yomit et Daf Hayomi du jour
-• Programme des cours, avec inscription
-• Annonces de la synagogue et messagerie avec l'administration
-• Boutique (livres, objets, dédicaces) avec reçus
+• Annonces de la synagogue
 
 Les horaires sont les mêmes que sur l'écran de la synagogue et se mettent à jour automatiquement.
 
@@ -45,6 +43,10 @@ Captures iPhone 6,9 pouces (1320 × 2868) : 01-accueil.png … 06-dons.png
 
 ## Confidentialité de l'app (App Store Connect › Confidentialité de l'app)
 
+**VERSION SIMPLE (actuelle)** : « Collectez-vous des données ? » → **Non, nous ne collectons pas de données**.
+
+**Plus tard, avec comptes et paiements :**
+
 Données collectées, **liées à l'utilisateur**, **non utilisées pour le suivi** :
 - Coordonnées : nom, adresse e-mail, numéro de téléphone, adresse postale → Fonctionnalité de l'app
 - Achats : historique d'achats → Fonctionnalité de l'app
@@ -53,5 +55,5 @@ Pas de publicité, pas de suivi, pas de données de localisation.
 
 ## Vérification par Apple (Informations pour la vérification de l'app)
 
-- Compte de démonstration : un compte de test créé pour Apple (e-mail + mot de passe)
-- Remarques : « L'application affiche les horaires et les zmanim de la synagogue Beth Chalom. Le compte sert à acheter des articles de la synagogue et à écrire à l'administration. Les paiements passent par Stripe. »
+- Connexion requise : **Non** (version simple, pas de compte)
+- Remarques : « L'application affiche les horaires et les zmanim de la synagogue Beth Chalom. Aucun compte, aucun paiement : horaires, zmanim, Siddour et calendrier. »

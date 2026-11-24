@@ -8,7 +8,7 @@
 Beth Chalom
 
 **Description courte** (80 caractères max)
-Horaires des offices, zmanim, Siddour séfarade, calendrier juif et dons.
+Horaires des offices, zmanim, Siddour séfarade et calendrier juif.
 
 **Description complète**
 L'application de la synagogue Beth Chalom (Paris) : toute la vie de la communauté dans votre poche.
@@ -19,9 +19,7 @@ L'application de la synagogue Beth Chalom (Paris) : toute la vie de la communaut
 • Siddour séfarade (Edot HaMizrah), lisible même sans Internet
 • Calendrier juif : fêtes, Roch Hodech, jeûnes, avec la date hébraïque
 • Halakha Yomit et Daf Hayomi du jour
-• Programme des cours, avec inscription
-• Annonces de la synagogue et messagerie avec l'administration
-• Boutique (livres, objets, dédicaces) et dons en ligne, avec reçus
+• Annonces de la synagogue
 
 Les horaires sont les mêmes que sur l'écran de la synagogue et se mettent à jour automatiquement.
 
@@ -48,9 +46,12 @@ Les horaires sont les mêmes que sur l'écran de la synagogue et se mettent à j
 
 **Classification du contenu** : catégorie « Référence, actualités ou éducation » → répondre Non à toutes les questions (violence, sexualité, langage, drogues, jeux d'argent…).
 
-**Public cible** : 18 ans et plus (paiements et dons en ligne).
+**Public cible** : 18 ans et plus.
 
-**Sécurité des données** :
+**Sécurité des données — VERSION SIMPLE (actuelle, sans compte ni paiement)** :
+- « Votre application collecte-t-elle ou partage-t-elle des données ? » → **Non**.
+
+**Sécurité des données — plus tard, quand les comptes et paiements seront branchés** :
 - Données collectées : Nom, adresse e-mail, numéro de téléphone (facultatif), adresse postale (facultative), historique d'achats, messages.
 - Finalités : fonctionnement de l'application, gestion du compte, communications de la synagogue.
 - Partagées avec des tiers : Non (Supabase et Stripe agissent pour le compte de la synagogue).
