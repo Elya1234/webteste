@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EMPTY_ASSOCIATION, getAssociation, type Association } from "../lib/backend";
+import { EMPTY_ASSOCIATION, LITE, getAssociation, type Association } from "../lib/backend";
 import { useSynagogue } from "../lib/synagogue";
 
 /* Pages exigées par l'App Store, le Play Store et la loi (RGPD, vente à distance).
@@ -21,6 +21,13 @@ export function Confidentialite() {
       <h1 className="serif gold-text">Politique de confidentialité</h1>
       <p className="small muted">Dernière mise à jour : {new Date().toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</p>
       <h2>Qui est responsable de vos données ?</h2><Who a={a} name={config.name} />
+      {LITE ? <>
+      <h2>Ce que nous enregistrons</h2>
+      <p><b>Rien.</b> L'application ne demande ni compte, ni nom, ni e-mail, ni localisation. Elle ne contient aucune publicité, aucun traçage et aucun outil de mesure d'audience.</p>
+      <p>Elle télécharge seulement les horaires de la synagogue, les zmanim (Hebcal), les textes de prière et d'étude (Sefaria). Une copie reste sur votre téléphone pour l'utilisation sans Internet ; elle disparaît si vous supprimez l'application.</p>
+      <h2>Vos droits</h2>
+      <p>Pour toute question, écrivez-nous{a.email && <> à <span className="gold">{a.email}</span></>}. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>
+      </> : <>
       <h2>Ce que nous enregistrons</h2>
       <ul>
         <li><b>Votre compte</b> : prénom, nom, e-mail, téléphone (facultatif), adresse (facultative, pour les reçus fiscaux). Le mot de passe n'est jamais lisible : seule une empreinte chiffrée est conservée.</li>
@@ -36,6 +43,7 @@ export function Confidentialite() {
       <p>Tant que votre compte existe. Les dons et paiements sont conservés 10 ans (obligation comptable), même après la suppression du compte, sans lien avec celui-ci.</p>
       <h2>Vos droits</h2>
       <p>Vous pouvez consulter et corriger vos informations dans Mon compte, et <b>supprimer votre compte</b> à tout moment (Mon compte › Supprimer mon compte). Pour toute autre demande (accès, opposition, portabilité), écrivez-nous{a.email && <> à <span className="gold">{a.email}</span></>}. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>
+      </>}
     </article></div>
   );
 }

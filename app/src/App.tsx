@@ -20,7 +20,7 @@ import Paiement from "./pages/Paiement";
 import Recu from "./pages/Recu";
 import RecuAnnuel from "./pages/RecuAnnuel";
 import { Conditions, Confidentialite } from "./pages/Legal";
-import { unreadCount } from "./lib/backend";
+import { LITE, unreadCount } from "./lib/backend";
 import { useAuth } from "./lib/auth";
 
 const NAV: { r: Route; label: string; icon: string }[] = [
@@ -29,6 +29,11 @@ const NAV: { r: Route; label: string; icon: string }[] = [
   { r: "boutique", label: "Boutique", icon: "M5 8h14l-1.2 12H6.2zM9 8V6a3 3 0 0 1 6 0v2" },
   { r: "compte", label: "Compte", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9a8 8 0 0 1 16 0" }
 ];
+// version simple : Siddour et Calendrier à la place de Boutique et Compte
+const NAV_LITE: typeof NAV = [NAV[0], NAV[1],
+  { r: "siddour", label: "Siddour", icon: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zm0 16V5m4 2h7" },
+  { r: "calendrier", label: "Calendrier", icon: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" }];
+const TABS = LITE ? NAV_LITE : NAV;
 // rubriques ouvertes depuis le Menu : petit retour en haut de page (le Siddour a son propre fil d'Ariane)
 const BACK_TO_MENU: Route[] = ["calendrier", "zmanim", "cours", "halakha", "daf", "videos", "galerie", "dons"];
 const MENU_ICON = "M4 6h16M4 12h16M4 18h16";
@@ -43,7 +48,7 @@ export default function App() {
   const { profile } = useAuth();
   const [unread, setUnread] = useState(0);
   useEffect(() => {
-    if (!profile) { setUnread(0); return; }
+    if (!profile || LITE) { setUnread(0); return; }
     const f = () => unreadCount().then(setUnread, () => {});
     f(); const id = setInterval(f, 60000);
     return () => clearInterval(id);
@@ -65,7 +70,7 @@ export default function App() {
     halakha: <Etude kind="halakha" />, daf: <Etude kind="daf" />, videos: <Videos />, galerie: <Galerie />, admin: <Admin params={params} />, messages: <Messages />, paiement: <Paiement />, recu: <Recu params={params} />, "recu-annuel": <RecuAnnuel params={params} />, confidentialite: <Confidentialite />, conditions: <Conditions />
   }[route];
   // les rubriques ouvertes depuis le Menu gardent l'onglet Menu allumé
-  const tab = NAV.some((n) => n.r === route) ? route : route === "panier" ? "boutique" : route === "messages" || route === "recu" || route === "recu-annuel" ? "compte" : ITEMS.some((i) => i.r === route) ? "menu" : route;
+  const tab = TABS.some((n) => n.r === route) ? route : route === "panier" ? "boutique" : route === "messages" || route === "recu" || route === "recu-annuel" ? "compte" : ITEMS.some((i) => i.r === route) ? "menu" : route;
 
   return (
     <div className="shell">
@@ -78,12 +83,12 @@ export default function App() {
           <span className="logo serif">✡&#xFE0E;</span>
           <span><span className="serif gold-text brand-name">{config.name}</span><span className="hebrew brand-he">{config.nameHe}</span></span>
         </a>
-        <a className="cart-btn" href="#/panier" aria-label={t("Panier") + " · " + count}>
+        {LITE ? <span className="cart-btn" aria-hidden="true" style={{ visibility: "hidden" }} /> : <a className="cart-btn" href="#/panier" aria-label={t("Panier") + " · " + count}>
           <Icon d={NAV[2].icon} />{count > 0 && <span className="badge">{count}</span>}
-        </a>
+        </a>}
       </header>
       <nav className="nav" aria-label="Navigation principale">
-        {NAV.map((n) => (
+        {TABS.map((n) => (
           <a key={n.r} href={"#/" + n.r} className={tab === n.r ? "on" : ""} aria-current={route === n.r ? "page" : undefined}>
             <span className="nav-ic"><Icon d={n.icon} />{n.r === "compte" && unread > 0 && <span className="badge">{unread}</span>}</span><span>{t(n.label)}</span>
           </a>

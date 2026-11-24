@@ -3,6 +3,7 @@ import { useState } from "react";
 import { LangSwitch } from "../components-lang";
 import { useSynagogue } from "../lib/synagogue";
 import type { Route } from "../lib/router";
+import { FULL_ONLY, LITE } from "../lib/backend";
 
 // Icônes simples au trait (même style que la barre de navigation)
 export const ITEMS: { r: Route; label: string; he: string; sub: string; icon: string }[] = [
@@ -29,7 +30,7 @@ export function MenuContent({ onPick, autoFocus = false }: { onPick?: () => void
   const [q, setQ] = useState("");
   const norm = (x: string) => x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const s = norm(q.trim());
-  const shown = ITEMS.filter((i) => !s || norm(i.label + " " + i.sub + " " + t(i.label) + " " + t(i.sub) + " " + i.he).includes(s));
+  const shown = ITEMS.filter((i) => !(LITE && FULL_ONLY.includes(i.r))).filter((i) => !s || norm(i.label + " " + i.sub + " " + t(i.label) + " " + t(i.sub) + " " + i.he).includes(s));
   return (
     <>
       <section className="banner" style={{ backgroundImage: "linear-gradient(180deg, rgba(4,10,28,.25), rgba(4,10,28,.7)), url(synagogue-bg.jpg)" }}>
@@ -47,8 +48,8 @@ export function MenuContent({ onPick, autoFocus = false }: { onPick?: () => void
         {!shown.length && <li className="muted" style={{ padding: 16 }}>{t("Aucune rubrique trouvée.")}</li>}
       </ul>
       <LangSwitch />
-      <nav className="legal-links small"><a href="#/confidentialite" onClick={onPick}>{t("Confidentialité")}</a><a href="#/conditions" onClick={onPick}>{t("Conditions de vente")}</a></nav>
-      <a className="admin-link small" href="#/admin" onClick={onPick}>{t("Espace administrateur")}</a>
+      <nav className="legal-links small"><a href="#/confidentialite" onClick={onPick}>{t("Confidentialité")}</a>{!LITE && <a href="#/conditions" onClick={onPick}>{t("Conditions de vente")}</a>}</nav>
+      {!LITE && <a className="admin-link small" href="#/admin" onClick={onPick}>{t("Espace administrateur")}</a>}
     </>
   );
 }
